@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace IPlot.Plotly
 {
@@ -15,10 +17,10 @@ namespace IPlot.Plotly
                 if (int.TryParse(prop.Substring(i + 1), out int index) && index >= 0)
                 {
                     var p = el.GetType().GetProperty(prop.Substring(0, i));
-                    var arr = p.GetValue(el) as ChartElement[];
+                    var arr = p.GetValue(el) as IEnumerable<ChartElement>;
 
-                    if ((arr != null) && arr.Length > index)
-                        return arr[index];
+                    if ((arr != null) && arr.Count() > index)
+                        return arr.ElementAt(index);
                 }
             }
             else

@@ -38,7 +38,7 @@ module Gen =
                     | ElementInt -> "int?"
                     | ElementFloat -> "double?"
                     | ElementString -> "string"
-                    | ElementArray e -> e.ToTypeString() + "[]"
+                    | ElementArray e -> "IEnumerable<" + e.ToTypeString() + ">"
                     | ElementOther(el) -> el
                     | ElementIgnore -> "_"
                 member this.ToTypeString() =
@@ -47,7 +47,7 @@ module Gen =
                     | ElementInt -> "int"
                     | ElementFloat -> "double"
                     | ElementString -> "string"
-                    | ElementArray e -> e.ToTypeString() + "[]"
+                    | ElementArray e -> "IEnumerable<" + e.ToTypeString() + ">"
                     | ElementOther(el) -> el
                     | ElementIgnore -> "_"
                 member this.IsArray() =

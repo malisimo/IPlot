@@ -21,6 +21,7 @@ let description = "##DESCRIPTION##"
 
 let templateFile = @"
 using System;
+using System.Collections.Generic;
 
 namespace IPlot.Plotly
 {

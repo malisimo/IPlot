@@ -49,18 +49,18 @@ namespace IPlot.Plotly
 
         public override ChartElement DeepClone()
         {
-            var PlotlyChart = new PlotlyChart();
+            var plotlyChart = new PlotlyChart();
 
             if (this.traces.Length > 0)
             {
-                PlotlyChart.traces = new Trace[this.traces.Length];
+                plotlyChart.traces = new Trace[this.traces.Length];
                 for (int i = 0; i < this.traces.Length; i++)
                 {
-                    PlotlyChart.traces[i] = (Trace)this.traces[i].DeepClone();
+                    plotlyChart.traces[i] = (Trace)this.traces[i].DeepClone();
                 }
             }
 
-            return PlotlyChart;
+            return plotlyChart;
         }
 
         public string serializeTraces(IEnumerable<string> names, IEnumerable<Trace> traces)

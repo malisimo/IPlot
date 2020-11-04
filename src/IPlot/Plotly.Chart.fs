@@ -9,7 +9,7 @@ type value = IConvertible
 type Chart() =
     static member val Props = Chart_IProp() with get
     
-    static member WithProp (propFun: System.Func<PlotlyChart, PlotlyChart>) (chart: PlotlyChart) =
+    static member WithProp (propFun: Func<PlotlyChart, PlotlyChart>) (chart: PlotlyChart) =
         propFun.Invoke (chart.DeepClone() :?> PlotlyChart)
 
     static member Plot data =
