@@ -4,7 +4,7 @@
 This differs slightly from XPlot in the following ways:
 
 * All chart properties are strongly typed
-* There is an added Chart.WithProp function which allows you to set any property on the chart, with help from intellisense
+* There is an added Chart.With function which allows you to set any property on the chart, with help from intellisense
 
 ## Motivation
 
@@ -37,7 +37,7 @@ let trace2 =
 ```
 
 There are some minor differences from the XPlot API (here the data must be a float array) but IPlot is mostly compatible.
-In order to set other properties, you can use Chart.WithProp as follows:
+In order to set other properties, you can use Chart.With as follows:
 
 ```fsharp
 [trace1; trace2]
