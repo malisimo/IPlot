@@ -15,7 +15,7 @@ module ``Scatter properties`` =
     let ``Set line width`` () =
         let chart =
             createChart()
-            |> Chart.WithProp (Chart.Props.traces.[0].asScatter.line.width 5.0)
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 5.0)
         
         Assert.Equal(5.0, (chart.traces.[0]:?>Scatter).line.width.Value)
 
@@ -37,14 +37,14 @@ module ``Scatter properties`` =
         |> Chart.Plot
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
-        |> Chart.WithProp (Chart.Props.traces.[0].asScatter.mode "markers")
-        |> Chart.WithProp (Chart.Props.traces.[0].asScatter.marker.color "#EE44AA")
-        |> Chart.WithProp (Chart.Props.traces.[0].asScatter.marker.size 12.)
-        |> Chart.WithProp (Chart.Props.traces.[1].asScatter.mode "lines+markers")
-        |> Chart.WithProp (Chart.Props.traces.[1].asScatter.line.width 5.0)
-        |> Chart.WithProp (Chart.Props.traces.[1].asScatter.line.color "#44FF22")
-        |> Chart.WithProp (Chart.Props.layout.showlegend false)
-        |> Chart.WithProp (Chart.Props.layout.plot_bgcolor "#334433")
+        |> Chart.With (Chart.Props.traces.[0].asScatter.mode "markers")
+        |> Chart.With (Chart.Props.traces.[0].asScatter.marker.color "#EE44AA")
+        |> Chart.With (Chart.Props.traces.[0].asScatter.marker.size 12.)
+        |> Chart.With (Chart.Props.traces.[1].asScatter.mode "lines+markers")
+        |> Chart.With (Chart.Props.traces.[1].asScatter.line.width 5.0)
+        |> Chart.With (Chart.Props.traces.[1].asScatter.line.color "#44FF22")
+        |> Chart.With (Chart.Props.layout.showlegend false)
+        |> Chart.With (Chart.Props.layout.plot_bgcolor "#334433")
         |> Chart.Show
 
         Assert.True(true)

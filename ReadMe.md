@@ -44,13 +44,13 @@ In order to set other properties, you can use Chart.WithProp as follows:
 |> Chart.Plot
 |> Chart.WithWidth 700
 |> Chart.WithHeight 500
-|> Chart.WithProp (Chart.Props.traces.[0].asScatter.mode "markers")
-|> Chart.WithProp (Chart.Props.traces.[0].asScatter.marker.color "#EE44AA")
-|> Chart.WithProp (Chart.Props.traces.[0].asScatter.marker.size 12.)
-|> Chart.WithProp (Chart.Props.traces.[1].asScatter.line.width 5.0)
-|> Chart.WithProp (Chart.Props.traces.[1].asScatter.line.color "#44FF22")
-|> Chart.WithProp (Chart.Props.traces.[1].asScatter.mode "lines+markers")
-|> Chart.WithProp (Chart.Props.traces.[1].asScatter.marker.color "#44AAEE")
-|> Chart.WithProp (Chart.Props.traces.[1].asScatter.marker.size 12.)
+|> Chart.With (Chart.Props.traces.[0].asScatter.mode "markers")
+|> Chart.With (Chart.Props.traces.[0].asScatter.marker.color "#EE44AA")
+|> Chart.With (Chart.Props.traces.[0].asScatter.marker.size 12.)
+|> Chart.With (Chart.Props.traces.[1].asScatter.mode "lines+markers")
+|> Chart.With (Chart.Props.traces.[1].asScatter.line.width 5.0)
+|> Chart.With (Chart.Props.traces.[1].asScatter.line.color "#44FF22")
+|> Chart.With (Chart.Props.layout.showlegend false)
+|> Chart.With (Chart.Props.layout.plot_bgcolor "#334433")
 |> Chart.Show
 ```
