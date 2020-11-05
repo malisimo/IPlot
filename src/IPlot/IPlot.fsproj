@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Common.fs" />
     <Compile Include="Plotly.Chart.fs" />
   </ItemGroup>
 

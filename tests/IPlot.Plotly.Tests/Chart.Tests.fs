@@ -3,13 +3,43 @@ namespace IPlot.Plotly.Tests
 open Xunit
 open IPlot.Plotly
 
-module ``Scatter properties`` =
+module TestUtils =
     let createChart() =
         PlotlyChart(
             traces = [|
                 Scatter() :> Trace
             |]
         )
+
+module ``Layout properties`` =
+    open TestUtils
+
+    [<Fact>]
+    let ``Set title`` () =
+        let chart =
+            createChart()
+            |> Chart.With (Chart.Props.layout.title.text "Beard length")
+        
+        Assert.Equal("Beard length", chart.layout.title.text)
+
+module ``Scatter properties`` =
+    open TestUtils
+    
+    [<Fact>]
+    let ``Set name`` () =
+        let chart =
+            createChart()
+            |> Chart.With (Chart.Props.traces.[0].asScatter.name "Mr Susan")
+        
+        Assert.Equal("Mr Susan", (chart.traces.[0]:?>Scatter).name)
+    
+    [<Fact>]
+    let ``Set mode`` () =
+        let chart =
+            createChart()
+            |> Chart.With (Chart.Props.traces.[0].asScatter.mode "lines+markers")
+        
+        Assert.Equal("lines+markers", (chart.traces.[0]:?>Scatter).mode)
     
     [<Fact>]
     let ``Set line width`` () =
@@ -18,6 +48,14 @@ module ``Scatter properties`` =
             |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 5.0)
         
         Assert.Equal(5.0, (chart.traces.[0]:?>Scatter).line.width.Value)
+    
+    [<Fact>]
+    let ``Set line color`` () =
+        let chart =
+            createChart()
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#222")
+        
+        Assert.Equal("#222", (chart.traces.[0]:?>Scatter).line.color)
 
     [<Fact>]
     let ``Basic Line Plot``() =
@@ -78,3 +116,20 @@ module ``Scatter properties`` =
         |> Chart.WithHeight 500
         |> Chart.Show
 
+module ``Surface properties`` =
+    
+    [<Fact>]
+    let ``Basic Surface``() =
+        let r = System.Random(2539)
+        let zData =
+            seq {
+                for _ in 1..100 do
+                    let v = r.NextDouble()
+                    yield v//[|v;v+2.;v+3.|]
+                    }
+
+        zData
+        |> Chart.Surface
+        |> Chart.WithWidth 700
+        |> Chart.WithHeight 500
+        |> Chart.Show

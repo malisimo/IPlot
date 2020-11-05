@@ -1,7 +1,7 @@
 ﻿namespace IPlot.Plotly
 
-open IPlot.Plotly
 open System
+open IPlot.Common
 
 type key = IConvertible
 type value = IConvertible
@@ -264,4 +264,21 @@ type Chart() =
                 Scatter(x = x, y = y, mode = "markers")
             )
         Chart.Plot scatters
+
+    static member Surface(data:seq<#value>) =
+        let zData = data |> Chart.ToFloatArray
+        
+        let surface =
+            Surface(
+                z = zData,
+                contours = Contours(
+                    z = Z(
+                        show = !< true,
+                        usecolormap = !< true,
+                        highlightcolor = "#42f462",
+                        project = Project( z = !< true)
+                    )
+                )
+            )
+        Chart.Plot surface
 
