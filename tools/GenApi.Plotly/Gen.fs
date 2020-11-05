@@ -20,13 +20,31 @@ module Gen =
             | ElementOther of string
             | ElementIgnore
             with
-                static member FromPropType (typeName: string) =
+                static member FromPropType (typeName: string) (name: string) (traceType: string option)=
                     match typeName with
                     | "boolean" -> ElementBool
                     | "integer" -> ElementInt
                     | "number" | "angle" -> ElementFloat
                     | "string" | "flaglist" | "geoid" | "sceneid" | "axisid" | "color" -> ElementString
                     | "any" | "colorscale" | "subplotid" | "enumerated" -> ElementString
+                    | "data_array" when name = "ids" -> ElementArray(ElementString)
+                    | "data_array" when name = "customdata" -> ElementArray(ElementString)
+                    | "data_array" when name = "ticktext" -> ElementArray(ElementString)
+                    | "data_array" when name = "text" -> ElementArray(ElementString)
+                    | "data_array" when name = "hovertext" -> ElementArray(ElementString)
+                    | "data_array" when name = "colors" -> ElementArray(ElementString)
+                    | "data_array" when name = "color" -> ElementArray(ElementString)
+                    | "data_array" when name = "format" -> ElementArray(ElementString)
+                    | "data_array" when name = "labels" -> ElementArray(ElementString)
+                    | "data_array" when name = "facecolor" -> ElementArray(ElementString)
+                    | "data_array" when name = "vertexcolor" -> ElementArray(ElementString)
+                    | "data_array" when name = "columnorder" -> ElementArray(ElementInt)
+                    | "data_array" when name = "i" -> ElementArray(ElementInt)
+                    | "data_array" when name = "j" -> ElementArray(ElementInt)
+                    | "data_array" when name = "k" -> ElementArray(ElementInt)
+                    | "data_array" when traceType = Some("Surface") -> ElementArray(ElementArray(ElementFloat))
+                    | "data_array" when name = "values" && traceType = Some("Table") -> ElementArray(ElementArray(ElementFloat))
+                    | "data_array" when name = "surfacecolor" -> ElementArray(ElementArray(ElementString))
                     | "data_array" -> ElementArray(ElementFloat)
                     | "colorlist" -> ElementArray(ElementString)
                     | "info_array" -> ElementArray(ElementString)
@@ -74,30 +92,33 @@ module Gen =
                 elementType: string
                 isElementArray: bool
                 rootElement:string option
+                traceType:string option
                 fullType: string
             }
             with
-                static member FromString curPath elementType isElementArray rootElement name value =
+                static member FromString curPath elementType isElementArray rootElement traceType name value =
                     {
                         name = name
                         value = Some value
-                        ``type`` = if name = "type" then ElementIgnore else ElementString
+                        ``type`` = ElementString
                         description = ""
                         elementType = elementType
                         isElementArray = isElementArray
                         rootElement = rootElement
+                        traceType = traceType
                         fullType = pathToPropName curPath
                     }
 
-                static member FromObj curPath elementType isElementArray rootElement name (value: Dictionary<string, obj>) =
+                static member FromObj curPath elementType isElementArray rootElement traceType name (value: Dictionary<string, obj>) =
                     {
                         name = name
                         value = None
-                        ``type`` = ElementType.FromPropType (value.["valType"].ToString())
+                        ``type`` = ElementType.FromPropType (value.["valType"].ToString()) name traceType
                         description = if value.ContainsKey "description" then value.["description"].ToString() else ""
                         elementType = elementType
                         isElementArray = isElementArray
                         rootElement = rootElement
+                        traceType = traceType
                         fullType = pathToPropName curPath
                     }
 
@@ -147,34 +168,35 @@ module Gen =
             |> Seq.map (fun (key,keyProps) -> (keyDict.[key],keyProps))
 
         // Get a flat list of all properties from the current doc property
-        let rec getPropertiesFromDict curPath curType isArray rootElement (propertyDict: IDictionary<string, obj>) =
+        let rec getPropertiesFromDict curPath curType isArray rootElement traceType (propertyDict: IDictionary<string, obj>) =
             [
                 for p in propertyDict do
                     let curKey = p.Key
                     let curValue = p.Value
                     match curValue with
-                    | :? System.String -> yield Property.FromString curPath curType false rootElement curKey ("\"" + string curValue + "\"")
-                    | :? System.Boolean -> yield Property.FromString curPath curType false rootElement curKey curValue
+                    | :? System.String -> yield Property.FromString curPath curType false rootElement traceType curKey ("\"" + string curValue + "\"")
+                    | :? System.Boolean -> yield Property.FromString curPath curType false rootElement traceType curKey curValue
                     | _ ->
                         let propDict = tryDeserialiseDict (curValue.ToString())
                         match propDict.ContainsKey("valType") with
-                        | true -> yield Property.FromObj curPath curType isArray rootElement curKey propDict // Property is a value or array
+                        | true -> yield Property.FromObj curPath curType isArray rootElement traceType curKey propDict // Property is a value or array
                         | false -> // Property is a nested dictionary
                             let el =
                                 {
                                     name = curKey
                                     value = None
-                                    ``type`` = ElementType.FromPropType curKey
+                                    ``type`` = ElementType.FromPropType curKey curKey traceType
                                     description = ""
                                     elementType = curType
                                     isElementArray = isArray
-                                    fullType = pathToPropName curPath
                                     rootElement = rootElement
+                                    traceType = traceType
+                                    fullType = pathToPropName curPath
                                 }
                             if Property.IsValid el then
                                 yield el
                                 let properties = tryDeserialiseDict (curValue.ToString())
-                                yield! getPropertiesFromDict (curKey::curPath) curKey (el.``type``.IsArray()) None properties   
+                                yield! getPropertiesFromDict (curKey::curPath) curKey (el.``type``.IsArray()) None traceType properties   
             ]
 
         let toElementFile ((elType:string, elBaseType:string option), elMembers:Property seq) =
@@ -239,7 +261,7 @@ module Gen =
                         |> tryDeserialiseDict
                         |> fun dict -> dict.["attributes"].ToString()
                         |> tryDeserialiseDict
-                    yield! getPropertiesFromDict [typeName] typeName false (Some("Trace")) properties
+                    yield! getPropertiesFromDict [typeName] typeName false (Some("Trace")) (Some(typeName)) properties
             ]
             |> List.filter Property.IsValid
 
@@ -251,7 +273,7 @@ module Gen =
                 let properties =
                     jObj.ToString()
                     |> tryDeserialiseDict
-                yield! getPropertiesFromDict [typeName] typeName false None properties
+                yield! getPropertiesFromDict [typeName] typeName false None None properties
             ]
             |> List.filter Property.IsValid
         
