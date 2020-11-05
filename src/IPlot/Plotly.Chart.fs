@@ -265,8 +265,11 @@ type Chart() =
             )
         Chart.Plot scatters
 
-    static member Surface(data:seq<#value>) =
-        let zData = data |> Chart.ToFloatArray
+    static member Surface(data:seq<seq<#value>>) =
+        let zData =
+            data
+            |> Seq.map Chart.ToFloatArray
+            |> Seq.head
         
         let surface =
             Surface(
