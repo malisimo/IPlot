@@ -69,7 +69,7 @@ namespace IPlot.Plotly
                 return JsonConvert.SerializeObject(traces, Formatting.None, new JsonSerializerSettings
                 {
                     NullValueHandling = NullValueHandling.Ignore
-                });
+                }).Replace("iplot_", string.Empty);
 
             var namedTraces =
                 names
@@ -83,7 +83,7 @@ namespace IPlot.Plotly
             return JsonConvert.SerializeObject(namedTraces, Formatting.None, new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore
-            });
+            }).Replace("iplot_", string.Empty);
         }
 
 
@@ -124,9 +124,9 @@ namespace IPlot.Plotly
         {
             var tracesJson = serializeTraces(_labels, this.traces);
             var layoutJson = this.layout == null ? "\"\"" : JsonConvert.SerializeObject(this.layout, Formatting.None, new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore
-                });
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            }).Replace("iplot_", string.Empty);
 
             return
                 Html.jsFunctionTemplate

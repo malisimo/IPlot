@@ -125,7 +125,7 @@ module ``Surface properties`` =
             seq {
                 for _ in 1..100 do
                     let v = r.NextDouble()
-                    yield v//[|v;v+2.;v+3.|]
+                    yield [v;v+2.;v+3.] |> List.toSeq
                     }
 
         zData

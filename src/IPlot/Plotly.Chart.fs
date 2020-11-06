@@ -1,6 +1,7 @@
 ﻿namespace IPlot.Plotly
 
 open System
+open System.Linq
 open IPlot.Common
 
 type key = IConvertible
@@ -133,6 +134,11 @@ type Chart() =
         |> Seq.map (fun v -> (v :> IConvertible).ToDouble(null))
         |> Seq.toArray
 
+    static member internal ToStringArray s =
+        s
+        |> Seq.map (fun s -> s.ToString())
+        |> Seq.toArray
+
     static member Area(data:seq<#key * #value>) =
         let x = Seq.map fst data |> Chart.ToFloatArray
         let y = Seq.map snd data |> Chart.ToFloatArray
@@ -182,7 +188,7 @@ type Chart() =
                 mode = "markers",
                 marker =
                     Marker (
-                        size = if Seq.isEmpty sizes then Nullable() else Nullable<float>(float (Seq.head sizes))
+                        size = if Seq.isEmpty sizes then Nullable() else Nullable<float>((Seq.head sizes :> IConvertible).ToDouble(null))
                     )
             )
         Chart.Plot trace
@@ -240,7 +246,7 @@ type Chart() =
         Chart.Plot scatters
 
     static member Pie(data:seq<#key * #value>) =
-        let x = Seq.map fst data |> Chart.ToFloatArray
+        let x = Seq.map fst data |> Chart.ToStringArray
         let y = Seq.map snd data |> Chart.ToFloatArray
         let pie = Pie(labels = x, values = y)
         Chart.Plot [pie]
@@ -268,12 +274,15 @@ type Chart() =
     static member Surface(data:seq<seq<#value>>) =
         let zData =
             data
-            |> Seq.map Chart.ToFloatArray
-            |> Seq.head
+            |> Seq.map (fun arr ->
+                arr
+                |> Seq.map (fun v -> (v :> IConvertible).ToDouble(null)))
+            |> Seq.toArray
         
         let surface =
             Surface(
-                z = zData,
+                z = zData.AsEnumerable(),
+                iplot_type = "surface",
                 contours = Contours(
                     z = Z(
                         show = !< true,

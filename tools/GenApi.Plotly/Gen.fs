@@ -42,8 +42,8 @@ module Gen =
                     | "data_array" when name = "i" -> ElementArray(ElementInt)
                     | "data_array" when name = "j" -> ElementArray(ElementInt)
                     | "data_array" when name = "k" -> ElementArray(ElementInt)
-                    | "data_array" when traceType = Some("Surface") -> ElementArray(ElementArray(ElementFloat))
-                    | "data_array" when name = "values" && traceType = Some("Table") -> ElementArray(ElementArray(ElementFloat))
+                    | "data_array" when traceType = Some("surface") -> ElementArray(ElementArray(ElementFloat))
+                    | "data_array" when name = "values" && traceType = Some("table") -> ElementArray(ElementArray(ElementFloat))
                     | "data_array" when name = "surfacecolor" -> ElementArray(ElementArray(ElementString))
                     | "data_array" -> ElementArray(ElementFloat)
                     | "colorlist" -> ElementArray(ElementString)
@@ -79,7 +79,7 @@ module Gen =
                 member this.IsBaseType() =
                     match this with
                     | ElementBool | ElementInt | ElementFloat | ElementString -> true
-                    | ElementArray(ElementBool) | ElementArray(ElementInt) | ElementArray(ElementFloat) | ElementArray(ElementString) -> true
+                    | ElementArray _ -> true
                     | _ -> false
 
 
@@ -169,6 +169,9 @@ module Gen =
 
         // Get a flat list of all properties from the current doc property
         let rec getPropertiesFromDict curPath curType isArray rootElement traceType (propertyDict: IDictionary<string, obj>) =
+            let debugStop s =
+                printfn "[%s] Stop here" s
+            
             [
                 for p in propertyDict do
                     let curKey = p.Key
@@ -179,7 +182,12 @@ module Gen =
                     | _ ->
                         let propDict = tryDeserialiseDict (curValue.ToString())
                         match propDict.ContainsKey("valType") with
-                        | true -> yield Property.FromObj curPath curType isArray rootElement traceType curKey propDict // Property is a value or array
+                        | true ->
+                            // When an array, Need to yield properties but no elements from these
+                            let pVal = Property.FromObj curPath curType isArray rootElement traceType curKey propDict // Property is a value or array
+                            if pVal.``type``.IsArray() && pVal.traceType = Some("surface") then
+                                debugStop (curPath |> List.reduce (+))
+                            yield pVal
                         | false -> // Property is a nested dictionary
                             let el =
                                 {
@@ -195,8 +203,7 @@ module Gen =
                                 }
                             if Property.IsValid el then
                                 yield el
-                                let properties = tryDeserialiseDict (curValue.ToString())
-                                yield! getPropertiesFromDict (curKey::curPath) curKey (el.``type``.IsArray()) None traceType properties   
+                                yield! getPropertiesFromDict (curKey::curPath) curKey (el.``type``.IsArray()) None traceType propDict   
             ]
 
         let toElementFile ((elType:string, elBaseType:string option), elMembers:Property seq) =
@@ -209,13 +216,15 @@ module Gen =
             elType,fileStr
 
         let toPropFile ((propType:string, elType:string, isArrayProp:bool), props:Property seq) =
-            let classStr =
+            if elType = "Surface" then
+                printfn "Surface"
+
+            let fileStr =
                 props
                 |> Seq.distinctBy (fun x -> x.name)
                 |> Seq.map Property.ToPropertyTokens
                 |> Templates.genPropClass propType elType
-
-            let fileStr = Templates.genPropFile classStr
+                |> Templates.genPropFile
 
             propType,fileStr
 
