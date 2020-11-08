@@ -6,15 +6,21 @@ module Gen =
     open System.Collections.Generic
     open Newtonsoft.Json
 
-    let jsonUrl = "https://api.highcharts.com/highcharts/dump.json"
+    let jsonUrl = "https://api.highcharts.com/highcharts/tree.json"
+    let cachedJsonFile = "HighCharts.Doc.json"
+    let loadFromCache = true
 
     module Implementation =
         open System.Net
 
         let fetchJson() =
-            use client = new WebClient()
-            client.Encoding <- System.Text.Encoding.UTF8
-            client.DownloadString jsonUrl
+            if loadFromCache && File.Exists(cachedJsonFile) then
+                use tr = new StreamReader(cachedJsonFile) :> TextReader
+                tr.ReadToEnd()
+            else
+                use client = new WebClient()
+                client.Encoding <- System.Text.Encoding.UTF8
+                client.DownloadString jsonUrl
 
         let tryDeserialiseDict str =
             if System.Text.RegularExpressions.Regex.Match(str, @"^\s{+\s*}+\s$").Success then
@@ -75,6 +81,16 @@ module Gen =
         let jsonDict =
             JsonConvert.DeserializeObject(fetchJson(), typeof<Dictionary<string, obj>>)
             :?> Dictionary<string, obj>
+
+        // Use following root props:
+        // * chart
+        // * data
+        // * plotOptions
+        // * series?
+        // * title?
+        // * xAxis?
+        // * yAxis?
+        // * zAxis?
 
         // let traces =
         //     jsonDict.["traces"].ToString()

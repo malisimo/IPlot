@@ -7,3 +7,4 @@ src/IPlot.Plotly/Props/
 
 tools/GenApi.Plotly/Plotly.Doc.json
 tools/GenApi.Plotly/Plotly.Layout.json
+tools/GenApi.HighCharts/HighCharts.Doc.json
