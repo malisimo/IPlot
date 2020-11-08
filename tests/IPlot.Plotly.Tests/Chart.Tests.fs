@@ -2,6 +2,7 @@ namespace IPlot.Plotly.Tests
 
 open Xunit
 open IPlot.Plotly
+open System
 
 module TestUtils =
     let createChart() =
@@ -70,11 +71,19 @@ module ``Scatter properties`` =
                 x = [2.; 3.; 4.; 5.],
                 y = [16.; 5.; 11.; 9.]
             )
+
+        let layout =
+            Layout(
+                title = Title(
+                    text = "Basic Line Plot"
+                )
+            )
         
         [trace1; trace2]
         |> Chart.Plot
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
+        |> Chart.WithLayout layout
         |> Chart.With (Chart.Props.traces.[0].asScatter.mode "markers")
         |> Chart.With (Chart.Props.traces.[0].asScatter.marker.color "#EE44AA")
         |> Chart.With (Chart.Props.traces.[0].asScatter.marker.size 12.)
@@ -109,12 +118,71 @@ module ``Scatter properties`` =
                 y = [12.; 9.; 15.; 12.],
                 mode = "lines+markers"
             )
+
+        let layout =
+            Layout(
+                title = Title(
+                    text = "Line and Scatter Plot"
+                )
+            )
         
         [lineTrace1; lineTrace2; lineTrace3]
         |> Chart.Plot
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
+        |> Chart.WithLayout layout
         |> Chart.Show
+
+    [<Fact>]
+    let ``Time Series Plot (strings)``() =        
+        let trace =
+            Scatter(
+                xs_ = ["2020-09-12 22:30:00";"2020-09-13 22:30:00";"2020-09-15 22:30:00";"2020-09-19 22:30:00"],
+                y = [-1.; -11.; -4.; 5.],
+                mode = "lines+markers"
+            )
+
+        let layout =
+            Layout(
+                title = Title(
+                    text = "Time Series Plot (strings)"
+                )
+            )
+        
+        [trace]
+        |> Chart.Plot
+        |> Chart.WithWidth 700
+        |> Chart.WithHeight 500
+        |> Chart.WithLayout layout
+        |> Chart.Show
+
+    [<Fact>]
+    let ``Time Series Plot (DateTimes)``() =        
+        let trace =
+            Scatter(
+                xt_ = [
+                    DateTime(2020,9,12,22,30,0);
+                    DateTime(2020,9,13,22,30,0);
+                    DateTime(2020,9,15,22,30,0);
+                    DateTime(2020,9,19,22,30,0)],
+                y = [-1.; -11.; -4.; 5.],
+                mode = "lines+markers"
+            )
+
+        let layout =
+            Layout(
+                title = Title(
+                    text = "Time Series Plot (DateTimes)"
+                )
+            )
+        
+        [trace]
+        |> Chart.Plot
+        |> Chart.WithWidth 700
+        |> Chart.WithHeight 500
+        |> Chart.WithLayout layout
+        |> Chart.Show
+
 
 module ``Surface properties`` =
     
@@ -128,8 +196,16 @@ module ``Surface properties`` =
                     yield [v;v+2.;v+3.] |> List.toSeq
                     }
 
+        let layout =
+            Layout(
+                title = Title(
+                    text = "Basic Surface"
+                )
+            )
+
         zData
         |> Chart.Surface
         |> Chart.WithWidth 700
-        |> Chart.WithHeight 500
+        |> Chart.WithHeight 900
+        |> Chart.WithLayout layout
         |> Chart.Show

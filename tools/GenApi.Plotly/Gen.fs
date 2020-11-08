@@ -1,4 +1,5 @@
 ﻿namespace GenApi.Plotly
+open Newtonsoft.Json.Linq
 
 module Gen =
     open System.IO
@@ -10,133 +11,8 @@ module Gen =
     module Implementation =
         open System.Net
         open Utils
-
-        type ElementType =
-            | ElementBool
-            | ElementInt
-            | ElementFloat
-            | ElementString
-            | ElementArray of ElementType
-            | ElementOther of string
-            | ElementIgnore
-            with
-                static member FromPropType (typeName: string) (name: string) (traceType: string option)=
-                    match typeName with
-                    | "boolean" -> ElementBool
-                    | "integer" -> ElementInt
-                    | "number" | "angle" -> ElementFloat
-                    | "string" | "flaglist" | "geoid" | "sceneid" | "axisid" | "color" -> ElementString
-                    | "any" | "colorscale" | "subplotid" | "enumerated" -> ElementString
-                    | "data_array" when name = "ids" -> ElementArray(ElementString)
-                    | "data_array" when name = "customdata" -> ElementArray(ElementString)
-                    | "data_array" when name = "ticktext" -> ElementArray(ElementString)
-                    | "data_array" when name = "text" -> ElementArray(ElementString)
-                    | "data_array" when name = "hovertext" -> ElementArray(ElementString)
-                    | "data_array" when name = "colors" -> ElementArray(ElementString)
-                    | "data_array" when name = "color" -> ElementArray(ElementString)
-                    | "data_array" when name = "format" -> ElementArray(ElementString)
-                    | "data_array" when name = "labels" -> ElementArray(ElementString)
-                    | "data_array" when name = "facecolor" -> ElementArray(ElementString)
-                    | "data_array" when name = "vertexcolor" -> ElementArray(ElementString)
-                    | "data_array" when name = "columnorder" -> ElementArray(ElementInt)
-                    | "data_array" when name = "i" -> ElementArray(ElementInt)
-                    | "data_array" when name = "j" -> ElementArray(ElementInt)
-                    | "data_array" when name = "k" -> ElementArray(ElementInt)
-                    | "data_array" when traceType = Some("surface") -> ElementArray(ElementArray(ElementFloat))
-                    | "data_array" when name = "values" && traceType = Some("table") -> ElementArray(ElementArray(ElementFloat))
-                    | "data_array" when name = "surfacecolor" -> ElementArray(ElementArray(ElementString))
-                    | "data_array" -> ElementArray(ElementFloat)
-                    | "colorlist" -> ElementArray(ElementString)
-                    | "info_array" -> ElementArray(ElementString)
-                    | "_deprecated" | "_arrayAttrRegexps" -> ElementIgnore
-                    | t -> ElementOther(firstCharToUpper t)
-                member this.ToNullableTypeString() =
-                    match this with
-                    | ElementBool -> "bool?"
-                    | ElementInt -> "int?"
-                    | ElementFloat -> "double?"
-                    | ElementString -> "string"
-                    | ElementArray e -> "IEnumerable<" + e.ToTypeString() + ">"
-                    | ElementOther(el) -> el
-                    | ElementIgnore -> "_"
-                member this.ToTypeString() =
-                    match this with
-                    | ElementBool -> "bool"
-                    | ElementInt -> "int"
-                    | ElementFloat -> "double"
-                    | ElementString -> "string"
-                    | ElementArray e -> "IEnumerable<" + e.ToTypeString() + ">"
-                    | ElementOther(el) -> el
-                    | ElementIgnore -> "_"
-                member this.IsArray() =
-                    match this with
-                    | ElementArray e -> true
-                    | _ -> false
-                member this.GetArraySubtype() =
-                    match this with
-                    | ElementArray t -> Some t
-                    | _ -> None
-                member this.IsBaseType() =
-                    match this with
-                    | ElementBool | ElementInt | ElementFloat | ElementString -> true
-                    | ElementArray _ -> true
-                    | _ -> false
-
-
-        type Property =
-            {
-                name: string
-                value : obj option
-                ``type``: ElementType
-                description: string
-                elementType: string
-                isElementArray: bool
-                rootElement:string option
-                traceType:string option
-                fullType: string
-            }
-            with
-                static member FromString curPath elementType isElementArray rootElement traceType name value =
-                    {
-                        name = name
-                        value = Some value
-                        ``type`` = ElementString
-                        description = ""
-                        elementType = elementType
-                        isElementArray = isElementArray
-                        rootElement = rootElement
-                        traceType = traceType
-                        fullType = pathToPropName curPath
-                    }
-
-                static member FromObj curPath elementType isElementArray rootElement traceType name (value: Dictionary<string, obj>) =
-                    {
-                        name = name
-                        value = None
-                        ``type`` = ElementType.FromPropType (value.["valType"].ToString()) name traceType
-                        description = if value.ContainsKey "description" then value.["description"].ToString() else ""
-                        elementType = elementType
-                        isElementArray = isElementArray
-                        rootElement = rootElement
-                        traceType = traceType
-                        fullType = pathToPropName curPath
-                    }
-
-                static member ToPropertyTokens (prop: Property) : Templates.PropertyTokens = 
-                    {
-                        Description = prop.description
-                        PropertyName = prop.name
-                        PropertyNullableType = prop.``type``.ToNullableTypeString()
-                        PropertyType = prop.``type``.ToTypeString()
-                        FullType = prop.fullType
-                        IsBaseType = prop.``type``.IsBaseType()
-                    }
-
-                static member IsValid (prop: Property) =
-                    if prop.``type`` = ElementIgnore then
-                        false
-                    else
-                        prop.elementType <> "_deprecated"
+        open Property
+        open ElementType
 
         let fetchJson() =
             use client = new WebClient()
@@ -169,10 +45,10 @@ module Gen =
 
         // Get a flat list of all properties from the current doc property
         let rec getPropertiesFromDict curPath curType isArray rootElement traceType (propertyDict: IDictionary<string, obj>) =
-            let debugStop s =
-                printfn "[%s] Stop here" s
+            Hacks.addTraceProperties curType propertyDict
             
             [
+                
                 for p in propertyDict do
                     let curKey = p.Key
                     let curValue = p.Value
@@ -182,12 +58,8 @@ module Gen =
                     | _ ->
                         let propDict = tryDeserialiseDict (curValue.ToString())
                         match propDict.ContainsKey("valType") with
-                        | true ->
-                            // When an array, Need to yield properties but no elements from these
-                            let pVal = Property.FromObj curPath curType isArray rootElement traceType curKey propDict // Property is a value or array
-                            if pVal.``type``.IsArray() && pVal.traceType = Some("surface") then
-                                debugStop (curPath |> List.reduce (+))
-                            yield pVal
+                        | true -> // Property is a value or array
+                            yield Property.FromObj curPath curType isArray rootElement traceType curKey propDict
                         | false -> // Property is a nested dictionary
                             let el =
                                 {
@@ -216,9 +88,6 @@ module Gen =
             elType,fileStr
 
         let toPropFile ((propType:string, elType:string, isArrayProp:bool), props:Property seq) =
-            if elType = "Surface" then
-                printfn "Surface"
-
             let fileStr =
                 props
                 |> Seq.distinctBy (fun x -> x.name)
@@ -229,6 +98,7 @@ module Gen =
             propType,fileStr
 
     open Implementation
+    open Property
 
     let go() =
         let outElementPath = "src/IPlot.Plotly/Elements"

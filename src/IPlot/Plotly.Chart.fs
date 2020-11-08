@@ -91,11 +91,6 @@ type Chart() =
         chart.WithLegend enabled
         chart
 
-    /// Sets the chart's configuration options.
-    static member WithOptions options (chart:PlotlyChart) =
-        chart.WithOptions options
-        chart
-
     /// Sets the chart's height.
     static member WithSize size (chart:PlotlyChart) =
         chart.WithSize size

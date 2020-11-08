@@ -60,16 +60,30 @@ namespace IPlot.Plotly
                 }
             }
 
+            if (this.layout != null)
+                plotlyChart.layout = (Layout)this.layout.DeepClone();
+
             return plotlyChart;
         }
 
         public string serializeTraces(IEnumerable<string> names, IEnumerable<Trace> traces)
         {
-            if ((names == null) || !names.Any())
-                return JsonConvert.SerializeObject(traces, Formatting.None, new JsonSerializerSettings
+            Func<IEnumerable<Trace>,string> serialiseFunc = (traceArr =>
                 {
-                    NullValueHandling = NullValueHandling.Ignore
-                }).Replace("iplot_", string.Empty);
+                    return JsonConvert.SerializeObject(traces, Formatting.None, new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    })
+                    .Replace("iplot_", string.Empty)
+                    .Replace("xt_", "x")
+                    .Replace("xs_", "x")
+                    .Replace("yt_", "y")
+                    .Replace("ys_", "y")
+                    .Replace("zs_", "z");
+                });
+
+            if ((names == null) || !names.Any())
+                return serialiseFunc(traces);
 
             var namedTraces =
                 names
@@ -80,10 +94,7 @@ namespace IPlot.Plotly
                     return nt.Item2;
                 }).ToArray();
 
-            return JsonConvert.SerializeObject(namedTraces, Formatting.None, new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            }).Replace("iplot_", string.Empty);
+            return serialiseFunc(namedTraces);
         }
 
 
@@ -194,12 +205,6 @@ namespace IPlot.Plotly
                 this.layout = new Layout() { showlegend = enabled };
             else
                 this.layout.showlegend = enabled;
-        }
-
-        /// Sets the chart's configuration options.
-        public void WithOptions(Layout options)
-        {
-            WithLayout(options);
         }
 
         /// Sets the chart's width and height.
