@@ -54,3 +54,34 @@ In order to set other properties, you can use Chart.With as follows:
 |> Chart.With (Chart.Props.layout.plot_bgcolor "#334433")
 |> Chart.Show
 ```
+
+Some trace types allow using date times, and/or strings as the data arrays, which allow plotting time series and categorical data.  The following trace types support these:
+
+* Scatter (and Scattergl)
+* Heatmap (and Heatmapgl)
+* Surface
+
+For these, you can use the additional ``xs_`` (string) and ``xt_`` (DateTime) properties as follows:
+
+```fsharp
+let surface =
+    Surface(
+        xt_ = [
+            DateTime(2020,9,12,22,30,0)
+            DateTime(2020,9,13,22,30,0)
+            DateTime(2020,9,15,22,30,0)
+            DateTime(2020,9,19,22,30,0)],
+        z = [
+            [0.1;0.3;0.8]
+            [0.2;0.35;0.85]
+            [0.9;1.0;1.4]
+            [1.2;1.3;1.8]],
+        iplot_type = "surface"
+    )
+
+[surface]
+|> Chart.Plot
+|> Chart.WithWidth 1200
+|> Chart.WithHeight 800
+|> Chart.Show
+```

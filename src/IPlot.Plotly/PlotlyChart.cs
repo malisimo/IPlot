@@ -134,7 +134,11 @@ namespace IPlot.Plotly
         public string GetPlottingJS()
         {
             var tracesJson = serializeTraces(_labels, this.traces);
-            var layoutJson = this.layout == null ? "\"\"" : JsonConvert.SerializeObject(this.layout, Formatting.None, new JsonSerializerSettings
+            var layout = this.layout == null ? new Layout() : (Layout)this.layout.DeepClone();
+            layout.width = this.width;
+            layout.height = this.height;
+
+            var layoutJson = JsonConvert.SerializeObject(layout, Formatting.None, new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore
             }).Replace("iplot_", string.Empty);

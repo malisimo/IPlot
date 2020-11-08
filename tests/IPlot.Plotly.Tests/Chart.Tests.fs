@@ -209,3 +209,34 @@ module ``Surface properties`` =
         |> Chart.WithHeight 900
         |> Chart.WithLayout layout
         |> Chart.Show
+
+    [<Fact>]
+    let ``Time Surface``() =
+        let surface =
+            Surface(
+                xt_ = [
+                    DateTime(2020,9,12,22,30,0)
+                    DateTime(2020,9,13,22,30,0)
+                    DateTime(2020,9,15,22,30,0)
+                    DateTime(2020,9,19,22,30,0)],
+                z = [
+                    [0.1;0.3;0.8]
+                    [0.2;0.35;0.85]
+                    [0.9;1.0;1.4]
+                    [1.2;1.3;1.8]],
+                iplot_type = "surface"
+            )
+
+        let layout =
+            Layout(
+                title = Title(
+                    text = "Time Surface"
+                )
+            )
+
+        surface
+        |> Chart.Plot
+        |> Chart.WithWidth 1200
+        |> Chart.WithHeight 900
+        |> Chart.WithLayout layout
+        |> Chart.Show
