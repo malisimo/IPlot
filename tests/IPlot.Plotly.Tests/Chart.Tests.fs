@@ -184,6 +184,51 @@ module ``Scatter properties`` =
         |> Chart.Show
 
 
+module ``Heatmap properties`` =
+
+    [<Fact>]
+    let ``Time Heatmap``() =
+        let xt = [
+            DateTime(2020,9,12,22,30,0)
+            DateTime(2020,9,13,22,30,0)
+            DateTime(2020,9,15,22,30,0)
+            DateTime(2020,9,19,22,30,0)]
+        let z = [
+                [0.1;0.3;0.8]
+                [0.2;0.35;0.85]
+                [0.9;1.0;1.4]
+                [1.2;1.3;1.8]] |> Seq.map (Seq.ofList)
+
+        z
+        |> Chart.Heatmap
+        |> Chart.With (Chart.Props.traces.[0].asHeatmap.xt_ xt)
+        |> Chart.WithWidth 1200
+        |> Chart.WithHeight 900
+        |> Chart.WithTitle "Heatmap"
+        |> Chart.Show
+
+    [<Fact>]
+    let ``Time HeatmapGl``() =
+        let xt = [
+            DateTime(2020,9,12,22,30,0)
+            DateTime(2020,9,13,22,30,0)
+            DateTime(2020,9,15,22,30,0)
+            DateTime(2020,9,19,22,30,0)]
+        let z = [
+                [0.1;0.3;0.8]
+                [0.2;0.35;0.85]
+                [0.9;1.0;1.4]
+                [1.2;1.3;1.8]] |> Seq.map (Seq.ofList)
+
+        z
+        |> Chart.HeatmapGl
+        |> Chart.With (Chart.Props.traces.[0].asHeatmapgl.xt_ xt)
+        |> Chart.WithWidth 1200
+        |> Chart.WithHeight 900
+        |> Chart.WithTitle "Heatmap GL"
+        |> Chart.Show
+
+
 module ``Surface properties`` =
     
     [<Fact>]
@@ -212,31 +257,21 @@ module ``Surface properties`` =
 
     [<Fact>]
     let ``Time Surface``() =
-        let surface =
-            Surface(
-                xt_ = [
-                    DateTime(2020,9,12,22,30,0)
-                    DateTime(2020,9,13,22,30,0)
-                    DateTime(2020,9,15,22,30,0)
-                    DateTime(2020,9,19,22,30,0)],
-                z = [
-                    [0.1;0.3;0.8]
-                    [0.2;0.35;0.85]
-                    [0.9;1.0;1.4]
-                    [1.2;1.3;1.8]],
-                iplot_type = "surface"
-            )
+        let xt = [
+            DateTime(2020,9,12,22,30,0)
+            DateTime(2020,9,13,22,30,0)
+            DateTime(2020,9,15,22,30,0)
+            DateTime(2020,9,19,22,30,0)]
+        let z = [
+                [0.1;0.3;0.8]
+                [0.2;0.35;0.85]
+                [0.9;1.0;1.4]
+                [1.2;1.3;1.8]] |> Seq.map (Seq.ofList)
 
-        let layout =
-            Layout(
-                title = Title(
-                    text = "Time Surface"
-                )
-            )
-
-        surface
-        |> Chart.Plot
+        z
+        |> Chart.Surface
+        |> Chart.With (Chart.Props.traces.[0].asSurface.xt_ xt)
         |> Chart.WithWidth 1200
         |> Chart.WithHeight 900
-        |> Chart.WithLayout layout
+        |> Chart.WithTitle "Time Surface"
         |> Chart.Show
