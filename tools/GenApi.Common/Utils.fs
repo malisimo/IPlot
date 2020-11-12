@@ -1,4 +1,4 @@
-module internal Utils
+module Utils
 
 let firstCharToLower (str:string) =
     match str.Length with

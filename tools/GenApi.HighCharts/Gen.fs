@@ -1,5 +1,7 @@
 ﻿namespace GenApi.HighCharts
 open Newtonsoft.Json.Linq
+open Utils
+open Property
 
 module Gen =
     open System.IO
@@ -21,7 +23,7 @@ module Gen =
                 use client = new WebClient()
                 client.Encoding <- System.Text.Encoding.UTF8
                 client.DownloadString jsonUrl
-
+        
         let tryDeserialiseDict str =
             if System.Text.RegularExpressions.Regex.Match(str, @"^\s{+\s*}+\s$").Success then
                 printfn "Found empty class - empty dict"
@@ -33,30 +35,138 @@ module Gen =
                 with _ ->
                     printfn "Exception deserialising dict - empty dict"
                     new Dictionary<string, obj>()
-        
-        
 
-        // Get a flat list of all properties from the current doc property
-        let rec getPropertiesFromDict curPath curType isArray rootElement traceType (propertyDict: IDictionary<string, obj>) =
-            [
+        let getObjectPropFromDict propName (propertyDict: IDictionary<string, obj>) =
+            if propertyDict.ContainsKey propName then
+                match propertyDict.[propName] with
+                | :? JObject as o ->                        
+                    o.ToObject<IDictionary<string,obj>>() |> Some
+                | _ ->
+                    None
+            else
+                None
+        
+        let getArrayPropFromDict propName (propertyDict: IDictionary<string, obj>) =
+            if propertyDict.ContainsKey propName then
+                match propertyDict.[propName] with
+                | :? JArray as a ->                        
+                    a.Children() |> Seq.map (fun el -> el :> obj) |> Some
+                | _ ->
+                    None
+            else
+                None
+        
+        let getBooleanPropFromDict propName (propertyDict: IDictionary<string, obj>) =
+            if propertyDict.ContainsKey propName then
+                match propertyDict.[propName] with
+                | :? System.Boolean as b ->
+                    Some b
+                | _ ->
+                    None
+            else
+                None
+        
+        let getStringPropFromDict propName (propertyDict: IDictionary<string, obj>) =
+            if propertyDict.ContainsKey propName then
+                string propertyDict.[propName] |> Some
+            else
+                None
+
+        let parseDocletFromDict (propertyDict: IDictionary<string, obj>) =
+            let desc =
+                propertyDict
+                |> getObjectPropFromDict "doclet"
+                |> Option.bind (getStringPropFromDict "description")
+                |> Option.defaultValue ""
+            
+            let propTypes =
+                propertyDict
+                |> getObjectPropFromDict "doclet"
+                |> Option.bind (getObjectPropFromDict "type")
+                |> Option.bind (getArrayPropFromDict "names")
+                |> Option.map (fun a -> Seq.map string a)
+                |> Option.defaultValue Seq.empty
+
+            let isDeprecated =
+                propertyDict
+                |> getObjectPropFromDict "doclet"
+                |> Option.bind (getBooleanPropFromDict "deprecated")
+                |> Option.defaultValue false
+            
+            desc,propTypes,isDeprecated
+
+        // Group properties based on projection, but apply a different projection to key to carry extra data through
+        let groupBy (distinctProject: Property -> 'a) (keyProject: Property -> 'b) (props: Property seq) =
+            let keyDict =
+                props
+                |> Seq.distinctBy distinctProject
+                |> Seq.map (fun p -> (distinctProject p, keyProject p))
+                |> dict
                 
-                for p in propertyDict do
-                    let curKey = p.Key
-                    let curValue = p.Value
-                    match curValue with
-                    | :? System.String ->
-                        yield (sprintf "[String] curPath: %A; curType: %s; IsArray: %b; curKey: %s; curValue: %s" curPath curType false curKey (string curValue))
-                    | :? System.Boolean ->
-                        yield (sprintf "[Boolean] curPath: %A; curType: %s; IsArray: %b; curKey: %s; curValue: %s" curPath curType false curKey (string curValue))
-                    | _ ->
-                        let propDict = tryDeserialiseDict (curValue.ToString())
-                        match propDict.ContainsKey("valType") with
-                        | true -> // Property is a value or array
-                            yield (sprintf "[Obj] curPath: %A; curType: %s; IsArray: %b; curKey: %s; curValue: %s" curPath curType false curKey (string curValue))
-                        | false -> // Property is a nested dictionary
-                            yield (sprintf "[Dictionary] curPath: %A; curType: %s; IsArray: %b; curKey: %s; curValue: %s" curPath curType false curKey (string curValue))
-                            yield! getPropertiesFromDict (curKey::curPath) curKey false None traceType propDict   
+            props
+            |> Seq.groupBy distinctProject
+            |> Seq.map (fun (key,keyProps) -> (keyDict.[key],keyProps))
+            
+        // Get a flat list of all properties from the current doc property
+        let rec getPropertiesFromDict curPath curType isArrayElement rootElement (propertyDict: IDictionary<string, obj>) =
+            let makeProperty name desc propTypes isArrayElement childProps =
+                //printfn "  - making %s" (pathToPropName (name::curPath))
+                {
+                    name = name
+                    childProps = childProps
+                    types = propTypes
+                    description = desc
+                    elementType = curType
+                    isArrayElement = isArrayElement
+                    rootElement = rootElement
+                    fullType = pathToPropName (name::curPath)
+                }
+            [
+                if propertyDict.ContainsKey "children" then
+                    let desc,propTypes,isDeprecated =
+                        propertyDict
+                        |> parseDocletFromDict
+                    if isDeprecated |> not then
+                        match propertyDict.["children"] with
+                        | :? JObject as o ->
+                            for p in o.ToObject<IDictionary<string,obj>>() do
+                                let curKey = p.Key
+                                match p.Value with
+                                | :? JObject as o ->
+                                    let oDict = o.ToObject<Dictionary<string, obj>>()
+                                    let childProps = getPropertiesFromDict (curKey::curPath) curKey false None oDict
+                                    let curProp = makeProperty curKey desc propTypes isArrayElement childProps
+                                    yield curProp
+                                    yield! childProps
+                                | _ ->
+                                    ()
+                        | _ ->
+                            ()
             ]
+
+        let toElementFile ((elType:string, elBaseType:string option), elMembers:Property seq) =
+            let fileStr =
+                elMembers
+                |> Seq.distinctBy (fun x -> x.name)
+                |> Seq.map Property.ToPropertyTokens
+                |> Templates.genElementFile elType elBaseType
+
+            elType,fileStr
+
+        let toPropFile (prop:Property) =
+            let pt = Property.ToPropertyTokens prop
+            match pt.IsBaseType with
+            | true ->
+                None
+            | false ->
+                let fileStr =
+                    prop.childProps
+                    |> Seq.distinctBy (fun x -> x.name)
+                    |> Seq.map Property.ToPropertyTokens
+                    |> Templates.genPropClass prop.fullType (firstCharToUpper prop.name)
+                    |> Templates.genPropFile
+
+                Some (prop.fullType,fileStr)
 
     open Implementation
 
@@ -82,74 +192,69 @@ module Gen =
             JsonConvert.DeserializeObject(fetchJson(), typeof<Dictionary<string, obj>>)
             :?> Dictionary<string, obj>
 
-        // Use following root props:
-        // * chart
-        // * data
-        // * plotOptions
-        // * series?
-        // * title?
-        // * xAxis?
-        // * yAxis?
-        // * zAxis?
+        let chartProps =
+            let childProps =
+                jsonDict
+                |> Seq.filter (fun kvp -> kvp.Key <> "_meta")
 
-        // let traces =
-        //     jsonDict.["traces"].ToString()
-        //     |> tryDeserialiseDict
+            seq {
+                for child in childProps do
+                    match child.Value with
+                    | :? JObject as o ->
+                        let propDict = o.ToObject<Dictionary<string, obj>>()
 
-        // let layout =
-        //     jsonDict.["layout"].ToString()
-        //     |> tryDeserialiseDict
+                        yield! getPropertiesFromDict [child.Key;"HighChartsChart"] child.Key false (Some("HighChartsChart")) propDict
+                    | _ ->
+                        ()
+            }
+            |> Seq.cache
+
+        // chartProps
+        // |> List.map (fun p -> printfn "%s" p.fullType)
+        // |> ignore
+
+        let elements =
+            chartProps
+            |> Seq.distinctBy (fun p -> (p.name,p.elementType))
+            |> groupBy (fun p -> firstCharToUpper p.elementType) (fun p -> (firstCharToUpper p.elementType,p.rootElement))
             
-        // // Get a flat list of all properties from all traces
-        // let traceProperties =
-        //     [
-        //         for x in traces do 
-        //             let typeName = x.Key // scatter, etc
-        //             let properties =
-        //                 x.Value.ToString()
-        //                 |> tryDeserialiseDict
-        //                 |> fun dict -> dict.["attributes"].ToString()
-        //                 |> tryDeserialiseDict
-        //             yield! getPropertiesFromDict [typeName] typeName false (Some("Trace")) (Some(typeName)) properties
-        //     ]
-        //     |> List.filter Property.IsValid
+        let propHelpers =
+            chartProps
+            |> Seq.distinctBy (fun p -> p.fullType)
 
-        // // Get a flat list of all properties from the layout property
-        // let layoutProperties =
-        //     [
-        //         let typeName = "layout"
-        //         let jObj = layout.["layoutAttributes"]
-        //         let properties =
-        //             jObj.ToString()
-        //             |> tryDeserialiseDict
-        //         yield! getPropertiesFromDict [typeName] typeName false None None properties
-        //     ]
-        //     |> List.filter Property.IsValid
+        let elementsDgb =
+            elements
+            |> Seq.map (fun ((el,_),props) -> el + ":" + (System.String.Concat(";",props)))
+            |> Seq.take 5
+            |> Seq.toArray
+            
+        let propHelpersDbg =
+            propHelpers
+            |> Seq.filter (fun p -> p.name = "connectorWidth")
+            |> Seq.map (fun p -> p.ToNiceString())
+            |> Seq.take 5
+            |> Seq.toArray
         
         printfn ""
         printfn "=================="
         printfn ""
 
-        // // Export elements
-        // List.append traceProperties layoutProperties
-        // |> List.distinctBy (fun p -> (p.name,p.``type``,p.elementType))
-        // |> groupBy (fun p -> Utils.firstCharToUpper p.elementType) (fun p -> (Utils.firstCharToUpper p.elementType, p.rootElement))
-        // |> Seq.map toElementFile
-        // |> Seq.toArray
-        // |> Array.map (fun (typeName,str) ->
-        //     printfn "Exporting %s" typeName
-        //     File.WriteAllText(Path.Combine(outElementPath, typeName + ".cs"), str))
-        // |> ignore
+        // fsharplint:disable Hints
+        elements
+        |> Seq.map toElementFile
+        |> Seq.map (fun (typeName,str) ->
+            printfn "Exporting %s" typeName
+            File.WriteAllText(Path.Combine(outElementPath, typeName + ".cs"), str))
+        |> Seq.length
+        |> printfn "Written %i files"
 
-        // // Export property helpers
-        // List.append traceProperties layoutProperties
-        // |> groupBy (fun p -> p.fullType) (fun p -> (p.fullType, Utils.firstCharToUpper p.elementType, p.isElementArray))
-        // |> Seq.map toPropFile
-        // |> Seq.toArray
-        // |> Array.map (fun (typeName,str) ->
-        //     printfn "Exporting %s" typeName
-        //     File.WriteAllText(Path.Combine(outPropPath, typeName + ".cs"), str))
-        // |> ignore
+        propHelpers
+        |> Seq.choose toPropFile// Hits multiple times with same p.name
+        |> Seq.map (fun (typeName,str) ->
+            printfn "Exporting %s" typeName
+            File.WriteAllText(Path.Combine(outPropPath, typeName + ".cs"), str))
+        |> Seq.length
+        |> printfn "Written %i files"
         
         printfn ""
         printfn "=================="
