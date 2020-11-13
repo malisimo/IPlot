@@ -26,6 +26,7 @@ let makeSafeTypeName name =
     | "base" -> "iplot_base"
     | "default" -> "iplot_default"
     | "params" -> "iplot_params"
+    | "operator" -> "iplot_operator"
     | name -> name
     |> unHyphen
 

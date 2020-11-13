@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace IPlot.HighCharts
 {
-    public class SighChartsChart : ChartElement
+    public class HighChartsChart : ChartElement
     {
         /// The width of the chart container element.
         public int width { get; set; } = 900;
@@ -19,30 +19,30 @@ namespace IPlot.HighCharts
 
         private IEnumerable<string> _labels;
 
-        public static FSharpFunc<Func<SighChartsChart, SighChartsChart>, FSharpFunc<SighChartsChart, SighChartsChart>> WithFs
+        public static FSharpFunc<Func<HighChartsChart, HighChartsChart>, FSharpFunc<HighChartsChart, HighChartsChart>> WithFs
         {
             get
             {
-                Func<Func<SighChartsChart, SighChartsChart>, SighChartsChart, SighChartsChart> lam = (propFun, SighChartsChart) => propFun((SighChartsChart)SighChartsChart.DeepClone());
-                var f = FuncConvert.FromFunc<Func<SighChartsChart, SighChartsChart>, SighChartsChart, SighChartsChart>(lam);
+                Func<Func<HighChartsChart, HighChartsChart>, HighChartsChart, HighChartsChart> lam = (propFun, HighChartsChart) => propFun((HighChartsChart)HighChartsChart.DeepClone());
+                var f = FuncConvert.FromFunc<Func<HighChartsChart, HighChartsChart>, HighChartsChart, HighChartsChart>(lam);
 
                 return f;
             }
         }
 
-        public static SighChartsChart With(Func<SighChartsChart, SighChartsChart> propFun, SighChartsChart SighChartsChart)
+        public static HighChartsChart With(Func<HighChartsChart, HighChartsChart> propFun, HighChartsChart HighChartsChart)
         {
-            return propFun((SighChartsChart)SighChartsChart.DeepClone());
+            return propFun((HighChartsChart)HighChartsChart.DeepClone());
         }
 
-        public SighChartsChart With(Func<SighChartsChart, SighChartsChart> propFun)
+        public HighChartsChart With(Func<HighChartsChart, HighChartsChart> propFun)
         {
             return With(propFun, this);
         }
 
         public override ChartElement DeepClone()
         {
-            var highchartsChart = new SighChartsChart();
+            var highchartsChart = new HighChartsChart();
 
             return highchartsChart;
         }

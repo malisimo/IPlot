@@ -182,7 +182,7 @@ let genElementFile elType (props:PropertyTokens seq) =
 
     let elClass =
         templateElementClass
-        |> strRep elementType elType
+        |> strRep elementType (Utils.makeSafeTypeName elType)
         |> strRep elementMembers elMembers
         |> strRep elementClone elClone
         |> strRep elementBase "ChartElement"
@@ -217,13 +217,13 @@ let genPropClass elPropType elType (props:PropertyTokens seq) =
             templatePropSetter
             |> strRep jsonPropName (Utils.makeSafeTypeName p.PropertyName)
             |> strRep elementPropName (Utils.makeSafeTypeName p.PropertyName)
-            |> strRep elementPropType p.PropertyType
-            |> strRep elementType elType)
+            |> strRep elementPropType (Utils.makeSafeTypeName p.PropertyType)
+            |> strRep elementType (Utils.makeSafeTypeName elType))
         |> String.concat "\n"
 
     templatePropClass
     |> strRep elementPropType (Utils.makeSafeTypeName elPropType)
-    |> strRep elementType elType
+    |> strRep elementType (Utils.makeSafeTypeName elType)
     |> strRep jsonPropName (Utils.makeSafeTypeName (Utils.firstCharToLower elType))
     |> strRep body (propGetters + propSetters)
 

@@ -107,10 +107,9 @@ module Gen =
             |> Seq.groupBy distinctProject
             |> Seq.map (fun (key,keyProps) -> (keyDict.[key],keyProps))
             
-        // Get a flat list of all properties from the current doc property
+        // Get a nested list of properties
         let rec getPropertiesFromDict curPath curType isArrayElement (propertyDict: IDictionary<string, obj>) =
             let makeProperty name desc propTypes isArrayElement childProps =
-                //printfn "  - making %s" (pathToPropName (name::curPath))
                 {
                     name = name
                     childProps = childProps
@@ -120,31 +119,38 @@ module Gen =
                     isArrayElement = isArrayElement
                     fullType = pathToPropName curPath
                 }
-            [
-                if propertyDict.ContainsKey "children" then
-                    let desc,propTypes,isDeprecated =
-                        propertyDict
-                        |> parseDocletFromDict
+                
+            if propertyDict.ContainsKey "children" then
+                let desc,propTypes,isDeprecated =
+                    propertyDict
+                    |> parseDocletFromDict
 
-                    if isDeprecated |> not then
-                        match propertyDict.["children"] with
-                        | :? JObject as o ->
-                            let childProps = [
-                                for p in o.ToObject<IDictionary<string,obj>>() do
-                                    let curKey = p.Key
-                                    match p.Value with
-                                    | :? JObject as o ->
-                                        let oDict = o.ToObject<Dictionary<string, obj>>()
-                                        yield! getPropertiesFromDict (curKey::curPath) curKey false oDict
-                                    | _ ->
-                                        ()]
+                if isDeprecated |> not then
+                    match propertyDict.["children"] with
+                    | :? JObject as o ->
+                        let childProps = [
+                            for p in o.ToObject<IDictionary<string,obj>>() do
+                                let curKey = p.Key
+                                match p.Value with
+                                | :? JObject as o ->
+                                    let oDict = o.ToObject<Dictionary<string, obj>>()
 
-                            let curProp = makeProperty curType desc propTypes isArrayElement childProps
-                            yield curProp
-                            yield! childProps
-                        | _ ->
-                            ()
-            ]
+                                    match getPropertiesFromDict (curKey::curPath) curKey false oDict with
+                                    | Some(prop) -> yield prop
+                                    | None -> ()
+                                | _ ->
+                                    ()
+                        ]
+
+                        let curProp = makeProperty curType desc propTypes isArrayElement childProps
+                        //yield! childProps
+                        Some curProp
+                    | _ ->
+                        None
+                else
+                    None
+            else
+                None
 
         let toElementFile (prop:Property) = //
             match prop.childProps with
@@ -159,10 +165,15 @@ module Gen =
                 (firstCharToUpper prop.name,fileStr)
                 |> Some
 
-        let toPropFile (prop:Property) =
+        let rec toPropFiles (files:(string*string) list) (prop:Property) =
             match prop.childProps with
-            | [] -> None
+            | [] ->
+                files
             | _ ->
+                let allFiles =
+                    prop.childProps
+                    |> List.fold toPropFiles files
+                
                 let fileStr =
                     prop.childProps
                     |> Seq.distinctBy (fun x -> x.name)
@@ -170,8 +181,7 @@ module Gen =
                     |> Templates.genPropClass prop.fullType (firstCharToUpper prop.name)
                     |> Templates.genPropFile
 
-                (prop.fullType,fileStr)
-                |> Some
+                (prop.fullType,fileStr)::allFiles
 
     open Implementation
 
@@ -208,7 +218,9 @@ module Gen =
                     | :? JObject as o ->
                         let propDict = o.ToObject<Dictionary<string, obj>>()
 
-                        yield! getPropertiesFromDict [child.Key;"Chart"] child.Key false propDict
+                        match getPropertiesFromDict [child.Key;"Chart"] child.Key false propDict with
+                        | Some(p) -> yield p
+                        | None -> ()
                     | _ ->
                         ()
             }
@@ -228,29 +240,18 @@ module Gen =
         // |> List.map (fun p -> printfn "%s" p.fullType)
         // |> ignore
 
+        let rec walkProp (props:Property list) (prop:Property) =
+            prop.childProps
+            |> List.fold walkProp props
+            |> fun p -> prop::p
+
         let elements =
             chartProps
+            |> Seq.fold walkProp [rootProp]
             |> Seq.groupBy (fun x -> x.name)
             |> Seq.choose (fun (_,v) -> Property.UnionAll v)
             //|> groupBy (fun p -> firstCharToUpper p.elementType) (fun p -> (firstCharToUpper p.elementType,p.rootElement))
-            
-        let propHelpers =
-            chartProps
-            |> Seq.append [rootProp]
-            |> Seq.distinctBy (fun p -> p.fullType)
-
-        let elementsDgb =
-            elements
-            |> Seq.map (fun p -> p.ToNiceString())
-            |> Seq.take 5
-            |> Seq.toArray
-            
-        let propHelpersDbg =
-            propHelpers
-            |> Seq.map (fun p -> p.ToNiceString())
-            |> Seq.take 50
-            |> Seq.toArray
-        
+                    
         printfn ""
         printfn "=================="
         printfn ""
@@ -265,8 +266,9 @@ module Gen =
         |> Seq.length
         |> printfn "Written %i files"
 
-        propHelpers
-        |> Seq.choose toPropFile// Hits multiple times with same p.name
+        [rootProp]
+        |> Seq.fold toPropFiles []
+        |> Seq.toArray
         |> Seq.map (fun (typeName,str) ->
             printfn "Exporting %s" typeName
             File.WriteAllText(Path.Combine(outPropPath, typeName + ".cs"), str))
