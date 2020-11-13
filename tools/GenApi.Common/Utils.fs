@@ -17,11 +17,17 @@ let firstCharToUpper (str:string) =
         |> fun x -> string x + str.Substring 1
 
 let makeSafeTypeName name =
+    let unHyphen (str:string) =
+        str.Replace("-","_")
+        
     match name with
     | "type" -> "iplot_type"
     | "end" -> "iplot_end"
     | "base" -> "iplot_base"
+    | "default" -> "iplot_default"
+    | "params" -> "iplot_params"
     | name -> name
+    |> unHyphen
 
 let pathToPropName (path: string list) =
     path

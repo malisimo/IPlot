@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace IPlot.HighCharts
 {
-    public class HighChartsChart : ChartElement
+    public class SighChartsChart : ChartElement
     {
         /// The width of the chart container element.
         public int width { get; set; } = 900;
@@ -19,75 +19,32 @@ namespace IPlot.HighCharts
 
         private IEnumerable<string> _labels;
 
-        public static FSharpFunc<Func<HighChartsChart, HighChartsChart>, FSharpFunc<HighChartsChart, HighChartsChart>> WithFs
+        public static FSharpFunc<Func<SighChartsChart, SighChartsChart>, FSharpFunc<SighChartsChart, SighChartsChart>> WithFs
         {
             get
             {
-                Func<Func<HighChartsChart, HighChartsChart>, HighChartsChart, HighChartsChart> lam = (propFun, HighChartsChart) => propFun((HighChartsChart)HighChartsChart.DeepClone());
-                var f = FuncConvert.FromFunc<Func<HighChartsChart, HighChartsChart>, HighChartsChart, HighChartsChart>(lam);
+                Func<Func<SighChartsChart, SighChartsChart>, SighChartsChart, SighChartsChart> lam = (propFun, SighChartsChart) => propFun((SighChartsChart)SighChartsChart.DeepClone());
+                var f = FuncConvert.FromFunc<Func<SighChartsChart, SighChartsChart>, SighChartsChart, SighChartsChart>(lam);
 
                 return f;
             }
         }
 
-        public static HighChartsChart With(Func<HighChartsChart, HighChartsChart> propFun, HighChartsChart HighChartsChart)
+        public static SighChartsChart With(Func<SighChartsChart, SighChartsChart> propFun, SighChartsChart SighChartsChart)
         {
-            return propFun((HighChartsChart)HighChartsChart.DeepClone());
+            return propFun((SighChartsChart)SighChartsChart.DeepClone());
         }
 
-        public HighChartsChart With(Func<HighChartsChart, HighChartsChart> propFun)
+        public SighChartsChart With(Func<SighChartsChart, SighChartsChart> propFun)
         {
             return With(propFun, this);
         }
 
         public override ChartElement DeepClone()
         {
-            var plotlyChart = new HighChartsChart();
+            var highchartsChart = new SighChartsChart();
 
-            if (this.traces.Length > 0)
-            {
-                plotlyChart.traces = new Trace[this.traces.Length];
-                for (int i = 0; i < this.traces.Length; i++)
-                {
-                    plotlyChart.traces[i] = (Trace)this.traces[i].DeepClone();
-                }
-            }
-
-            if (this.layout != null)
-                plotlyChart.layout = (Layout)this.layout.DeepClone();
-
-            return plotlyChart;
-        }
-
-        public string serializeTraces(IEnumerable<string> names, IEnumerable<Trace> traces)
-        {
-            Func<IEnumerable<Trace>,string> serialiseFunc = (traceArr =>
-                {
-                    return JsonConvert.SerializeObject(traces, Formatting.None, new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore
-                    })
-                    .Replace("iplot_", string.Empty)
-                    .Replace("xt_", "x")
-                    .Replace("xs_", "x")
-                    .Replace("yt_", "y")
-                    .Replace("ys_", "y")
-                    .Replace("zs_", "z");
-                });
-
-            if ((names == null) || !names.Any())
-                return serialiseFunc(traces);
-
-            var namedTraces =
-                names
-                .Zip(traces, (n,t) => (n,t))
-                .Select((nt,i) =>
-                {
-                    nt.Item2.name = nt.Item1;
-                    return nt.Item2;
-                }).ToArray();
-
-            return serialiseFunc(namedTraces);
+            return highchartsChart;
         }
 
 
@@ -97,7 +54,6 @@ namespace IPlot.HighCharts
             var chartMarkup = GetInlineHtml();
             return
                 Html.pageTemplate
-                    .Replace("[PLOTLYSRC]", this.plotlySrc)
                     .Replace("[CHART]", chartMarkup);
         }
 
@@ -126,28 +82,9 @@ namespace IPlot.HighCharts
         /// The chart's plotting JavaScript code.
         public string GetPlottingJS()
         {
-            var tracesJson = serializeTraces(_labels, this.traces);
-            var layout = this.layout == null ? new Layout() : (Layout)this.layout.DeepClone();
-            layout.width = this.width;
-            layout.height = this.height;
-
-            var layoutJson = JsonConvert.SerializeObject(layout, Formatting.None, new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            }).Replace("iplot_", string.Empty);
-
             return
                 Html.jsFunctionTemplate
-                    .Replace("[ID]", this.id)
-                    .Replace("[DATA]", tracesJson)
-                    .Replace("[LAYOUT]", layoutJson);
-        }
-
-        public void Plot(IEnumerable<Trace> data, Layout layout = null, IEnumerable<string> labels = null)
-        {
-            this.traces = data.ToArray();
-            this.layout = layout;
-            _labels = labels;
+                    .Replace("[ID]", this.id);
         }
 
         public void Show()
@@ -183,21 +120,6 @@ namespace IPlot.HighCharts
             _labels = labels.ToArray();
         }
 
-        /// Sets the chart's configuration options.
-        public void WithLayout(Layout layout)
-        {
-            this.layout = layout;
-        }
-
-        /// Display/hide the legend.
-        public void WithLegend(bool enabled)
-        {
-            if (this.layout == null)
-                this.layout = new Layout() { showlegend = enabled };
-            else
-                this.layout.showlegend = enabled;
-        }
-
         /// Sets the chart's width and height.
         public void WithSize(int width, int height)
         {
@@ -205,57 +127,11 @@ namespace IPlot.HighCharts
             this.width = width;
         }
 
-        /// Sets the chart's title.
-        public void WithTitle(string title)
-        {
-            if (this.layout == null)
-                this.layout = new Layout() { title = new Title() { text = title } };
-            else
-                this.layout.title = new Title() { text = title };
-        }
 
         /// Sets the chart's width.
         public void WithWidth(int width)
         {
             this.width = width;
-        }
-
-        /// Sets the chart's X-axis title.
-        public void WithXTitle(string xTitle)
-        {
-            if (this.layout == null)
-                this.layout = new Layout() { xaxis = new Xaxis() { title = new Title() { text = xTitle } } };
-            else
-            {
-                if (this.layout.xaxis == null)
-                    this.layout.xaxis = new Xaxis() { title = new Title() { text = xTitle } };
-                else
-                {
-                    if (this.layout.xaxis.title == null)
-                        this.layout.xaxis.title = new Title() { text = xTitle };
-                    else
-                        this.layout.xaxis.title.text = xTitle;
-                }
-            }
-        }
-
-        /// Sets the chart's Y-axis title.
-        public void WithYTitle(string yTitle)
-        {
-            if (this.layout == null)
-                this.layout = new Layout() { yaxis = new Yaxis() { title = new Title() { text = yTitle } } };
-            else
-            {
-                if (this.layout.yaxis == null)
-                    this.layout.yaxis = new Yaxis() { title = new Title() { text = yTitle } };
-                else
-                {
-                    if (this.layout.yaxis.title == null)
-                        this.layout.yaxis.title = new Title() { text = yTitle };
-                    else
-                        this.layout.yaxis.title.text = yTitle;
-                }
-            }
         }
     }
 }

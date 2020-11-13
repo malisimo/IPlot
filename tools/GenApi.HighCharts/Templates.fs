@@ -144,11 +144,11 @@ type PropertyTokens = {
     with
         member this.ToFullPropertyType() =
             if this.FullType.EndsWith("_IProp") then
-                this.FullType.Substring(0,this.FullType.Length-6) + "_" + Utils.firstCharToUpper this.PropertyName + "_IProp"
+                this.FullType.Substring(0,this.FullType.Length-6) + "_IProp"
             else
                 this.FullType + "_" + Utils.firstCharToUpper this.PropertyName + "_IProp"
 
-let genElementFile elType elBaseType (props:PropertyTokens seq) =
+let genElementFile elType (props:PropertyTokens seq) =
     let validProps =
         props
         |> Seq.filter (fun p ->
@@ -160,10 +160,10 @@ let genElementFile elType elBaseType (props:PropertyTokens seq) =
         |> Seq.map (fun p ->
             let name = Utils.makeSafeTypeName p.PropertyName
             let desc = if p.Description <> "" then p.Description.Replace("\n","\n        /// ") else p.PropertyName
-            let newStr =
-                match elBaseType with
-                | Some(_) when name = "name" -> "new "
-                | _ -> ""
+            let newStr = ""
+                // match elBaseType with
+                // | Some(_) when name = "name" -> "new "
+                // | _ -> ""
             
             templateElementMember
             |> strRep description desc
@@ -185,7 +185,7 @@ let genElementFile elType elBaseType (props:PropertyTokens seq) =
         |> strRep elementType elType
         |> strRep elementMembers elMembers
         |> strRep elementClone elClone
-        |> strRep elementBase (elBaseType |> Option.defaultValue "ChartElement")
+        |> strRep elementBase "ChartElement"
 
     templateFile
     |> strRep classBody elClass
@@ -207,7 +207,7 @@ let genPropClass elPropType elType (props:PropertyTokens seq) =
         |> Seq.map (fun p ->
             templatePropGetter
             |> strRep jsonPropName (Utils.makeSafeTypeName p.PropertyName)
-            |> strRep propType (p.ToFullPropertyType()))
+            |> strRep propType (Utils.makeSafeTypeName (p.ToFullPropertyType())))
         |> String.concat "\n"
 
     let propSetters =
@@ -222,7 +222,7 @@ let genPropClass elPropType elType (props:PropertyTokens seq) =
         |> String.concat "\n"
 
     templatePropClass
-    |> strRep elementPropType elPropType
+    |> strRep elementPropType (Utils.makeSafeTypeName elPropType)
     |> strRep elementType elType
     |> strRep jsonPropName (Utils.makeSafeTypeName (Utils.firstCharToLower elType))
     |> strRep body (propGetters + propSetters)

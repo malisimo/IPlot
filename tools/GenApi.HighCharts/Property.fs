@@ -13,13 +13,16 @@ type Property =
         description: string
         elementType: string
         isArrayElement: bool
-        rootElement:string option
     }
     with
-        static member TypesToTypeStr isNullable elType (types:string seq) =
+        static member TypesToTypeStr isNullable elType (types: string seq) (hasChildren: bool) =
             let tryMatchType t =
                 match t with
-                | "*" -> Some (firstCharToUpper elType)
+                | "*" ->
+                    if hasChildren then 
+                        Some (firstCharToUpper elType)
+                     else
+                        Some "string"
                 | "Array< float >" -> "float []" |> Some
                 | "boolean" -> if isNullable then Some "bool?" else Some "bool"
                 | "number" -> if isNullable then Some "float?" else Some "float"
@@ -29,9 +32,9 @@ type Property =
             types
             |> Seq.choose tryMatchType
             |> Seq.tryHead
-            |> Option.defaultValue (firstCharToUpper elType)
+            |> Option.defaultValue "string"//(firstCharToUpper elType)
 
-        static member IsBaseType (types:string seq) =
+        static member IsBaseType (types: string seq) =
             let isBase t =
                 match t with
                 | "boolean" -> true
@@ -43,15 +46,27 @@ type Property =
             |> Seq.exists isBase
             
         static member ToPropertyTokens (prop: Property) : Templates.PropertyTokens = 
+            let hasChildren = Seq.isEmpty prop.childProps |> not
+            
             {
                 Description = prop.description
                 PropertyName = prop.name
-                PropertyNullableType = Property.TypesToTypeStr true prop.name prop.types
-                PropertyType = Property.TypesToTypeStr false prop.name prop.types
+                PropertyNullableType = Property.TypesToTypeStr true prop.name prop.types hasChildren
+                PropertyType = Property.TypesToTypeStr false prop.name prop.types hasChildren
                 FullType = prop.fullType
-                IsBaseType = Property.IsBaseType prop.types
+                IsBaseType = hasChildren |> not
             }
-         
+
+        static member Union (p1: Property) (p2: Property) =
+            { p1 with
+                childProps = p1.childProps @ p2.childProps |> List.distinctBy (fun p -> p.name)
+                types = Seq.concat [p1.types; p2.types] |> Seq.distinct
+            }
+
+        static member UnionAll (props: Property seq) =
+            Seq.tryHead props
+            |> Option.map (fun hd -> Seq.fold Property.Union hd props)
+        
         member this.ToNiceString() =
             let firstType =
                 Seq.tryHead this.types
@@ -61,4 +76,4 @@ type Property =
                 |> List.map (fun c -> c.ToNiceString())
                 |> String.concat ";"
 
-            sprintf "[%s] %s:%s { %s }" this.elementType this.name firstType childNiceStrings
+            sprintf "[%s](%s) %s:%s { %s }" this.fullType this.elementType this.name firstType childNiceStrings
