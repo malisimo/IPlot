@@ -8,6 +8,8 @@ namespace IPlot.HighCharts
 {
     public class HighChartsChart : ChartElement
     {
+        public Chart chart { get; set; } = null;
+
         /// The width of the chart container element.
         public int width { get; set; } = 900;
 
@@ -47,6 +49,15 @@ namespace IPlot.HighCharts
             return highchartsChart;
         }
 
+        public string serializeChart(Chart chart)
+        {
+            return JsonConvert.SerializeObject(chart, Formatting.None, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                })
+                .Replace("iplot_", string.Empty);
+        }
+
 
         /// Returns the chart's full HTML source.
         public string GetHtml()
@@ -82,9 +93,17 @@ namespace IPlot.HighCharts
         /// The chart's plotting JavaScript code.
         public string GetPlottingJS()
         {
+            var chartJson = serializeChart(this.chart);
+
             return
                 Html.jsFunctionTemplate
-                    .Replace("[ID]", this.id);
+                    .Replace("[ID]", this.id)
+                    .Replace("[CHARTOBJ]", chartJson);
+        }
+
+        public void Plot(IEnumerable<Trace> data)
+        {
+            this.chart.series = data;
         }
 
         public void Show()

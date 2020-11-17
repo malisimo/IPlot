@@ -85,6 +85,8 @@ namespace IPlot.HighCharts
                     return (T)(object)new bool?(i > 0);
                 else if (value is float f)
                     return (T)(object)new bool?(f > 0.0f);
+                else if (value is double d)
+                    return (T)(object)new bool?(d > 0.0);
                 else if (value is string s)
                 {
                     if (s.ToLower() == "true")
@@ -101,6 +103,8 @@ namespace IPlot.HighCharts
                     return (T)(object)new int?(i);
                 else if (value is float f)
                     return (T)(object)new int?((int)f);
+                else if (value is double d)
+                    return (T)(object)new int?((int)d);
                 else if (value is string s)
                 {
                     if (int.TryParse(s, out int res))
@@ -109,12 +113,32 @@ namespace IPlot.HighCharts
                         return (T)(object)new int?(0);
                 }
             }
+            else if (underlyingType == typeof(float))
+            {
+                if (value is bool b)
+                    return (T)(object)new float?(b ? 1.0f : 0.0f);
+                else if (value is int i)
+                    return (T)(object)new float?((float)i);
+                else if (value is float f)
+                    return (T)(object)new float?(f);
+                else if (value is double d)
+                    return (T)(object)new double?(d);
+                else if (value is string s)
+                {
+                    if (double.TryParse(s, out double res))
+                        return (T)(object)new double?((float)res);
+                    else
+                        return (T)(object)new double?(0.0f);
+                }
+            }
             else if (underlyingType == typeof(double))
             {
                 if (value is bool b)
                     return (T)(object)new double?(b ? 1.0f : 0.0f);
                 else if (value is int i)
                     return (T)(object)new double?((double)i);
+                else if (value is float f)
+                    return (T)(object)new float?(f);
                 else if (value is double d)
                     return (T)(object)new double?(d);
                 else if (value is string s)

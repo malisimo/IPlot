@@ -108,18 +108,10 @@ module Gen =
             |> Seq.map (fun (key,keyProps) -> (keyDict.[key],keyProps))
             
         // Get a nested list of properties
-        let rec getPropertiesFromDict curPath curType isArrayElement (propertyDict: IDictionary<string, obj>) =
-            let makeProperty name desc propTypes isArrayElement childProps =
-                {
-                    name = name
-                    childProps = childProps
-                    types = propTypes
-                    description = desc
-                    elementType = curType
-                    isArrayElement = isArrayElement
-                    fullType = pathToPropName curPath
-                }
-                
+        let rec getPropertiesFromDict curPath curType isArrayElement isRootElement isParentSeries (propertyDict: IDictionary<string, obj>) =
+            let debugStop() =            
+                printfn "debug"
+
             if propertyDict.ContainsKey "children" then
                 let desc,propTypes,isDeprecated =
                     propertyDict
@@ -128,23 +120,70 @@ module Gen =
                 if isDeprecated |> not then
                     match propertyDict.["children"] with
                     | :? JObject as o ->
+                        let isChartSeries = curType = "series" && isRootElement
+                        let traceType =                            
+                            match isParentSeries,propTypes |> Seq.toList with
+                            | true,[] -> Some curType
+                            | _ -> None
+                        
                         let childProps = [
                             for p in o.ToObject<IDictionary<string,obj>>() do
                                 let curKey = p.Key
+                                if curKey = "data" && curType = "series" then
+                                    debugStop()
+                                
                                 match p.Value with
                                 | :? JObject as o ->
                                     let oDict = o.ToObject<Dictionary<string, obj>>()
 
-                                    match getPropertiesFromDict (curKey::curPath) curKey false oDict with
+                                    match getPropertiesFromDict (curKey::curPath) curKey false false isChartSeries oDict with
                                     | Some(prop) -> yield prop
                                     | None -> ()
                                 | _ ->
                                     ()
                         ]
 
-                        let curProp = makeProperty curType desc propTypes isArrayElement childProps
-                        //yield! childProps
-                        Some curProp
+                        let hasChildren = childProps |> List.isEmpty |> not
+                        let arrayNestCount = Property.ArrayNestCount propTypes
+                        match hasChildren,arrayNestCount with
+                        | true,Some(c,_) when c > 0 ->
+                            // If array and has children then add arrays prior to child props
+                            let rec makeArrayProp n i cur =
+                                if i < 0 then
+                                    cur
+                                else                                    
+                                    let next = {
+                                        fullType = pathToPropName (List.init i (fun _ -> "IArray") @ curPath)
+                                        name = curType
+                                        childProps = cur
+                                        types = if i = n then List.toSeq ["*"] else propTypes
+                                        description = (String.replicate (n-i) "Array of ") + desc
+                                        elementType = curType
+                                        isArrayElement = i = n
+                                        isObjectArray = i < n
+                                        baseType = "ChartElement"
+                                        isRoot = false
+                                    }
+                                    
+                                    makeArrayProp n (i-1) [next]
+
+                            let mm = makeArrayProp c c childProps
+                            mm
+                            |> Seq.tryHead
+                        | _ ->
+                            {
+                                fullType = pathToPropName curPath
+                                name = curType
+                                childProps = if traceType.IsSome then Hacks.filterTraceChildProperties childProps else childProps
+                                types = propTypes
+                                description = desc
+                                elementType = curType
+                                isArrayElement = isArrayElement
+                                isObjectArray = false
+                                baseType = if traceType.IsSome then "Trace" else "ChartElement"
+                                isRoot = false
+                            }
+                            |> Some
                     | _ ->
                         None
                 else
@@ -152,15 +191,18 @@ module Gen =
             else
                 None
 
-        let toElementFile (prop:Property) = //
-            match prop.childProps with
-            | [] -> None
-            | _ ->
+        let toElementFile (prop:Property) =
+            if prop.elementType = "Chart_IProp" then
+                printfn "debug"
+            
+            if prop.isObjectArray then None
+            elif List.isEmpty prop.childProps then None
+            else
                 let fileStr =
                     prop.childProps
                     |> Seq.distinctBy (fun x -> x.name)
                     |> Seq.map Property.ToPropertyTokens
-                    |> Templates.genElementFile (firstCharToUpper prop.name)
+                    |> (Templates.genElementFile (firstCharToUpper prop.name) prop.baseType prop.isRoot)
 
                 (firstCharToUpper prop.name,fileStr)
                 |> Some
@@ -173,12 +215,20 @@ module Gen =
                 let allFiles =
                     prop.childProps
                     |> List.fold toPropFiles files
+
+                let arraySubType =
+                    if prop.isObjectArray then
+                        prop.childProps
+                        |> Seq.tryHead
+                        |> Option.map (fun p -> p.fullType)
+                    else
+                        None
                 
                 let fileStr =
                     prop.childProps
                     |> Seq.distinctBy (fun x -> x.name)
                     |> Seq.map Property.ToPropertyTokens
-                    |> Templates.genPropClass prop.fullType (firstCharToUpper prop.name)
+                    |> Templates.genPropClass prop.fullType (firstCharToUpper prop.name) arraySubType
                     |> Templates.genPropFile
 
                 (prop.fullType,fileStr)::allFiles
@@ -218,13 +268,14 @@ module Gen =
                     | :? JObject as o ->
                         let propDict = o.ToObject<Dictionary<string, obj>>()
 
-                        match getPropertiesFromDict [child.Key;"Chart"] child.Key false propDict with
+                        match getPropertiesFromDict [child.Key;"Chart"] child.Key false true (child.Key = "series") propDict with
                         | Some(p) -> yield p
                         | None -> ()
                     | _ ->
                         ()
             }
             |> Seq.cache
+
         let rootProp = 
             {
                 fullType = "Chart_IProp"
@@ -234,6 +285,9 @@ module Gen =
                 description = "Root HighCharts Chart object"
                 elementType = "Chart_IProp"
                 isArrayElement = false
+                isObjectArray = false
+                baseType = "ChartElement"
+                isRoot = true
             }
 
         // chartProps
@@ -248,10 +302,10 @@ module Gen =
         let elements =
             chartProps
             |> Seq.fold walkProp [rootProp]
-            |> Seq.groupBy (fun x -> x.name)
+            |> Seq.groupBy (fun x -> (x.name,x.isObjectArray))
             |> Seq.choose (fun (_,v) -> Property.UnionAll v)
             //|> groupBy (fun p -> firstCharToUpper p.elementType) (fun p -> (firstCharToUpper p.elementType,p.rootElement))
-                    
+
         printfn ""
         printfn "=================="
         printfn ""

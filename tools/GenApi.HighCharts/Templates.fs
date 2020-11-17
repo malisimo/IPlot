@@ -18,6 +18,8 @@ let classBody = "##CLASS##"
 let body = "##BODY##"
 let newProp = "##NEW##"
 let description = "##DESCRIPTION##"
+let traceType = "##TRACETYPE##"
+let traceClone = "##TRACECLONE##"
 
 let templateFile = @"
 using System;
@@ -32,10 +34,12 @@ let templateElementClass = @"
     public class ##ELEMENTTYPE## : ##ELEMENTBASE##
     {
 ##ELEMENTMEMBERS##
+##TRACETYPE##
 
         public override ChartElement DeepClone()
         {
             var obj = new ##ELEMENTTYPE##();
+##TRACECLONE##
 ##ELEMENTCLONE##
             return obj;
         }
@@ -45,6 +49,14 @@ let templateElementClass = @"
 let templateElementMember = @"
         /// ##DESCRIPTION##
         public ##NEW####PROPTYPE## ##PROPNAME## { get; set; } = null;"
+
+let templateElementTraceType = @"
+        public string type_iprop { get; } = ""##TRACETYPE##"";"
+
+let templateElementTraceClone = @"
+            if (this is Trace t)
+                Trace.DeepCopy(t, obj);
+"
 
 let templateElementClone = @"            obj.##PROPNAME## = ##PROPNAME##;"
 
@@ -80,7 +92,7 @@ let templatePropClass = @"
 "
 
 let templateArrayPropClass = @"
-    public class ##ELEMENTTYPE## : ChartProp, IArrayProp
+    public class ##ELEMENTPROPTYPE## : ChartProp, IArrayProp
     {
         private int _index;
         public int Index
@@ -140,6 +152,7 @@ type PropertyTokens = {
     PropertyType: string
     FullType: string
     IsBaseType: bool
+    IsObjectArray: bool
 }
     with
         member this.ToFullPropertyType() =
@@ -148,7 +161,10 @@ type PropertyTokens = {
             else
                 this.FullType + "_" + Utils.firstCharToUpper this.PropertyName + "_IProp"
 
-let genElementFile elType (props:PropertyTokens seq) =
+let genElementFile elType baseType isRootElement (props:PropertyTokens seq) =
+    if elType = "chart" then
+        printfn "debug"
+
     let validProps =
         props
         |> Seq.filter (fun p ->
@@ -164,11 +180,16 @@ let genElementFile elType (props:PropertyTokens seq) =
                 // match elBaseType with
                 // | Some(_) when name = "name" -> "new "
                 // | _ -> ""
+            let propTypeStr =
+                if isRootElement && p.PropertyName = "series" then
+                    "IEnumerable<Trace>"
+                else
+                    (Utils.makeSafeTypeName p.PropertyNullableType)
             
             templateElementMember
             |> strRep description desc
             |> strRep elementPropName name
-            |> strRep propType p.PropertyNullableType
+            |> strRep propType propTypeStr
             |> strRep newProp newStr)
         |> String.concat "\n"
 
@@ -180,12 +201,24 @@ let genElementFile elType (props:PropertyTokens seq) =
             |> strRep elementPropName name)
         |> String.concat "\n"
 
+    let traceTypeStr,traceCloneStr =
+        if baseType <> "ChartElement" then
+            let tt =
+                templateElementTraceType
+                |> strRep traceType elType
+
+            tt,templateElementTraceClone
+        else
+            "",""
+
     let elClass =
         templateElementClass
         |> strRep elementType (Utils.makeSafeTypeName elType)
         |> strRep elementMembers elMembers
         |> strRep elementClone elClone
-        |> strRep elementBase "ChartElement"
+        |> strRep elementBase baseType
+        |> strRep traceType traceTypeStr
+        |> strRep traceClone traceCloneStr
 
     templateFile
     |> strRep classBody elClass
@@ -194,40 +227,44 @@ let genPropFile propClass =
     templateFile
     |> strRep classBody propClass
 
-let genPropClass elPropType elType (props:PropertyTokens seq) =
-    let validProps =
-        props
-        |> Seq.filter (fun p ->
-            let name = Utils.makeSafeTypeName p.PropertyName
-            elType <> Utils.firstCharToUpper name)
-
-    let propGetters =
-        validProps
-        |> Seq.filter (fun p -> p.IsBaseType |> not)
-        |> Seq.map (fun p ->
-            templatePropGetter
-            |> strRep jsonPropName (Utils.makeSafeTypeName p.PropertyName)
-            |> strRep propType (Utils.makeSafeTypeName (p.ToFullPropertyType())))
-        |> String.concat "\n"
-
-    let propSetters =
-        validProps
-        |> Seq.filter (fun p -> p.IsBaseType)
-        |> Seq.map (fun p ->
-            templatePropSetter
-            |> strRep jsonPropName (Utils.makeSafeTypeName p.PropertyName)
-            |> strRep elementPropName (Utils.makeSafeTypeName p.PropertyName)
-            |> strRep elementPropType (Utils.makeSafeTypeName p.PropertyType)
-            |> strRep elementType (Utils.makeSafeTypeName elType))
-        |> String.concat "\n"
-
-    templatePropClass
-    |> strRep elementPropType (Utils.makeSafeTypeName elPropType)
-    |> strRep elementType (Utils.makeSafeTypeName elType)
-    |> strRep jsonPropName (Utils.makeSafeTypeName (Utils.firstCharToLower elType))
-    |> strRep body (propGetters + propSetters)
-
-let genArrayPropClass elType elSubType =
+let genArrayPropClass elPropType elSubType =
     templateArrayPropClass
-    |> strRep elementType elType
+    |> strRep elementPropType elPropType
     |> strRep arraySubType elSubType
+
+let genPropClass elPropType elType arraySubType (props:PropertyTokens seq) =
+    match arraySubType with
+    | Some(subType) ->
+        genArrayPropClass elPropType subType
+    | None ->
+        let validProps =
+            props
+            |> Seq.filter (fun p ->
+                let name = Utils.makeSafeTypeName p.PropertyName
+                elType <> Utils.firstCharToUpper name)
+
+        let propGetters =
+            validProps
+            |> Seq.filter (fun p -> p.IsBaseType |> not)
+            |> Seq.map (fun p ->
+                templatePropGetter
+                |> strRep jsonPropName (Utils.makeSafeTypeName p.PropertyName)
+                |> strRep propType (Utils.makeSafeTypeName (p.ToFullPropertyType())))
+            |> String.concat "\n"
+
+        let propSetters =
+            validProps
+            |> Seq.filter (fun p -> p.IsBaseType)
+            |> Seq.map (fun p ->
+                templatePropSetter
+                |> strRep jsonPropName (Utils.makeSafeTypeName p.PropertyName)
+                |> strRep elementPropName (Utils.makeSafeTypeName p.PropertyName)
+                |> strRep elementPropType (Utils.makeSafeTypeName p.PropertyType)
+                |> strRep elementType (Utils.makeSafeTypeName elType))
+            |> String.concat "\n"
+
+        templatePropClass
+        |> strRep elementPropType (Utils.makeSafeTypeName elPropType)
+        |> strRep elementType (Utils.makeSafeTypeName elType)
+        |> strRep jsonPropName (Utils.makeSafeTypeName (Utils.firstCharToLower elType))
+        |> strRep body (propGetters + propSetters)

@@ -13,26 +13,60 @@ type Property =
         description: string
         elementType: string
         isArrayElement: bool
+        isObjectArray: bool
+        baseType: string
+        isRoot: bool
     }
     with
         static member TypesToTypeStr isNullable elType (types: string seq) (hasChildren: bool) =
-            let tryMatchType t =
+            let tryMatchType nullable t =
                 match t with
-                | "*" ->
-                    if hasChildren then 
-                        Some (firstCharToUpper elType)
-                     else
-                        Some "string"
-                | "Array< float >" -> "float []" |> Some
-                | "boolean" -> if isNullable then Some "bool?" else Some "bool"
-                | "number" -> if isNullable then Some "float?" else Some "float"
+                | "boolean" -> if nullable then Some "bool?" else Some "bool"
+                | "number" -> if nullable then Some "double?" else Some "double"
                 | "string" -> Some "string"
                 | _ -> None
 
+            if elType = "line" then
+                printfn "debug"
+            
+            if hasChildren then
+                match Property.ArrayNestCount types with
+                | Some(c,t) when c > 0 ->
+                    match tryMatchType false t with
+                    | Some(baseType) ->
+                        surrStr "IEnumerable<" ">" c baseType
+                    | None ->
+                        surrStr "IEnumerable<" ">" c (firstCharToUpper elType)
+                | _ ->
+                    firstCharToUpper elType
+            else
+                types
+                |> Seq.choose (tryMatchType isNullable)
+                |> Seq.tryHead
+                |> Option.defaultValue "string"//(firstCharToUpper elType)
+
+        static member ArrayNestCount t =
+            let tryParseArray (t:string) =
+                if t.Length > 8 && t.StartsWith "Array.<" && t.EndsWith ">" then
+                    t.Substring(7, t.Length-8)
+                    |> Some
+                else
+                    None
+
+            let rec arrayNestCount count t =
+                match tryParseArray t with
+                | Some(tNext) ->
+                    arrayNestCount (count+1) tNext
+                | None ->
+                    count,t
+
+            arrayNestCount 0 t
+
+        static member ArrayNestCount (types:string seq) =
             types
-            |> Seq.choose tryMatchType
+            |> Seq.map Property.ArrayNestCount
+            |> Seq.sortByDescending fst
             |> Seq.tryHead
-            |> Option.defaultValue "string"//(firstCharToUpper elType)
 
         static member IsBaseType (types: string seq) =
             let isBase t =
@@ -55,6 +89,7 @@ type Property =
                 PropertyType = Property.TypesToTypeStr false prop.name prop.types hasChildren
                 FullType = prop.fullType
                 IsBaseType = hasChildren |> not
+                IsObjectArray = prop.isObjectArray
             }
 
         static member Union (p1: Property) (p2: Property) =

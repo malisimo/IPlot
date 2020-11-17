@@ -36,3 +36,13 @@ let pathToPropName (path: string list) =
     |> (fun l -> "IProp"::l)
     |> List.rev
     |> String.concat "_"
+
+let repStr n str =
+    seq { for _ in 1..n -> str }
+
+let surrStr strBefore strAfter n (str:string) =
+    let surr s =
+        strBefore + s + strAfter
+    
+    [1..n]
+    |> List.fold (fun s _ -> surr s) str
