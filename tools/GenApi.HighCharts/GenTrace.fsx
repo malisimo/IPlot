@@ -23,7 +23,7 @@ let propPath = Path.Combine(__SOURCE_DIRECTORY__,"../../src/IPlot.HighCharts/Pro
 let outFile = Path.Combine(__SOURCE_DIRECTORY__,"../../src/IPlot.HighCharts/BaseProps/Trace_IProp.cs")
 
 let makeTraceType t =
-    "Chart_Series_" + t + "_IProp"
+    "HighChart_Series_" + t + "_IProp"
 
 let traceTypes =
     Directory.GetFiles elPath

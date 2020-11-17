@@ -6,7 +6,7 @@ type key = IConvertible
 type value = IConvertible
 
 type Chart() =
-    static member val Props = Chart_IProp() with get
+    static member val Props = HighChart_IProp() with get
     
     static member With (propFun: Func<HighChartsChart, HighChartsChart>) (chart: HighChartsChart) =
         propFun.Invoke (chart.DeepClone() :?> HighChartsChart)

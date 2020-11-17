@@ -8,7 +8,7 @@ namespace IPlot.HighCharts
 {
     public class HighChartsChart : ChartElement
     {
-        public Chart chart { get; set; } = null;
+        public HighChart chart { get; set; } = null;
 
         /// The width of the chart container element.
         public int width { get; set; } = 900;
@@ -49,13 +49,13 @@ namespace IPlot.HighCharts
             return highchartsChart;
         }
 
-        public string serializeChart(Chart chart)
+        public string serializeChart(HighChart chart)
         {
             return JsonConvert.SerializeObject(chart, Formatting.None, new JsonSerializerSettings
                 {
                     NullValueHandling = NullValueHandling.Ignore
                 })
-                .Replace("iplot_", string.Empty);
+                .Replace("_iplot", string.Empty);
         }
 
 

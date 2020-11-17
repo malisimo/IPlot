@@ -162,9 +162,6 @@ type PropertyTokens = {
                 this.FullType + "_" + Utils.firstCharToUpper this.PropertyName + "_IProp"
 
 let genElementFile elType baseType isRootElement (props:PropertyTokens seq) =
-    if elType = "chart" then
-        printfn "debug"
-
     let validProps =
         props
         |> Seq.filter (fun p ->

@@ -1,23 +1,12 @@
 namespace IPlot.HighCharts.Tests
 
+open System
 open Xunit
 open IPlot.HighCharts
-open System
 
 module TestUtils =
     let createChart() =
         HighChartsChart()
-
-module ``Layout properties`` =
-    open TestUtils
-
-    [<Fact>]
-    let ``Set title`` () =
-        let chart =
-            createChart()
-            |> Chart.With (Chart.Props.layout.title.text "Beard length")
-        
-        Assert.Equal("Beard length", chart.layout.title.text)
 
 module ``Scatter properties`` =
     open TestUtils
@@ -26,9 +15,9 @@ module ``Scatter properties`` =
     let ``Set name`` () =
         let chart =
             createChart()
-            |> Chart.With (Chart.Props.traces.[0].asScatter.name "Mr Susan")
+            |> Chart.With (Chart.Props.series.[0].asLine.name "Mr Susan")
         
-        Assert.Equal("Mr Susan", (chart.traces.[0]:?>Scatter).name)
+        Assert.Equal("Mr Susan", (chart.series.[0]:?>Line).name)
     
     [<Fact>]
     let ``Set mode`` () =

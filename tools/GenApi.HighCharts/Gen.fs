@@ -9,7 +9,7 @@ module Gen =
     open Newtonsoft.Json
 
     let jsonUrl = "https://api.highcharts.com/highcharts/tree.json"
-    let cachedJsonFile = "HighCharts.Doc.json"
+    let cachedJsonFile = "tools/GenApi.HighCharts/HighCharts.Doc.json"
     let loadFromCache = true
 
     module Implementation =
@@ -109,9 +109,6 @@ module Gen =
             
         // Get a nested list of properties
         let rec getPropertiesFromDict curPath curType isArrayElement isRootElement isParentSeries (propertyDict: IDictionary<string, obj>) =
-            let debugStop() =            
-                printfn "debug"
-
             if propertyDict.ContainsKey "children" then
                 let desc,propTypes,isDeprecated =
                     propertyDict
@@ -129,9 +126,6 @@ module Gen =
                         let childProps = [
                             for p in o.ToObject<IDictionary<string,obj>>() do
                                 let curKey = p.Key
-                                if curKey = "data" && curType = "series" then
-                                    debugStop()
-                                
                                 match p.Value with
                                 | :? JObject as o ->
                                     let oDict = o.ToObject<Dictionary<string, obj>>()
@@ -192,9 +186,6 @@ module Gen =
                 None
 
         let toElementFile (prop:Property) =
-            if prop.elementType = "Chart_IProp" then
-                printfn "debug"
-            
             if prop.isObjectArray then None
             elif List.isEmpty prop.childProps then None
             else
@@ -267,8 +258,9 @@ module Gen =
                     match child.Value with
                     | :? JObject as o ->
                         let propDict = o.ToObject<Dictionary<string, obj>>()
+                        let safeKey = if child.Key = "chart" then "chart_iprop" else child.Key
 
-                        match getPropertiesFromDict [child.Key;"Chart"] child.Key false true (child.Key = "series") propDict with
+                        match getPropertiesFromDict [safeKey;"highChart"] safeKey false true (safeKey = "series") propDict with
                         | Some(p) -> yield p
                         | None -> ()
                     | _ ->
@@ -278,12 +270,12 @@ module Gen =
 
         let rootProp = 
             {
-                fullType = "Chart_IProp"
-                name = "chart"
+                fullType = "HighChart_IProp"
+                name = "highChart"
                 childProps = chartProps |> Seq.toList
                 types = ["*"]
                 description = "Root HighCharts Chart object"
-                elementType = "Chart_IProp"
+                elementType = "HighChart_IProp"
                 isArrayElement = false
                 isObjectArray = false
                 baseType = "ChartElement"

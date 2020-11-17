@@ -25,9 +25,6 @@ type Property =
                 | "number" -> if nullable then Some "double?" else Some "double"
                 | "string" -> Some "string"
                 | _ -> None
-
-            if elType = "line" then
-                printfn "debug"
             
             if hasChildren then
                 match Property.ArrayNestCount types with
