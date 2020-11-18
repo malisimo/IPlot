@@ -51,7 +51,7 @@ let templateElementMember = @"
         public ##NEW####PROPTYPE## ##PROPNAME## { get; set; } = null;"
 
 let templateElementTraceType = @"
-        public string type_iprop { get; } = ""##TRACETYPE##"";"
+        public string type_iplot { get; } = ""##TRACETYPE##"";"
 
 let templateElementTraceClone = @"
             if (this is Trace t)
@@ -69,7 +69,7 @@ let templatePropClass = @"
 
             return (chart) =>
             {
-                var el = (ChartElement)chart;
+                var el = (ChartElement)chart.chart;
                 var i = 0;
 
                 while ((el != null) && (i < propPath.Count))
@@ -128,7 +128,7 @@ let templatePropSetter = @"
 
             return (chart) =>
             {
-                var el = (ChartElement)chart;
+                var el = (ChartElement)chart.chart;
                 var i = 0;
 
                 while ((el != null) && (i < propPath.Count))
@@ -202,7 +202,7 @@ let genElementFile elType baseType isRootElement (props:PropertyTokens seq) =
         if baseType <> "ChartElement" then
             let tt =
                 templateElementTraceType
-                |> strRep traceType elType
+                |> strRep traceType (Utils.firstCharToLower elType)
 
             tt,templateElementTraceClone
         else
@@ -229,7 +229,7 @@ let genArrayPropClass elPropType elSubType =
     |> strRep elementPropType elPropType
     |> strRep arraySubType elSubType
 
-let genPropClass elPropType elType arraySubType (props:PropertyTokens seq) =
+let genPropClass elPropType elType elJsonName arraySubType (props:PropertyTokens seq) =
     match arraySubType with
     | Some(subType) ->
         genArrayPropClass elPropType subType
@@ -263,5 +263,5 @@ let genPropClass elPropType elType arraySubType (props:PropertyTokens seq) =
         templatePropClass
         |> strRep elementPropType (Utils.makeSafeTypeName elPropType)
         |> strRep elementType (Utils.makeSafeTypeName elType)
-        |> strRep jsonPropName (Utils.makeSafeTypeName (Utils.firstCharToLower elType))
+        |> strRep jsonPropName (Utils.makeSafeTypeName (Utils.firstCharToLower elJsonName))
         |> strRep body (propGetters + propSetters)

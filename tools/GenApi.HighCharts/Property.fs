@@ -2,6 +2,7 @@ module Property
 
 open System.Collections.Generic
 open Utils
+open Trace
 open Templates
 
 type Property =
@@ -16,6 +17,7 @@ type Property =
         isObjectArray: bool
         baseType: string
         isRoot: bool
+        isChartSeries: bool
     }
     with
         static member TypesToTypeStr isNullable elType (types: string seq) (hasChildren: bool) =
@@ -88,11 +90,29 @@ type Property =
                 IsBaseType = hasChildren |> not
                 IsObjectArray = prop.isObjectArray
             }
+            
+        static member ToPropertyTokens (trace: TracePropInfo) : Templates.PropertyTokens =             
+            {
+                Description = trace.Description
+                PropertyName = trace.PropName
+                PropertyNullableType = trace.PropType
+                PropertyType = trace.PropTypeNullable
+                FullType = trace.FullType
+                IsBaseType = true
+                IsObjectArray = false
+            }
 
         static member Union (p1: Property) (p2: Property) =
+            let baseType =
+                match p1.baseType,p2.baseType with
+                | ("Trace",_) -> "Trace"
+                | (_,"Trace") -> "Trace"
+                | _ -> p1.baseType
+            
             { p1 with
                 childProps = p1.childProps @ p2.childProps |> List.distinctBy (fun p -> p.name)
                 types = Seq.concat [p1.types; p2.types] |> Seq.distinct
+                baseType = baseType
             }
 
         static member UnionAll (props: Property seq) =

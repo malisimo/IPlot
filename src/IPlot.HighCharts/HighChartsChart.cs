@@ -8,7 +8,7 @@ namespace IPlot.HighCharts
 {
     public class HighChartsChart : ChartElement
     {
-        public HighChart chart { get; set; } = null;
+        public HighChart chart { get; set; } = new HighChart();
 
         /// The width of the chart container element.
         public int width { get; set; } = 900;
@@ -18,6 +18,9 @@ namespace IPlot.HighCharts
 
         /// The chart's container div id.
         public string id { get; set; } = Guid.NewGuid().ToString();
+
+        /// The highcharts.js src.
+        public string highchartsSrc { get; set; } = Html.DefaultHighChartsSrc;
 
         private IEnumerable<string> _labels;
 
@@ -45,6 +48,10 @@ namespace IPlot.HighCharts
         public override ChartElement DeepClone()
         {
             var highchartsChart = new HighChartsChart();
+            highchartsChart.chart = (HighChart)this.chart.DeepClone();
+            highchartsChart.width = this.width;
+            highchartsChart.height = this.height;
+            highchartsChart.id = this.id;
 
             return highchartsChart;
         }
@@ -55,7 +62,8 @@ namespace IPlot.HighCharts
                 {
                     NullValueHandling = NullValueHandling.Ignore
                 })
-                .Replace("_iplot", string.Empty);
+                .Replace("_iplot", string.Empty)
+                .Replace("data_mat_", "data");
         }
 
 
@@ -65,7 +73,8 @@ namespace IPlot.HighCharts
             var chartMarkup = GetInlineHtml();
             return
                 Html.pageTemplate
-                    .Replace("[CHART]", chartMarkup);
+                    .Replace("[CHART]", chartMarkup)
+                    .Replace("[HIGHCHARTSSRC]", highchartsSrc);
         }
 
         /// Inline markup that can be embedded in a HTML document.
@@ -103,7 +112,7 @@ namespace IPlot.HighCharts
 
         public void Plot(IEnumerable<Trace> data)
         {
-            this.chart.series = data;
+            this.chart.series = data.ToList();
         }
 
         public void Show()
