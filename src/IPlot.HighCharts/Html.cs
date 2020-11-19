@@ -5,19 +5,30 @@ namespace IPlot.HighCharts
 {
     public class Html
     {
-        public const string DefaultHighChartsSrc = "https://code.highcharts.com/highcharts.js";
+        public const string DefaultHighChartsSrc = "https://code.highcharts.com/";
 
         public const string pageTemplate =
         @"<!DOCTYPE html>
 <html>
     <head>
         <meta charset = ""UTF-8"" />
-        <script src=""[HIGHCHARTSSRC]""></script>
+        <script src=""[HIGHCHARTSSRC]highcharts.js""></script>
+        <script src=""[HIGHCHARTSSRC]highcharts-more.js""></script>
+        <script src=""[HIGHCHARTSSRC]highcharts-3d.js""></script>
+        [MODULESRC]
+        <script src=""[HIGHCHARTSSRC]modules/series-label.js""></script>
+        <script src=""[HIGHCHARTSSRC]modules/annotations.js""></script>
+        <script src=""[HIGHCHARTSSRC]modules/exporting.js""></script>
+        <script src=""[HIGHCHARTSSRC]modules/export-data.js""></script>
+        <script src=""[HIGHCHARTSSRC]modules/accessibility.js""></script>
     </head>
     <body>
         [CHART]
     </body>
 </html>";
+
+        public const string moduleTemplate =
+        @"<script src=""[HIGHCHARTSSRC]modules/[MODULENAME].js""></script>";
 
         public const string inlineTemplate =
         @"<div id=""[ID]"" style=""width: [WIDTH] px; height: [HEIGHT] px;""></div>

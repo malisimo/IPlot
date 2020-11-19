@@ -66,14 +66,34 @@ namespace IPlot.HighCharts
                 .Replace("data_mat_", "data");
         }
 
+        /// Returns the JS to load relevant module scripts
+        public string GetModuleScripts()
+        {
+            var seriesTypes = chart.series.Select(s => s.name.ToLower());
+            var modules =
+                seriesTypes
+                .SelectMany(t => ModuleLoading.GetDependencies(t))
+                .ToArray();
+
+            var moduleImports =
+                modules
+                    .Select(m =>
+                        Html.moduleTemplate
+                            .Replace("[MODULENAME]", m)
+                            .Replace("[HIGHCHARTSSRC]", highchartsSrc));
+
+            return String.Join("\n", moduleImports);
+        }
 
         /// Returns the chart's full HTML source.
         public string GetHtml()
         {
             var chartMarkup = GetInlineHtml();
+
             return
                 Html.pageTemplate
                     .Replace("[CHART]", chartMarkup)
+                    .Replace("[MODULESRC]", GetModuleScripts())
                     .Replace("[HIGHCHARTSSRC]", highchartsSrc);
         }
 

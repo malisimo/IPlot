@@ -21,12 +21,12 @@ let makeSafeTypeName name =
         str.Replace("-","_")
         
     match name with
-    | "type" -> "iplot_type"
-    | "end" -> "iplot_end"
-    | "base" -> "iplot_base"
-    | "default" -> "iplot_default"
-    | "params" -> "iplot_params"
-    | "operator" -> "iplot_operator"
+    | "type" -> "type_iplot"
+    | "end" -> "end_iplot"
+    | "base" -> "base_iplot"
+    | "default" -> "default_iplot"
+    | "params" -> "params_iplot"
+    | "operator" -> "operator_iplot"
     | name -> name
     |> unHyphen
 

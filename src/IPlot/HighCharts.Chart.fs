@@ -87,4 +87,12 @@ type Chart() =
     //             Series(line = Line(data = Data(x = x, y = y))
     //         )
     //     Chart.Plot scatters
+
+    static member Cylinder(data:seq<#value>) =
+        let cylinder = Cylinder(data = (data |> Chart.ToFloatArray))
+        Chart.Plot [cylinder :> Trace]
+        |> Chart.With (Chart.Props.chart_iplot.type_iplot "cylinder")
+        |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 50.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 25.)
         

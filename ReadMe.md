@@ -12,6 +12,10 @@ The XPlot API is really nice for throwing plots together, although if you want t
 
 This project aims to demonstrate a nicer way of curating a plot, where intellisense can help you find appropriate properties to set, along with their types.
 
+## Chart Backends
+
+You can choose to render charts using Plotly or HighCharts. Either import ```IPlot.Plotly``` or ```IPlot.HighCharts``` - the chart API is very similar.
+
 ## Basic API
 
 Taking the example from [the XPlot documentation](https://fslab.org/XPlot/chart/plotly-line-scatter-plots.html) a basic line chart can be generated as follows:
@@ -40,6 +44,8 @@ There are some minor differences from the XPlot API (here the data must be a seq
 In order to set other properties, you can use Chart.With as follows:
 
 ```fsharp
+open IPlot.Plotly
+
 [trace1; trace2]
 |> Chart.Plot
 |> Chart.WithWidth 700
@@ -52,6 +58,25 @@ In order to set other properties, you can use Chart.With as follows:
 |> Chart.With (Chart.Props.traces.[1].asScatter.line.color "#44FF22")
 |> Chart.With (Chart.Props.layout.showlegend false)
 |> Chart.With (Chart.Props.layout.plot_bgcolor "#334433")
+|> Chart.Show
+```
+
+```fsharp
+open IPlot.HighCharts
+
+let trace =
+    Cylinder(
+        data = [1.; 2.; 3.; 4.; 3.; 2.; 1.],
+        name = "Cylinder"
+    ) :> Trace
+
+[trace]
+|> Chart.Plot
+|> Chart.With (Chart.Props.chart_iplot.type_iplot "cylinder")
+|> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
+|> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 25.)
+|> Chart.WithWidth 700
+|> Chart.WithHeight 500
 |> Chart.Show
 ```
 
@@ -76,7 +101,7 @@ let surface =
             [0.2;0.35;0.85]
             [0.9;1.0;1.4]
             [1.2;1.3;1.8]],
-        iplot_type = "surface"
+        type_iplot = "surface"
     )
 
 [surface]

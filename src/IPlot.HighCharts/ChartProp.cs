@@ -49,12 +49,13 @@ namespace IPlot.HighCharts
 
         public static string ToPropertyName(string typeName)
         {
-            var propName = typeName;
+            var propName = typeName.Replace("_iplot","-iplot");
 
             if (typeName.EndsWith("_IProp"))
-                propName = typeName.Substring(0, typeName.Length - 6);
+                propName = propName.Substring(0, propName.Length - 6);
             else if (typeName.EndsWith("_IArrayProp"))
-                propName = typeName.Substring(0, typeName.Length - 11);
+                propName = propName.Substring(0, propName.Length - 11);
+
 
             var i = propName.LastIndexOf('_');
             if ((i >= 0) && (i < propName.Length-1))
@@ -63,7 +64,7 @@ namespace IPlot.HighCharts
             if (propName.Length > 0)
                 propName = char.ToLower(propName[0]) + propName.Substring(1);
 
-            return propName;
+            return propName.Replace("-iplot","_iplot");
         }
 
         public static T SafeConvert<T, U>(T _, U value)

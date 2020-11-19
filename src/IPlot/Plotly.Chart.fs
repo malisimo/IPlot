@@ -296,7 +296,7 @@ type Chart() =
         let heatmap =
             Heatmap(
                 z = zData,
-                iplot_type = "heatmapgl"
+                type_iplot = "heatmapgl"
             )
         Chart.Plot heatmap
 
@@ -310,7 +310,7 @@ type Chart() =
         let heatmap =
             Heatmapgl(
                 z = zData,
-                iplot_type = "heatmapgl"
+                type_iplot = "heatmapgl"
             )
         Chart.Plot heatmap
 
@@ -324,7 +324,7 @@ type Chart() =
         let surface =
             Surface(
                 z = zData,
-                iplot_type = "surface",
+                type_iplot = "surface",
                 contours = Contours(
                     z = Z(
                         show = !< true,
