@@ -8,6 +8,7 @@ namespace IPlot.HighCharts
         public string name { get; set; }
         public IEnumerable<double> data { get; set; }
         public IEnumerable<IEnumerable<double>> data_mat_ { get; set; }
+        public virtual string type_iplot { get; }
 
         public static void DeepCopy(Trace src, Trace dest)
         {

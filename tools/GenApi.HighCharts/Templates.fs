@@ -51,7 +51,7 @@ let templateElementMember = @"
         public ##NEW####PROPTYPE## ##PROPNAME## { get; set; } = null;"
 
 let templateElementTraceType = @"
-        public string type_iplot { get; } = ""##TRACETYPE##"";"
+        public override string type_iplot { get { return ""##TRACETYPE##""; } }"
 
 let templateElementTraceClone = @"
             if (this is Trace t)

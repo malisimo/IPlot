@@ -174,3 +174,26 @@ module ``Heatmap properties`` =
         |> Chart.Show
 
         Assert.True(true)
+
+module ``Streamgraph properties`` =
+
+    [<Fact>]
+    let ``Basic Streamgraph``() =
+        let r = System.Random(931)
+        let trace1 =        
+            Streamgraph(
+                data = [ for x in 1..100 -> r.NextDouble() ],
+                name = "Stream A"
+            ) :> Trace
+        
+        [trace1]
+        |> Chart.Plot
+        |> Chart.With (Chart.Props.chart_iplot.type_iplot "streamgraph")
+        |> Chart.With (Chart.Props.series.[0].asStreamgraph.borderColor "#f32")
+        |> Chart.With (Chart.Props.series.[0].asStreamgraph.borderWidth 5.)
+        |> Chart.WithWidth 700
+        |> Chart.WithHeight 500
+        |> Chart.Show
+
+        Assert.True(true)
+

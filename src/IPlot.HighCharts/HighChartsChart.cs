@@ -69,7 +69,7 @@ namespace IPlot.HighCharts
         /// Returns the JS to load relevant module scripts
         public string GetModuleScripts()
         {
-            var seriesTypes = chart.series.Select(s => s.name.ToLower());
+            var seriesTypes = chart.series.Select(s => s.type_iplot);
             var modules =
                 seriesTypes
                 .SelectMany(t => ModuleLoading.GetDependencies(t))

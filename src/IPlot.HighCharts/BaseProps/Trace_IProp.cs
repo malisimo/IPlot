@@ -74,7 +74,7 @@ namespace IPlot.HighCharts
                 return chart;
             };
         }
-        
+
         public HighChart_Series_Abands_IProp asAbands
         {
             get { return new HighChart_Series_Abands_IProp() { _parent = _parent }; }
