@@ -1,5 +1,6 @@
 namespace IPlot.HighCharts.Tests
 
+open System
 open System.Linq
 open Xunit
 open IPlot.HighCharts
@@ -191,6 +192,53 @@ module ``Streamgraph properties`` =
         |> Chart.With (Chart.Props.chart_iplot.type_iplot "streamgraph")
         |> Chart.With (Chart.Props.series.[0].asStreamgraph.borderColor "#f32")
         |> Chart.With (Chart.Props.series.[0].asStreamgraph.borderWidth 5.)
+        |> Chart.WithWidth 700
+        |> Chart.WithHeight 500
+        |> Chart.Show
+
+        Assert.True(true)
+
+module ``Spline properties`` =
+
+    [<Fact>]
+    let ``Basic Spline Chart``() =
+        let r = System.Random(33)
+        let trace1 =        
+            Spline(
+                data_mat_ = [ for x in 1..12 -> [r.NextDouble(); r.NextDouble()] ],
+                name = "Spline"
+            ) :> Trace
+        
+        [trace1]
+        |> Chart.Plot
+        |> Chart.With (Chart.Props.chart_iplot.type_iplot "spline")
+        |> Chart.With (Chart.Props.series.[0].asSpline.dashStyle "ShortDashDot")
+        |> Chart.With (Chart.Props.series.[0].asSpline.lineWidth 6.)
+        |> Chart.WithWidth 700
+        |> Chart.WithHeight 500
+        |> Chart.Show
+
+        Assert.True(true)
+
+module ``Vector properties`` =
+
+    [<Fact>]
+    let ``Vector Flow``() =
+        let r = System.Random(392)
+        let trace1 =        
+            Vector(
+                data_mat_ = [
+                    for x in 0.0..0.1..1.0 do
+                        for y in 0.0..0.1..1.0 do
+                            yield [x; y; 3.0+4.0*x*x+y*y; Math.Atan2(y,x)*180./Math.PI]; ],
+                name = "Vector flow"
+            ) :> Trace
+        
+        [trace1]
+        |> Chart.Plot
+        |> Chart.With (Chart.Props.chart_iplot.type_iplot "vector")
+        |> Chart.With (Chart.Props.series.[0].asVector.lineWidth 5.)
+        |> Chart.With (Chart.Props.series.[0].asVector.color "red")
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show

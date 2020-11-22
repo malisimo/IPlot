@@ -2,5 +2,5 @@ module Program
 
 [<EntryPoint>]
 let main _ =
-    IPlot.HighCharts.Tests.``Streamgraph properties``.``Basic Streamgraph``()  
+    IPlot.HighCharts.Tests.``Vector properties``.``Vector Flow``()
     0
