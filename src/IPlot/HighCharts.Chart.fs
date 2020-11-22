@@ -16,13 +16,23 @@ type Chart() =
         chart.Plot [data]
         chart
 
-    static member Plot (data: seq<Trace>) =
+    static member Plot (data: seq<#Trace>) =
         let chart = HighChartsChart()
-        chart.Plot data
+        chart.Plot (Seq.cast<Trace> data)
         chart
     
     /// Displays a chart in the default browser
     static member Show (chart: HighChartsChart) = chart.Show()
+
+    /// Sets the chart's width.
+    static member WithTitle title (chart:HighChartsChart) =
+        chart.WithTitle title
+        chart
+
+    /// Sets the chart's width.
+    static member WithWidth width (chart:HighChartsChart) =
+        chart.WithWidth width
+        chart
     
     /// Sets the chart's height.
     static member WithHeight height (chart:HighChartsChart) =
@@ -49,11 +59,6 @@ type Chart() =
     /// Sets the chart's height.
     static member WithSize size (chart:HighChartsChart) =
         chart.WithSize size
-        chart
-
-    /// Sets the chart's width.
-    static member WithWidth width (chart:HighChartsChart) =
-        chart.WithWidth width
         chart
 
     static member internal ToFloatArray s =

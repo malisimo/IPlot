@@ -8,13 +8,21 @@ namespace IPlot.HighCharts
 {
     public class HighChartsChart : ChartElement
     {
+        public HighChartsChart()
+        {
+            this.chart.chart_iplot = new Chart_iplot()
+            {
+                width = 900,
+                height = 500
+            };
+            this.chart.title = new Title()
+            {
+                text = ""
+            };
+        }
+
+        /// The chart object containing all chart properties
         public HighChart chart { get; set; } = new HighChart();
-
-        /// The width of the chart container element.
-        public int width { get; set; } = 900;
-
-        /// The height of the chart container element.
-        public int height { get; set; } = 500;
 
         /// The chart's container div id.
         public string id { get; set; } = Guid.NewGuid().ToString();
@@ -49,8 +57,6 @@ namespace IPlot.HighCharts
         {
             var highchartsChart = new HighChartsChart();
             highchartsChart.chart = (HighChart)this.chart.DeepClone();
-            highchartsChart.width = this.width;
-            highchartsChart.height = this.height;
             highchartsChart.id = this.id;
 
             return highchartsChart;
@@ -104,8 +110,8 @@ namespace IPlot.HighCharts
             return
                 Html.inlineTemplate
                     .Replace("[ID]", this.id)
-                    .Replace("[WIDTH]", this.width.ToString())
-                    .Replace("[HEIGHT]", this.height.ToString())
+                    .Replace("[WIDTH]", this.chart.chart_iplot.width.ToString())
+                    .Replace("[HEIGHT]", this.chart.chart_iplot.height.ToString())
                     .Replace("[PLOTTING]", plotting);
         }
 
@@ -122,10 +128,7 @@ namespace IPlot.HighCharts
         /// The chart's plotting JavaScript code.
         public string GetPlottingJS()
         {
-            var c = (HighChart)this.chart.DeepClone();
-            c.chart_iplot.width = this.width;
-            c.chart_iplot.height = this.height;
-            var chartJson = serializeChart(c);
+            var chartJson = serializeChart(this.chart);
 
             return
                 Html.jsFunctionTemplate
@@ -145,10 +148,24 @@ namespace IPlot.HighCharts
         }
 
 
+        /// Sets the chart's width.
+        public void WithTitle(string title)
+        {
+            this.chart.title.text = title;
+        }
+
+
+        /// Sets the chart's width.
+        public void WithWidth(int width)
+        {
+            this.chart.chart_iplot.width = width;
+        }
+
+
         /// Sets the chart's height.
         public void WithHeight(int height)
         {
-            this.height = height;
+            this.chart.chart_iplot.height = height;
         }
 
         /// Sets the chart's container div id.
@@ -174,15 +191,8 @@ namespace IPlot.HighCharts
         /// Sets the chart's width and height.
         public void WithSize(int width, int height)
         {
-            this.height = height;
-            this.width = width;
-        }
-
-
-        /// Sets the chart's width.
-        public void WithWidth(int width)
-        {
-            this.width = width;
+            WithWidth(width);
+            WithHeight(height);
         }
     }
 }

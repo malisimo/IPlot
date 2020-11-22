@@ -13,6 +13,29 @@ module TestUtils =
             )
         )
 
+module ``Line properties`` =
+
+    [<Fact>]
+    let ``Basic Line Plot``() =
+        let trace1 =
+            Line(
+                data = [0.2; 0.8; 0.5; 1.1]
+            )
+
+        let trace2 =
+            Line(
+                data = [0.6; 0.1; 0.3; 0.7]
+            )
+
+        [trace1; trace2]
+        |> Chart.Plot
+        |> Chart.WithWidth 700
+        |> Chart.WithHeight 500
+        |> Chart.WithTitle "Two lines"
+        |> Chart.Show
+
+        Assert.True(true)
+
 module ``Scatter properties`` =
     open TestUtils
     
@@ -25,28 +48,11 @@ module ``Scatter properties`` =
         Assert.Equal("Mr Susan", chart.chart.series.ElementAt(0).name)
 
     [<Fact>]
-    let ``Basic Line Plot``() =
-        let trace1 =
-            Line(
-                data = [1.; 2.; 3.; 4.],
-                name = "Miller"
-            ) :> Trace
-        
-        
-        [trace1]
-        |> Chart.Plot
-        |> Chart.WithWidth 700
-        |> Chart.WithHeight 500
-        |> Chart.Show
-
-        Assert.True(true)
-
-    [<Fact>]
     let ``X/Y Scatter Plot``() =
         let trace1 =
             Scatter(
                 data_mat_ = [[1.;-1.]; [2.;1.5]; [3.;-0.5]; [4.;4.8]]
-            ) :> Trace
+            )
         
         
         [trace1]
@@ -67,7 +73,7 @@ module ``3D properties`` =
             Cylinder(
                 data = [1.; 2.; 3.; 4.; 3.; 2.; 1.],
                 name = "Cylinder"
-            ) :> Trace
+            )
         
         [trace1]
         |> Chart.Plot
@@ -90,7 +96,7 @@ module ``3D properties`` =
             Funnel3d(
                 data = [1010.; 202.; 96.; 46.; 3.; 20.; 8.],
                 name = "Funnel3d"
-            ) :> Trace
+            )
         
         [trace1]
         |> Chart.Plot
@@ -112,7 +118,7 @@ module ``3D properties`` =
             Pyramid3d(
                 data = [1010.; 202.; 96.; 46.; 3.; 20.; 8.],
                 name = "Pyramid3d"
-            ) :> Trace
+            )
         
         [trace1]
         |> Chart.Plot
@@ -136,7 +142,7 @@ module ``Error bar properties`` =
             Errorbar(
                 data_mat_ = [[22.;48.];[41.;49.];[31.;48.];[19.;24.];[11.;15.];[40.;49.]],
                 name = "Error Bar"
-            ) :> Trace
+            )
         
         [trace1]
         |> Chart.Plot
@@ -162,7 +168,7 @@ module ``Heatmap properties`` =
                                 for y in 1..40 do
                                     yield [ float x; float y; r.NextDouble() ] ],
                 name = "Heatmap"
-            ) :> Trace
+            )
         
         [trace1]
         |> Chart.Plot
@@ -185,7 +191,7 @@ module ``Streamgraph properties`` =
             Streamgraph(
                 data = [ for x in 1..100 -> r.NextDouble() ],
                 name = "Stream A"
-            ) :> Trace
+            )
         
         [trace1]
         |> Chart.Plot
@@ -207,7 +213,7 @@ module ``Spline properties`` =
             Spline(
                 data_mat_ = [ for x in 1..12 -> [r.NextDouble(); r.NextDouble()] ],
                 name = "Spline"
-            ) :> Trace
+            )
         
         [trace1]
         |> Chart.Plot
@@ -232,7 +238,7 @@ module ``Vector properties`` =
                         for y in 0.0..0.1..1.0 do
                             yield [x; y; 3.0+4.0*x*x+y*y; Math.Atan2(y,x)*180./Math.PI]; ],
                 name = "Vector flow"
-            ) :> Trace
+            )
         
         [trace1]
         |> Chart.Plot

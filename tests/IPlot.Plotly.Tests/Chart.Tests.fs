@@ -62,36 +62,21 @@ module ``Scatter properties`` =
     let ``Basic Line Plot``() =
         let trace1 =
             Scatter(
-                x = [1.; 2.; 3.; 4.],
-                y = [10.; 15.; 13.; 17.]
-            )
-        
-        let trace2 =
-            Scatter(
-                x = [2.; 3.; 4.; 5.],
-                y = [16.; 5.; 11.; 9.]
+                x = [0.; 1.; 2.; 3.],
+                y = [0.2; 0.8; 0.5; 1.1]
             )
 
-        let layout =
-            Layout(
-                title = Title(
-                    text = "Basic Line Plot"
-                )
+        let trace2 =
+            Scatter(
+                x = [0.; 1.; 2.; 3.],
+                y = [0.6; 0.1; 0.3; 0.7]
             )
-        
+
         [trace1; trace2]
         |> Chart.Plot
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
-        |> Chart.WithLayout layout
-        |> Chart.With (Chart.Props.traces.[0].asScatter.mode "markers")
-        |> Chart.With (Chart.Props.traces.[0].asScatter.marker.color "#EE44AA")
-        |> Chart.With (Chart.Props.traces.[0].asScatter.marker.size 12.)
-        |> Chart.With (Chart.Props.traces.[1].asScatter.mode "lines+markers")
-        |> Chart.With (Chart.Props.traces.[1].asScatter.line.width 5.0)
-        |> Chart.With (Chart.Props.traces.[1].asScatter.line.color "#44FF22")
-        |> Chart.With (Chart.Props.layout.showlegend false)
-        |> Chart.With (Chart.Props.layout.plot_bgcolor "#334433")
+        |> Chart.WithTitle "Two lines"
         |> Chart.Show
 
         Assert.True(true)
