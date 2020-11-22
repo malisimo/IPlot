@@ -1,17 +1,18 @@
 
 using System;
+using System.Collections.Generic;
 
 namespace IPlot.HighCharts
 {
     public class Trace_IProp : ChartProp
     {
-        public Func<HighChartsChart, HighChartsChart> name(string str)
+        public Func<HighChartsChart, HighChartsChart> name(string v)
         {
             var propPath = GetPath();
 
             return (chart) =>
             {
-                var el = (ChartElement)chart;
+                var el = (ChartElement)chart.chart;
                 var i = 0;
 
                 while ((el != null) && (i < propPath.Count))
@@ -22,12 +23,58 @@ namespace IPlot.HighCharts
 
                 var thisElement = el as Trace;
                 if (thisElement != null)
-                    thisElement.name = ChartProp.SafeConvert(thisElement.name, str);
+                    thisElement.name = ChartProp.SafeConvert(thisElement.name, v);
 
                 return chart;
             };
         }
 
+        public Func<HighChartsChart, HighChartsChart> data(IEnumerable<double> v)
+        {
+            var propPath = GetPath();
+
+            return (chart) =>
+            {
+                var el = (ChartElement)chart.chart;
+                var i = 0;
+
+                while ((el != null) && (i < propPath.Count))
+                {
+                    el = ChartElement.GetElement(propPath[i], el);
+                    i++;
+                }
+
+                var thisElement = el as Trace;
+                if (thisElement != null)
+                    thisElement.data = ChartProp.SafeConvert(thisElement.data, v);
+
+                return chart;
+            };
+        }
+
+        public Func<HighChartsChart, HighChartsChart> data_mat_(IEnumerable<IEnumerable<double>> v)
+        {
+            var propPath = GetPath();
+
+            return (chart) =>
+            {
+                var el = (ChartElement)chart.chart;
+                var i = 0;
+
+                while ((el != null) && (i < propPath.Count))
+                {
+                    el = ChartElement.GetElement(propPath[i], el);
+                    i++;
+                }
+
+                var thisElement = el as Trace;
+                if (thisElement != null)
+                    thisElement.data_mat_ = ChartProp.SafeConvert(thisElement.data_mat_, v);
+
+                return chart;
+            };
+        }
+        
         public HighChart_Series_Abands_IProp asAbands
         {
             get { return new HighChart_Series_Abands_IProp() { _parent = _parent }; }
@@ -143,6 +190,16 @@ namespace IPlot.HighCharts
             get { return new HighChart_Series_Columnrange_IProp() { _parent = _parent }; }
         }
 
+        public HighChart_Series_Cylinder_IProp asCylinder
+        {
+            get { return new HighChart_Series_Cylinder_IProp() { _parent = _parent }; }
+        }
+
+        public HighChart_Series_Dema_IProp asDema
+        {
+            get { return new HighChart_Series_Dema_IProp() { _parent = _parent }; }
+        }
+
         public HighChart_Series_Dependencywheel_IProp asDependencywheel
         {
             get { return new HighChart_Series_Dependencywheel_IProp() { _parent = _parent }; }
@@ -231,6 +288,16 @@ namespace IPlot.HighCharts
         public HighChart_Series_Linearregressionangle_IProp asLinearregressionangle
         {
             get { return new HighChart_Series_Linearregressionangle_IProp() { _parent = _parent }; }
+        }
+
+        public HighChart_Series_Linearregressionintercept_IProp asLinearregressionintercept
+        {
+            get { return new HighChart_Series_Linearregressionintercept_IProp() { _parent = _parent }; }
+        }
+
+        public HighChart_Series_Linearregressionslope_IProp asLinearregressionslope
+        {
+            get { return new HighChart_Series_Linearregressionslope_IProp() { _parent = _parent }; }
         }
 
         public HighChart_Series_Lollipop_IProp asLollipop
@@ -383,6 +450,11 @@ namespace IPlot.HighCharts
             get { return new HighChart_Series_Solidgauge_IProp() { _parent = _parent }; }
         }
 
+        public HighChart_Series_Spline_IProp asSpline
+        {
+            get { return new HighChart_Series_Spline_IProp() { _parent = _parent }; }
+        }
+
         public HighChart_Series_Stochastic_IProp asStochastic
         {
             get { return new HighChart_Series_Stochastic_IProp() { _parent = _parent }; }
@@ -403,6 +475,11 @@ namespace IPlot.HighCharts
             get { return new HighChart_Series_Supertrend_IProp() { _parent = _parent }; }
         }
 
+        public HighChart_Series_Tema_IProp asTema
+        {
+            get { return new HighChart_Series_Tema_IProp() { _parent = _parent }; }
+        }
+
         public HighChart_Series_Tilemap_IProp asTilemap
         {
             get { return new HighChart_Series_Tilemap_IProp() { _parent = _parent }; }
@@ -421,6 +498,11 @@ namespace IPlot.HighCharts
         public HighChart_Series_Trendline_IProp asTrendline
         {
             get { return new HighChart_Series_Trendline_IProp() { _parent = _parent }; }
+        }
+
+        public HighChart_Series_Trix_IProp asTrix
+        {
+            get { return new HighChart_Series_Trix_IProp() { _parent = _parent }; }
         }
 
         public HighChart_Series_Variablepie_IProp asVariablepie

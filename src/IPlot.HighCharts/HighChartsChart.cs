@@ -122,7 +122,10 @@ namespace IPlot.HighCharts
         /// The chart's plotting JavaScript code.
         public string GetPlottingJS()
         {
-            var chartJson = serializeChart(this.chart);
+            var c = (HighChart)this.chart.DeepClone();
+            c.chart_iplot.width = this.width;
+            c.chart_iplot.height = this.height;
+            var chartJson = serializeChart(c);
 
             return
                 Html.jsFunctionTemplate

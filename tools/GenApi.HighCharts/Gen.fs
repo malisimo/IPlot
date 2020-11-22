@@ -1,4 +1,5 @@
 ﻿namespace GenApi.HighCharts
+
 open Newtonsoft.Json.Linq
 open Utils
 open Property
@@ -14,6 +15,7 @@ module Gen =
 
     module Implementation =
         open System.Net
+        open DictUtils
 
         let fetchJson() =
             if loadFromCache && File.Exists(cachedJsonFile) then
@@ -23,54 +25,7 @@ module Gen =
                 use client = new WebClient()
                 client.Encoding <- System.Text.Encoding.UTF8
                 client.DownloadString jsonUrl
-        
-        let tryDeserialiseDict str =
-            if System.Text.RegularExpressions.Regex.Match(str, @"^\s{+\s*}+\s$").Success then
-                printfn "Found empty class - empty dict"
-                new Dictionary<string, obj>()
-            else
-                try
-                    JsonConvert.DeserializeObject(str, typeof<Dictionary<string, obj>>)
-                    :?> Dictionary<string, obj>
-                with _ ->
-                    printfn "Exception deserialising dict - empty dict"
-                    new Dictionary<string, obj>()
-
-        let getObjectPropFromDict propName (propertyDict: IDictionary<string, obj>) =
-            if propertyDict.ContainsKey propName then
-                match propertyDict.[propName] with
-                | :? JObject as o ->                        
-                    o.ToObject<IDictionary<string,obj>>() |> Some
-                | _ ->
-                    None
-            else
-                None
-        
-        let getArrayPropFromDict propName (propertyDict: IDictionary<string, obj>) =
-            if propertyDict.ContainsKey propName then
-                match propertyDict.[propName] with
-                | :? JArray as a ->                        
-                    a.Children() |> Seq.map (fun el -> el :> obj) |> Some
-                | _ ->
-                    None
-            else
-                None
-        
-        let getBooleanPropFromDict propName (propertyDict: IDictionary<string, obj>) =
-            if propertyDict.ContainsKey propName then
-                match propertyDict.[propName] with
-                | :? System.Boolean as b ->
-                    Some b
-                | _ ->
-                    None
-            else
-                None
-        
-        let getStringPropFromDict propName (propertyDict: IDictionary<string, obj>) =
-            if propertyDict.ContainsKey propName then
-                string propertyDict.[propName] |> Some
-            else
-                None
+       
 
         let parseDocletFromDict (propertyDict: IDictionary<string, obj>) =
             let desc =
@@ -86,6 +41,14 @@ module Gen =
                 |> Option.bind (getArrayPropFromDict "names")
                 |> Option.map (fun a -> Seq.map string a)
                 |> Option.defaultValue Seq.empty
+            
+            let extendsFrom =
+                propertyDict
+                |> getObjectPropFromDict "doclet"
+                |> Option.bind (getStringPropFromDict "extends")
+                |> Option.map (fun c ->
+                    let i = c.LastIndexOf('.')
+                    if i >= 0 then c.Substring(i+1) else c)
 
             let isDeprecated =
                 propertyDict
@@ -93,24 +56,71 @@ module Gen =
                 |> Option.bind (getBooleanPropFromDict "deprecated")
                 |> Option.defaultValue false
             
-            desc,propTypes,isDeprecated
+            desc,propTypes,extendsFrom,isDeprecated
 
-        // Group properties based on projection, but apply a different projection to key to carry extra data through
-        let groupBy (distinctProject: Property -> 'a) (keyProject: Property -> 'b) (props: Property seq) =
-            let keyDict =
-                props
-                |> Seq.distinctBy distinctProject
-                |> Seq.map (fun p -> (distinctProject p, keyProject p))
-                |> dict
-                
-            props
-            |> Seq.groupBy distinctProject
-            |> Seq.map (fun (key,keyProps) -> (keyDict.[key],keyProps))
             
+        // Given a heirarchy of properties that extend other base properties,
+        // extract a flat list of all child properties
+        let rec getInheritedProperties (props:Property list) (plotOptions: Property) newPrefix origType curType =
+            let rec retargetProperty name oldPrefix newPrefix (p:Property) =
+                if p.fullType.StartsWith(oldPrefix) then
+                    let i = p.fullType.Substring(oldPrefix.Length).IndexOf("_")
+                    if i >= 0 then
+                        let newFullType = newPrefix + p.fullType.Substring(i+oldPrefix.Length)
+                        let nextOldPrefix = p.fullType.Substring(0,i+oldPrefix.Length)
+                        { p with
+                            fullType = newFullType
+                            childProps = List.map (retargetProperty "" nextOldPrefix newPrefix) p.childProps
+                        }
+                    else
+                        { p with
+                            fullType = newPrefix + p.fullType.Substring(22)
+                            childProps = List.map (retargetProperty "" oldPrefix newPrefix) p.childProps
+                        }
+                else
+                    p
+
+            match curType with
+            | Some(t) ->
+                // Find properties that match current name,
+                // and call again for any base class it extends
+                plotOptions.childProps
+                |> List.tryFind (fun cp -> cp.name = t)
+                |> Option.map (fun cp ->
+                    let retargetFun =
+                        if t = origType then
+                            id
+                        else
+                            retargetProperty origType "HighChart_PlotOptions_" (newPrefix + (firstCharToUpper origType))
+
+                    let childProps =
+                        cp.childProps
+                        |> List.map retargetFun
+                        |> List.distinctBy (fun p -> p.fullType)
+
+                    getInheritedProperties (childProps @ props) plotOptions newPrefix origType cp.extends)
+                |> Option.defaultValue
+                    props 
+                    |> Hacks.filterTraceChildProperties
+            | None ->
+                props
+                |> Hacks.filterTraceChildProperties
+            
+        let toSeriesProps (curFullType:string) (props:Property list) =
+            let opStr = "_PlotOptions_"
+            props
+            |> List.map (fun p ->
+                match curFullType.Contains(opStr) with
+                | true ->
+                    p
+                | false ->
+                    { p with fullType = p.fullType.Replace(opStr,"_Series_") }
+                )
+
         // Get a nested list of properties
-        let rec getPropertiesFromDict curPath curType isArrayElement isRootElement isParentSeries (plotOptions:Property option) (propertyDict: IDictionary<string, obj>) =
+        let rec getPropertiesFromDict curPath curType isRootElement isParentSeries (plotOptions:Property option) (propertyDict: IDictionary<string, obj>) =
             if propertyDict.ContainsKey "children" then
-                let desc,propTypes,isDeprecated =
+                let desc,propTypes,extendsFrom,isDeprecated =
                     propertyDict
                     |> parseDocletFromDict
 
@@ -130,7 +140,7 @@ module Gen =
                                 | :? JObject as o ->
                                     let oDict = o.ToObject<Dictionary<string, obj>>()
 
-                                    match getPropertiesFromDict (curKey::curPath) curKey false false isChartSeries plotOptions oDict with
+                                    match getPropertiesFromDict (curKey::curPath) curKey false isChartSeries plotOptions oDict with
                                     | Some(prop) -> yield prop
                                     | None -> ()
                                 | _ ->
@@ -153,9 +163,9 @@ module Gen =
                                         types = if i = n then List.toSeq ["*"] else propTypes
                                         description = (String.replicate (n-i) "Array of ") + desc
                                         elementType = if isChartSeries then "trace" else curType
-                                        isArrayElement = i = n
                                         isObjectArray = i < n
                                         baseType = "ChartElement"
+                                        extends = extendsFrom
                                         isRoot = false
                                         isChartSeries = isChartSeries
                                     }
@@ -166,17 +176,28 @@ module Gen =
                             |> Seq.tryHead
                         | _ ->
                             // Add trace properties to those from plotOptions
+                            let parentFullType = 
+                                let s = (pathToPropName (List.skip 1 curPath))
+                                s.Substring(0,s.Length - 5)
+
                             let fullChildProps =
                                 if traceType.IsSome then
                                     let plotOptionsProps =
                                         plotOptions
-                                        |> Option.bind (fun p ->
-                                            p.childProps
-                                            |> List.tryFind (fun cp -> cp.name = curType)
-                                            |> Option.map (fun cp -> cp.childProps))
+                                        |> Option.map (fun p -> getInheritedProperties [] p parentFullType curType (Some(curType)))
+                                        |> Option.map (toSeriesProps (pathToPropName curPath))
                                         |> Option.defaultValue []
+
                                     plotOptionsProps @ childProps
                                     |> Hacks.filterTraceChildProperties
+                                elif parentFullType = "HighChart_PlotOptions_" then
+                                    let plotOptionsProps =
+                                        plotOptions
+                                        |> Option.map (fun p -> getInheritedProperties [] p parentFullType curType (Some(curType)))
+                                        |> Option.map (toSeriesProps (pathToPropName curPath))
+                                        |> Option.defaultValue []
+
+                                    plotOptionsProps @ childProps
                                 else
                                     childProps
                             
@@ -187,9 +208,9 @@ module Gen =
                                 types = propTypes
                                 description = desc
                                 elementType = curType
-                                isArrayElement = isArrayElement
                                 isObjectArray = false
                                 baseType = if traceType.IsSome then "Trace" else "ChartElement"
+                                extends = extendsFrom
                                 isRoot = false
                                 isChartSeries = false
                             }
@@ -213,39 +234,6 @@ module Gen =
 
                 (firstCharToUpper prop.name,fileStr)
                 |> Some
-
-        let rec toPropFiles (files:(string*string) list) (prop:Property) =
-            match prop.childProps,prop.baseType with
-            | [],"ChartElement" ->                 
-                files
-            | _ ->
-                let allFiles =
-                    prop.childProps
-                    |> List.fold toPropFiles files
-
-                let arraySubType =
-                    if prop.isObjectArray then
-                        prop.childProps
-                        |> Seq.tryHead
-                        |> Option.map (fun p -> p.fullType)
-                    else
-                        None
-
-                let childTokens =
-                    if prop.isChartSeries then
-                        Trace.traceProperties
-                        |> Seq.map Property.ToPropertyTokens
-                    else
-                        prop.childProps
-                        |> Seq.distinctBy (fun x -> x.name)
-                        |> Seq.map Property.ToPropertyTokens
-                
-                let fileStr =
-                    childTokens
-                    |> Templates.genPropClass prop.fullType (firstCharToUpper prop.elementType) prop.name arraySubType
-                    |> Templates.genPropFile
-
-                (prop.fullType,fileStr)::allFiles
 
     open Implementation
 
@@ -289,7 +277,7 @@ module Gen =
                 |> Seq.tryHead
                 |> Option.bind (fun (kvp,o) ->
                     let propDict = o.ToObject<Dictionary<string, obj>>()
-                    getPropertiesFromDict [kvp.Key;"highChart"] kvp.Key false true false None propDict)
+                    getPropertiesFromDict [kvp.Key;"highChart"] kvp.Key true false None propDict)
 
             seq {
                 for child in childProps do
@@ -298,7 +286,7 @@ module Gen =
                         let propDict = o.ToObject<Dictionary<string, obj>>()
                         let safeKey = if child.Key = "chart" then "chart_iplot" else child.Key
 
-                        match getPropertiesFromDict [safeKey;"highChart"] safeKey false true (safeKey = "series") plotOptions propDict with
+                        match getPropertiesFromDict [safeKey;"highChart"] safeKey true (safeKey = "series") plotOptions propDict with
                         | Some(p) -> yield p
                         | None -> ()
                     | _ ->
@@ -314,16 +302,12 @@ module Gen =
                 types = ["*"]
                 description = "Root HighCharts Chart object"
                 elementType = "highChart"
-                isArrayElement = false
                 isObjectArray = false
                 baseType = "ChartElement"
+                extends = None
                 isRoot = true
                 isChartSeries = false
             }
-
-        // chartProps
-        // |> List.map (fun p -> printfn "%s" p.fullType)
-        // |> ignore
 
         let rec walkProp (props:Property list) (prop:Property) =
             prop.childProps
@@ -335,7 +319,6 @@ module Gen =
             |> Seq.fold walkProp [rootProp]
             |> Seq.groupBy (fun x -> (x.name,x.isObjectArray))
             |> Seq.choose (fun (_,v) -> Property.UnionAll v)
-            //|> groupBy (fun p -> firstCharToUpper p.elementType) (fun p -> (firstCharToUpper p.elementType,p.rootElement))
 
         printfn ""
         printfn "=================="
@@ -352,9 +335,11 @@ module Gen =
         |> printfn "Written %i files"
 
         [rootProp]
-        |> Seq.fold toPropFiles []
-        |> Seq.toArray
-        |> Seq.map (fun (typeName,str) ->
+        |> Seq.fold toFlatPropList []
+        |> Seq.toList
+        |> unionProps []
+        |> Seq.choose toPropFile
+        |> Seq.map (fun (typeName,str,_) ->
             printfn "Exporting %s" typeName
             File.WriteAllText(Path.Combine(outPropPath, typeName + ".cs"), str))
         |> Seq.length

@@ -1,6 +1,5 @@
 module Property
 
-open System.Collections.Generic
 open Utils
 open Trace
 open Templates
@@ -13,9 +12,9 @@ type Property =
         types: string seq
         description: string
         elementType: string
-        isArrayElement: bool
         isObjectArray: bool
         baseType: string
+        extends:string option
         isRoot: bool
         isChartSeries: bool
     }
@@ -118,6 +117,7 @@ type Property =
         static member UnionAll (props: Property seq) =
             Seq.tryHead props
             |> Option.map (fun hd -> Seq.fold Property.Union hd props)
+            
         
         member this.ToNiceString() =
             let firstType =
@@ -129,3 +129,81 @@ type Property =
                 |> String.concat ";"
 
             sprintf "[%s](%s) %s:%s { %s }" this.fullType this.elementType this.name firstType childNiceStrings
+
+
+let rec unionProps (acc:Property list) (left:Property list) =
+    match left with
+    | hd::tl ->
+        if List.exists (fun p -> p.fullType = hd.fullType) acc then
+            unionProps acc tl
+        else
+            let others =
+                left
+                |> List.filter (fun p -> p.fullType = hd.fullType)
+
+            let unionedChildProps =
+                others
+                |> List.collect (fun p -> p.childProps)
+                |> fun c -> c @ hd.childProps
+            
+            unionProps ({ hd with childProps = unionedChildProps } :: acc) tl
+    | [] ->
+        acc
+
+let rec toFlatPropList (items:Property list) (prop:Property) =
+    match prop.childProps,prop.baseType with
+    | [],"ChartElement" ->                 
+        items
+    | _ ->
+        let allItems =
+            prop.childProps
+            |> List.fold toFlatPropList items
+
+        prop::allItems
+
+let rec toPropFile (prop:Property) =
+    match prop.childProps,prop.baseType with
+    | [],"ChartElement" ->                 
+        None
+    | _ ->
+        let arraySubType =
+            if prop.isObjectArray then
+                if prop.isChartSeries then
+                    "Trace_IProp"
+                    |> Some
+                else
+                    prop.childProps
+                    |> Seq.tryHead
+                    |> Option.map (fun p -> p.fullType)
+            else
+                None
+
+        let childTokens =
+            if prop.isChartSeries then
+                Trace.traceProperties
+                |> Seq.map Property.ToPropertyTokens
+            else
+                prop.childProps
+                |> Seq.distinctBy (fun x -> x.name)
+                |> Seq.map Property.ToPropertyTokens
+        
+        let fileStr =
+            childTokens
+            |> Templates.genPropClass prop.fullType (firstCharToUpper prop.elementType) prop.name arraySubType
+            |> Templates.genPropFile
+
+        (prop.fullType,fileStr,prop.ToNiceString())
+        |> Some
+        
+
+// Group properties based on projection, but apply a different projection to key to carry extra data through
+let groupBy (distinctProject: Property -> 'a) (keyProject: Property -> 'b) (props: Property seq) =
+    let keyDict =
+        props
+        |> Seq.distinctBy distinctProject
+        |> Seq.map (fun p -> (distinctProject p, keyProject p))
+        |> dict
+        
+    props
+    |> Seq.groupBy distinctProject
+    |> Seq.map (fun (key,keyProps) -> (keyDict.[key],keyProps))

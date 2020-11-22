@@ -71,6 +71,7 @@ module ``3D properties`` =
         [trace1]
         |> Chart.Plot
         |> Chart.With (Chart.Props.chart_iplot.type_iplot "cylinder")
+        |> Chart.With (Chart.Props.series.[0].asCylinder.colorByPoint true)
         |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
         |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 15.)
         |> Chart.With (Chart.Props.chart_iplot.options3d.beta 15.)
@@ -140,6 +141,7 @@ module ``Error bar properties`` =
         |> Chart.Plot
         |> Chart.With (Chart.Props.chart_iplot.type_iplot "errorbar")
         |> Chart.With (Chart.Props.chart_iplot.backgroundColor "#edf")
+        |> Chart.With (Chart.Props.plotOptions.errorbar.lineWidth 5.0)
         |> Chart.With (Chart.Props.plotOptions.errorbar.color "#333")
         |> Chart.With (Chart.Props.series.[0].asErrorbar.whiskerWidth 6.0) 
         |> Chart.WithWidth 700
