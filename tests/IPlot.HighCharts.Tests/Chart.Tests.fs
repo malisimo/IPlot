@@ -251,7 +251,7 @@ module ``Vector properties`` =
 
         Assert.True(true)
 
-module ``Sunburst properties`` =
+module ``Tree properties`` =
     let r = Random(7)
     let rec makeTree parent curDepth curName =        
         let curVal = r.Next(10) + 1 |> float
@@ -301,6 +301,55 @@ module ``Sunburst properties`` =
         |> Chart.With (Chart.Props.series.[0].sunburst.colorByPoint true)
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
+        |> Chart.Show
+
+        Assert.True(true)
+
+module ``Tilemap properties`` =
+    [<Fact>]
+    let ``Simple tilemap``() =
+        let trace1 =        
+            Tilemap(
+                data_obj = [
+                    Data_obj(
+                        name="AA",
+                        x=Nullable<float>(1.),
+                        y=Nullable<float>(3.),
+                        color="#52a"
+                    );
+                    Data_obj(
+                        name="AB",
+                        x=Nullable<float>(2.),
+                        y=Nullable<float>(3.),
+                        color="#36b"
+                    );
+                    Data_obj(
+                        name="VZ",
+                        x=Nullable<float>(1.),
+                        y=Nullable<float>(2.),
+                        color="#31c"
+                    );
+                    Data_obj(
+                        name="PO",
+                        x=Nullable<float>(2.),
+                        y=Nullable<float>(2.),
+                        color="#33a"
+                    )
+                ],
+                name = "Tilemap",
+                dataLabels = [|
+                    DataLabels(
+                        enabled = Nullable<bool>(true),
+                        format = "{point.name}")|]
+            )
+        
+        [trace1]
+        |> Chart.Plot
+        |> Chart.With (Chart.Props.chart_iplot.type_iplot "tilemap")
+        |> Chart.With (Chart.Props.series.[0].tilemap.pointPadding 4.)
+        |> Chart.With (Chart.Props.plotOptions.tilemap.borderColor "#4c4")
+        |> Chart.WithWidth 600
+        |> Chart.WithHeight 600
         |> Chart.Show
 
         Assert.True(true)

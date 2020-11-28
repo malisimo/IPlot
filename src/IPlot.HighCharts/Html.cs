@@ -15,6 +15,7 @@ namespace IPlot.HighCharts
         <script src=""[HIGHCHARTSSRC]highcharts.js""></script>
         <script src=""[HIGHCHARTSSRC]highcharts-more.js""></script>
         <script src=""[HIGHCHARTSSRC]highcharts-3d.js""></script>
+        <script src=""[HIGHCHARTSSRC]maps/highmaps.js""></script>
         [MODULESRC]
         <script src=""[HIGHCHARTSSRC]modules/series-label.js""></script>
         <script src=""[HIGHCHARTSSRC]modules/annotations.js""></script>

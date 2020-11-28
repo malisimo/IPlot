@@ -22,7 +22,7 @@ namespace IPlot.HighCharts
             { "sankey", new string[]{"sankey"} },
             { "streamgraph", new string[]{"streamgraph"} },
             { "sunburst", new string[]{"sunburst"} },
-            { "tilemap", new string[]{"tilemap"} },
+            { "tilemap", new string[]{"heatmap","tilemap"} },
             { "timeline", new string[]{"timeline"} },
             { "treemap", new string[]{"treemap"} },
             { "variablepie", new string[]{"variable-pie"} },
