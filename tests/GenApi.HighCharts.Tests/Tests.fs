@@ -36,7 +36,7 @@ module ``Implementation Tests`` =
             makeProperty "plotOptions" None [] with childProps = [baseProp; childProp1; childProp2]
         }
 
-        let allProps = getInheritedProperties [] plotOptions "#" "~" (Some("child2"))
+        let allProps = getInheritedProperties [] plotOptions None "#" "~" "child2" (Some("child2"))
         let allPropNames = allProps |> List.map (fun p -> p.name)
         printfn "allPropNames: %A" allPropNames
 

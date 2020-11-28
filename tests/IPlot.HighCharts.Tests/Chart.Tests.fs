@@ -51,7 +51,7 @@ module ``Scatter properties`` =
     let ``X/Y Scatter Plot``() =
         let trace1 =
             Scatter(
-                data_mat_ = [[1.;-1.]; [2.;1.5]; [3.;-0.5]; [4.;4.8]]
+                data_mat = [[1.;-1.]; [2.;1.5]; [3.;-0.5]; [4.;4.8]]
             )
         
         
@@ -78,7 +78,7 @@ module ``3D properties`` =
         [trace1]
         |> Chart.Plot
         |> Chart.With (Chart.Props.chart_iplot.type_iplot "cylinder")
-        |> Chart.With (Chart.Props.series.[0].asCylinder.colorByPoint true)
+        |> Chart.With (Chart.Props.series.[0].cylinder.colorByPoint true)
         |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
         |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 15.)
         |> Chart.With (Chart.Props.chart_iplot.options3d.beta 15.)
@@ -140,7 +140,7 @@ module ``Error bar properties`` =
     let ``Simple Error Bar Plot``() =
         let trace1 =
             Errorbar(
-                data_mat_ = [[22.;48.];[41.;49.];[31.;48.];[19.;24.];[11.;15.];[40.;49.]],
+                data_mat = [[22.;48.];[41.;49.];[31.;48.];[19.;24.];[11.;15.];[40.;49.]],
                 name = "Error Bar"
             )
         
@@ -150,7 +150,7 @@ module ``Error bar properties`` =
         |> Chart.With (Chart.Props.chart_iplot.backgroundColor "#edf")
         |> Chart.With (Chart.Props.plotOptions.errorbar.lineWidth 5.0)
         |> Chart.With (Chart.Props.plotOptions.errorbar.color "#333")
-        |> Chart.With (Chart.Props.series.[0].asErrorbar.whiskerWidth 6.0) 
+        |> Chart.With (Chart.Props.series.[0].errorbar.whiskerWidth 6.0) 
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show
@@ -164,7 +164,7 @@ module ``Heatmap properties`` =
         let r = System.Random(931)
         let trace1 =        
             Heatmap(
-                data_mat_ = [ for x in 1..100 do
+                data_mat = [ for x in 1..100 do
                                 for y in 1..40 do
                                     yield [ float x; float y; r.NextDouble() ] ],
                 name = "Heatmap"
@@ -173,7 +173,7 @@ module ``Heatmap properties`` =
         [trace1]
         |> Chart.Plot
         |> Chart.With (Chart.Props.chart_iplot.type_iplot "heatmap")
-        |> Chart.With (Chart.Props.series.[0].asHeatmap.borderWidth 0.)
+        |> Chart.With (Chart.Props.series.[0].heatmap.borderWidth 0.)
         |> Chart.With (Chart.Props.colorAxis.[0].stops "[(0.0,\"#433\"),(1.0,\"#f33\")]")
         |> Chart.With (Chart.Props.colorAxis.[0].maxColor "#f33")
         |> Chart.WithWidth 700
@@ -196,8 +196,8 @@ module ``Streamgraph properties`` =
         [trace1]
         |> Chart.Plot
         |> Chart.With (Chart.Props.chart_iplot.type_iplot "streamgraph")
-        |> Chart.With (Chart.Props.series.[0].asStreamgraph.borderColor "#f32")
-        |> Chart.With (Chart.Props.series.[0].asStreamgraph.borderWidth 5.)
+        |> Chart.With (Chart.Props.series.[0].streamgraph.borderColor "#f32")
+        |> Chart.With (Chart.Props.series.[0].streamgraph.borderWidth 5.)
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show
@@ -211,15 +211,15 @@ module ``Spline properties`` =
         let r = System.Random(33)
         let trace1 =        
             Spline(
-                data_mat_ = [ for x in 1..12 -> [r.NextDouble(); r.NextDouble()] ],
+                data_mat = [ for x in 1..12 -> [r.NextDouble(); r.NextDouble()] ],
                 name = "Spline"
             )
         
         [trace1]
         |> Chart.Plot
         |> Chart.With (Chart.Props.chart_iplot.type_iplot "spline")
-        |> Chart.With (Chart.Props.series.[0].asSpline.dashStyle "ShortDashDot")
-        |> Chart.With (Chart.Props.series.[0].asSpline.lineWidth 6.)
+        |> Chart.With (Chart.Props.series.[0].spline.dashStyle "ShortDashDot")
+        |> Chart.With (Chart.Props.series.[0].spline.lineWidth 6.)
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show
@@ -233,7 +233,7 @@ module ``Vector properties`` =
         let r = System.Random(392)
         let trace1 =        
             Vector(
-                data_mat_ = [
+                data_mat = [
                     for x in 0.0..0.1..1.0 do
                         for y in 0.0..0.1..1.0 do
                             yield [x; y; 3.0+4.0*x*x+y*y; Math.Atan2(y,x)*180./Math.PI]; ],
@@ -243,8 +243,44 @@ module ``Vector properties`` =
         [trace1]
         |> Chart.Plot
         |> Chart.With (Chart.Props.chart_iplot.type_iplot "vector")
-        |> Chart.With (Chart.Props.series.[0].asVector.lineWidth 5.)
-        |> Chart.With (Chart.Props.series.[0].asVector.color "red")
+        |> Chart.With (Chart.Props.series.[0].vector.lineWidth 5.)
+        |> Chart.With (Chart.Props.series.[0].vector.color "red")
+        |> Chart.WithWidth 700
+        |> Chart.WithHeight 500
+        |> Chart.Show
+
+        Assert.True(true)
+
+module ``Sunburst properties`` =
+
+    [<Fact>]
+    let ``Colourful Sunburst``() =
+        let trace1 =        
+            Sunburst(
+                data_obj = [
+                    Data_obj(
+                        name = "I have children",
+                        id = "id-1"
+                    )
+                    Data_obj(
+                        name = "I am a child",
+                        parent = "id-1",
+                        value = Nullable<float>(2.0)
+                    )
+                    Data_obj(
+                        name = "I am a smaller child",
+                        parent = "id-1",
+                        value = Nullable<float>(1.0)
+                    )
+                ],
+                name = "Sunburst"
+            )
+        
+        [trace1]
+        |> Chart.Plot
+        |> Chart.With (Chart.Props.chart_iplot.type_iplot "sunburst")
+        |> Chart.With (Chart.Props.series.[0].sunburst.lineWidth 2.0)
+        |> Chart.With (Chart.Props.series.[0].sunburst.colorByPoint true)
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show

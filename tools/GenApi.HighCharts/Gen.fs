@@ -261,6 +261,8 @@ module Gen =
                                     |> Option.defaultValue []
 
                                 plotOptionsProps @ childProps
+                                |> List.distinctBy (fun p -> p.fullType)
+                                |> List.sortBy (fun p -> p.fullType)
                                 |> Hacks.filterTraceChildProperties
 
                             {
@@ -283,6 +285,10 @@ module Gen =
                             let parentFullType = 
                                 let s = (pathToPropName (List.skip 1 curPath))
                                 s.Substring(0,s.Length - 5)
+                            if t = "column" then
+                                printfn "debug"
+                            elif t = "cylinder" then
+                                printfn "debug"
 
                             // Add trace properties to those from plotOptions
                             let fullChildProps =
@@ -292,7 +298,9 @@ module Gen =
                                     |> Option.map (toSeriesProps (pathToPropName curPath))
                                     |> Option.defaultValue []
 
-                                plotOptionsProps
+                                plotOptionsProps @ childProps
+                                |> List.distinctBy (fun p -> p.fullType)
+                                |> List.sortBy (fun p -> p.fullType)
                                 |> Hacks.filterTraceChildProperties
 
                             {

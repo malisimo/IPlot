@@ -52,7 +52,7 @@ namespace IPlot.HighCharts
             };
         }
 
-        public Func<HighChartsChart, HighChartsChart> data_mat_(IEnumerable<IEnumerable<double>> v)
+        public Func<HighChartsChart, HighChartsChart> data_mat(IEnumerable<IEnumerable<double>> v)
         {
             var propPath = GetPath();
 
@@ -69,7 +69,7 @@ namespace IPlot.HighCharts
 
                 var thisElement = el as Trace;
                 if (thisElement != null)
-                    thisElement.data_mat_ = ChartProp.SafeConvert(thisElement.data_mat_, v);
+                    thisElement.data_mat = ChartProp.SafeConvert(thisElement.data_mat, v);
 
                 return chart;
             };

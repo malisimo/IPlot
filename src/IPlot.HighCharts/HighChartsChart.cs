@@ -69,7 +69,8 @@ namespace IPlot.HighCharts
                     NullValueHandling = NullValueHandling.Ignore
                 })
                 .Replace("_iplot", string.Empty)
-                .Replace("data_mat_", "data");
+                .Replace("data_mat", "data")
+                .Replace("data_obj", "data");
         }
 
         /// Returns the JS to load relevant module scripts
