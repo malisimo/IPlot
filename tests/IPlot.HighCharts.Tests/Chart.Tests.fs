@@ -161,7 +161,7 @@ module ``Heatmap properties`` =
 
     [<Fact>]
     let ``Colourful Heatmap``() =
-        let r = System.Random(931)
+        let r = Random(931)
         let trace1 =        
             Heatmap(
                 data_mat = [ for x in 1..100 do
@@ -186,7 +186,7 @@ module ``Streamgraph properties`` =
 
     [<Fact>]
     let ``Basic Streamgraph``() =
-        let r = System.Random(931)
+        let r = Random(931)
         let trace1 =        
             Streamgraph(
                 data = [ for x in 1..100 -> r.NextDouble() ],
@@ -208,7 +208,7 @@ module ``Spline properties`` =
 
     [<Fact>]
     let ``Basic Spline Chart``() =
-        let r = System.Random(33)
+        let r = Random(33)
         let trace1 =        
             Spline(
                 data_mat = [ for x in 1..12 -> [r.NextDouble(); r.NextDouble()] ],
@@ -230,7 +230,7 @@ module ``Vector properties`` =
 
     [<Fact>]
     let ``Vector Flow``() =
-        let r = System.Random(392)
+        let r = Random(392)
         let trace1 =        
             Vector(
                 data_mat = [
@@ -252,28 +252,46 @@ module ``Vector properties`` =
         Assert.True(true)
 
 module ``Sunburst properties`` =
+    let r = Random(7)
+    let rec makeTree parent curDepth curName =        
+        let curVal = r.Next(10) + 1 |> float
+        let cur =
+            match parent with
+            | None ->
+                Data_obj(
+                    name = curName,
+                    id = curName,
+                    value = Nullable<float>(curVal)
+                )
+            | Some(p) ->
+                Data_obj(
+                    name = curName,
+                    id = curName,
+                    parent = p,
+                    value = Nullable<float>(curVal)
+                )
+        [
+            yield cur
+            if curDepth < 4 then
+                let numChildren = r.Next(5)
+                let childTrees =
+                    [ for child in 1..numChildren -> makeTree (Some(curName)) (curDepth+1) (sprintf "%s_%i" curName child) ]
+                    |> List.concat
+
+                yield! childTrees
+        ]
 
     [<Fact>]
     let ``Colourful Sunburst``() =
         let trace1 =        
             Sunburst(
-                data_obj = [
-                    Data_obj(
-                        name = "I have children",
-                        id = "id-1"
-                    )
-                    Data_obj(
-                        name = "I am a child",
-                        parent = "id-1",
-                        value = Nullable<float>(2.0)
-                    )
-                    Data_obj(
-                        name = "I am a smaller child",
-                        parent = "id-1",
-                        value = Nullable<float>(1.0)
-                    )
-                ],
-                name = "Sunburst"
+                data_obj = makeTree None 0 "Base",
+                name = "Sunburst",
+                levels = [
+                    Levels(
+                        level = Nullable<float>(2.),
+                        colorByPoint = Nullable<bool>(true))
+                ]
             )
         
         [trace1]
