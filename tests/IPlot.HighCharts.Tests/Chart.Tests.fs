@@ -78,7 +78,7 @@ module ``3D properties`` =
         [trace1]
         |> Chart.Plot
         |> Chart.With (Chart.Props.chart_iplot.type_iplot "cylinder")
-        |> Chart.With (Chart.Props.series.[0].cylinder.colorByPoint true)
+        |> Chart.With (Chart.Props.series.[0].asCylinder.colorByPoint true)
         |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
         |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 15.)
         |> Chart.With (Chart.Props.chart_iplot.options3d.beta 15.)
@@ -150,7 +150,7 @@ module ``Error bar properties`` =
         |> Chart.With (Chart.Props.chart_iplot.backgroundColor "#edf")
         |> Chart.With (Chart.Props.plotOptions.errorbar.lineWidth 5.0)
         |> Chart.With (Chart.Props.plotOptions.errorbar.color "#333")
-        |> Chart.With (Chart.Props.series.[0].errorbar.whiskerWidth 6.0) 
+        |> Chart.With (Chart.Props.series.[0].asErrorbar.whiskerWidth 6.0) 
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show
@@ -173,7 +173,7 @@ module ``Heatmap properties`` =
         [trace1]
         |> Chart.Plot
         |> Chart.With (Chart.Props.chart_iplot.type_iplot "heatmap")
-        |> Chart.With (Chart.Props.series.[0].heatmap.borderWidth 0.)
+        |> Chart.With (Chart.Props.series.[0].asHeatmap.borderWidth 0.)
         |> Chart.With (Chart.Props.colorAxis.[0].stops "[(0.0,\"#433\"),(1.0,\"#f33\")]")
         |> Chart.With (Chart.Props.colorAxis.[0].maxColor "#f33")
         |> Chart.WithWidth 700
@@ -196,8 +196,8 @@ module ``Streamgraph properties`` =
         [trace1]
         |> Chart.Plot
         |> Chart.With (Chart.Props.chart_iplot.type_iplot "streamgraph")
-        |> Chart.With (Chart.Props.series.[0].streamgraph.borderColor "#f32")
-        |> Chart.With (Chart.Props.series.[0].streamgraph.borderWidth 5.)
+        |> Chart.With (Chart.Props.series.[0].asStreamgraph.borderColor "#f32")
+        |> Chart.With (Chart.Props.series.[0].asStreamgraph.borderWidth 5.)
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show
@@ -218,8 +218,8 @@ module ``Spline properties`` =
         [trace1]
         |> Chart.Plot
         |> Chart.With (Chart.Props.chart_iplot.type_iplot "spline")
-        |> Chart.With (Chart.Props.series.[0].spline.dashStyle "ShortDashDot")
-        |> Chart.With (Chart.Props.series.[0].spline.lineWidth 6.)
+        |> Chart.With (Chart.Props.series.[0].asSpline.dashStyle "ShortDashDot")
+        |> Chart.With (Chart.Props.series.[0].asSpline.lineWidth 6.)
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show
@@ -243,8 +243,8 @@ module ``Vector properties`` =
         [trace1]
         |> Chart.Plot
         |> Chart.With (Chart.Props.chart_iplot.type_iplot "vector")
-        |> Chart.With (Chart.Props.series.[0].vector.lineWidth 5.)
-        |> Chart.With (Chart.Props.series.[0].vector.color "red")
+        |> Chart.With (Chart.Props.series.[0].asVector.lineWidth 5.)
+        |> Chart.With (Chart.Props.series.[0].asVector.color "red")
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show
@@ -297,8 +297,8 @@ module ``Tree properties`` =
         [trace1]
         |> Chart.Plot
         |> Chart.With (Chart.Props.chart_iplot.type_iplot "sunburst")
-        |> Chart.With (Chart.Props.series.[0].sunburst.lineWidth 2.0)
-        |> Chart.With (Chart.Props.series.[0].sunburst.colorByPoint true)
+        |> Chart.With (Chart.Props.series.[0].asSunburst.lineWidth 2.0)
+        |> Chart.With (Chart.Props.series.[0].asSunburst.colorByPoint true)
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show
@@ -336,17 +336,19 @@ module ``Tilemap properties`` =
                         color="#33a"
                     )
                 ],
-                name = "Tilemap",
-                dataLabels = [|
-                    DataLabels(
-                        enabled = Nullable<bool>(true),
-                        format = "{point.name}")|]
+                name = "Tilemap"
+                // dataLabels = [|
+                //     DataLabels(
+                //         enabled = Nullable<bool>(true),
+                //         format = "{point.name}")|]
             )
         
         [trace1]
         |> Chart.Plot
         |> Chart.With (Chart.Props.chart_iplot.type_iplot "tilemap")
-        |> Chart.With (Chart.Props.series.[0].tilemap.pointPadding 4.)
+        |> Chart.With (Chart.Props.series.[0].asTilemap.dataLabels.[0].enabled true)
+        |> Chart.With (Chart.Props.series.[0].asTilemap.dataLabels.[0].format "{point.name}")
+        |> Chart.With (Chart.Props.series.[0].asTilemap.pointPadding 4.)
         |> Chart.With (Chart.Props.plotOptions.tilemap.borderColor "#4c4")
         |> Chart.WithWidth 600
         |> Chart.WithHeight 600

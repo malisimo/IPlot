@@ -6,7 +6,7 @@ namespace IPlot.HighCharts
 {
     public class Trace_IProp : ChartProp
     {
-        public Func<HighChartsChart, HighChartsChart> name(string v)
+        public Func<HighChartsChart, HighChartsChart> id(string v)
         {
             var propPath = GetPath();
 
@@ -21,14 +21,37 @@ namespace IPlot.HighCharts
                     i++;
                 }
 
-                var thisElement = el as Trace;
+                var thisElement = el as Series;
                 if (thisElement != null)
-                    thisElement.name = ChartProp.SafeConvert(thisElement.name, v);
+                    thisElement.id = ChartProp.SafeConvert(thisElement.id, v);
 
                 return chart;
             };
         }
 
+        public Func<HighChartsChart, HighChartsChart> index(double v)
+        {
+            var propPath = GetPath();
+
+            return (chart) =>
+            {
+                var el = (ChartElement)chart.chart;
+                var i = 0;
+
+                while ((el != null) && (i < propPath.Count))
+                {
+                    el = ChartElement.GetElement(propPath[i], el);
+                    i++;
+                }
+
+                var thisElement = el as Series;
+                if (thisElement != null)
+                    thisElement.index = ChartProp.SafeConvert(thisElement.index, v);
+
+                return chart;
+            };
+        }
+        
         public Func<HighChartsChart, HighChartsChart> data(IEnumerable<double> v)
         {
             var propPath = GetPath();
@@ -70,6 +93,190 @@ namespace IPlot.HighCharts
                 var thisElement = el as Trace;
                 if (thisElement != null)
                     thisElement.data_mat = ChartProp.SafeConvert(thisElement.data_mat, v);
+
+                return chart;
+            };
+        }
+
+        public Func<HighChartsChart, HighChartsChart> legendIndex(double v)
+        {
+            var propPath = GetPath();
+
+            return (chart) =>
+            {
+                var el = (ChartElement)chart.chart;
+                var i = 0;
+
+                while ((el != null) && (i < propPath.Count))
+                {
+                    el = ChartElement.GetElement(propPath[i], el);
+                    i++;
+                }
+
+                var thisElement = el as Series;
+                if (thisElement != null)
+                    thisElement.legendIndex = ChartProp.SafeConvert(thisElement.legendIndex, v);
+
+                return chart;
+            };
+        }
+
+        public Func<HighChartsChart, HighChartsChart> mapData(string v)
+        {
+            var propPath = GetPath();
+
+            return (chart) =>
+            {
+                var el = (ChartElement)chart.chart;
+                var i = 0;
+
+                while ((el != null) && (i < propPath.Count))
+                {
+                    el = ChartElement.GetElement(propPath[i], el);
+                    i++;
+                }
+
+                var thisElement = el as Series;
+                if (thisElement != null)
+                    thisElement.mapData = ChartProp.SafeConvert(thisElement.mapData, v);
+
+                return chart;
+            };
+        }
+
+        public Func<HighChartsChart, HighChartsChart> name(string v)
+        {
+            var propPath = GetPath();
+
+            return (chart) =>
+            {
+                var el = (ChartElement)chart.chart;
+                var i = 0;
+
+                while ((el != null) && (i < propPath.Count))
+                {
+                    el = ChartElement.GetElement(propPath[i], el);
+                    i++;
+                }
+
+                var thisElement = el as Series;
+                if (thisElement != null)
+                    thisElement.name = ChartProp.SafeConvert(thisElement.name, v);
+
+                return chart;
+            };
+        }
+
+        public Func<HighChartsChart, HighChartsChart> stack(double v)
+        {
+            var propPath = GetPath();
+
+            return (chart) =>
+            {
+                var el = (ChartElement)chart.chart;
+                var i = 0;
+
+                while ((el != null) && (i < propPath.Count))
+                {
+                    el = ChartElement.GetElement(propPath[i], el);
+                    i++;
+                }
+
+                var thisElement = el as Series;
+                if (thisElement != null)
+                    thisElement.stack = ChartProp.SafeConvert(thisElement.stack, v);
+
+                return chart;
+            };
+        }
+
+        public Func<HighChartsChart, HighChartsChart> type_iplot(string v)
+        {
+            var propPath = GetPath();
+
+            return (chart) =>
+            {
+                var el = (ChartElement)chart.chart;
+                var i = 0;
+
+                while ((el != null) && (i < propPath.Count))
+                {
+                    el = ChartElement.GetElement(propPath[i], el);
+                    i++;
+                }
+
+                var thisElement = el as Series;
+                if (thisElement != null)
+                    thisElement.type_iplot = ChartProp.SafeConvert(thisElement.type_iplot, v);
+
+                return chart;
+            };
+        }
+
+        public Func<HighChartsChart, HighChartsChart> xAxis(double v)
+        {
+            var propPath = GetPath();
+
+            return (chart) =>
+            {
+                var el = (ChartElement)chart.chart;
+                var i = 0;
+
+                while ((el != null) && (i < propPath.Count))
+                {
+                    el = ChartElement.GetElement(propPath[i], el);
+                    i++;
+                }
+
+                var thisElement = el as Series;
+                if (thisElement != null)
+                    thisElement.xAxis = ChartProp.SafeConvert(thisElement.xAxis, v);
+
+                return chart;
+            };
+        }
+
+        public Func<HighChartsChart, HighChartsChart> yAxis(double v)
+        {
+            var propPath = GetPath();
+
+            return (chart) =>
+            {
+                var el = (ChartElement)chart.chart;
+                var i = 0;
+
+                while ((el != null) && (i < propPath.Count))
+                {
+                    el = ChartElement.GetElement(propPath[i], el);
+                    i++;
+                }
+
+                var thisElement = el as Series;
+                if (thisElement != null)
+                    thisElement.yAxis = ChartProp.SafeConvert(thisElement.yAxis, v);
+
+                return chart;
+            };
+        }
+
+        public Func<HighChartsChart, HighChartsChart> zIndex(double v)
+        {
+            var propPath = GetPath();
+
+            return (chart) =>
+            {
+                var el = (ChartElement)chart.chart;
+                var i = 0;
+
+                while ((el != null) && (i < propPath.Count))
+                {
+                    el = ChartElement.GetElement(propPath[i], el);
+                    i++;
+                }
+
+                var thisElement = el as Series;
+                if (thisElement != null)
+                    thisElement.zIndex = ChartProp.SafeConvert(thisElement.zIndex, v);
 
                 return chart;
             };
