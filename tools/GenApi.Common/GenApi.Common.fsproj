@@ -5,8 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="4.7.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <Compile Include="Utils.fs" />
   </ItemGroup>
 
 </Project>

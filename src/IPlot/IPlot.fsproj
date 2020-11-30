@@ -7,10 +7,12 @@
   <ItemGroup>
     <Compile Include="Common.fs" />
     <Compile Include="Plotly.Chart.fs" />
+    <Compile Include="HighCharts.Chart.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="../IPlot.Plotly/IPlot.Plotly.csproj" />
+    <ProjectReference Include="../IPlot.HighCharts/IPlot.HighCharts.csproj" />
   </ItemGroup>
 
 </Project>

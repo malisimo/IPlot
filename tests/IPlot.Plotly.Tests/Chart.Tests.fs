@@ -62,36 +62,21 @@ module ``Scatter properties`` =
     let ``Basic Line Plot``() =
         let trace1 =
             Scatter(
-                x = [1.; 2.; 3.; 4.],
-                y = [10.; 15.; 13.; 17.]
-            )
-        
-        let trace2 =
-            Scatter(
-                x = [2.; 3.; 4.; 5.],
-                y = [16.; 5.; 11.; 9.]
+                x = [0.; 1.; 2.; 3.],
+                y = [0.2; 0.8; 0.5; 1.1]
             )
 
-        let layout =
-            Layout(
-                title = Title(
-                    text = "Basic Line Plot"
-                )
+        let trace2 =
+            Scatter(
+                x = [0.; 1.; 2.; 3.],
+                y = [0.6; 0.1; 0.3; 0.7]
             )
-        
+
         [trace1; trace2]
         |> Chart.Plot
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
-        |> Chart.WithLayout layout
-        |> Chart.With (Chart.Props.traces.[0].asScatter.mode "markers")
-        |> Chart.With (Chart.Props.traces.[0].asScatter.marker.color "#EE44AA")
-        |> Chart.With (Chart.Props.traces.[0].asScatter.marker.size 12.)
-        |> Chart.With (Chart.Props.traces.[1].asScatter.mode "lines+markers")
-        |> Chart.With (Chart.Props.traces.[1].asScatter.line.width 5.0)
-        |> Chart.With (Chart.Props.traces.[1].asScatter.line.color "#44FF22")
-        |> Chart.With (Chart.Props.layout.showlegend false)
-        |> Chart.With (Chart.Props.layout.plot_bgcolor "#334433")
+        |> Chart.WithTitle "Two lines"
         |> Chart.Show
 
         Assert.True(true)
@@ -184,6 +169,51 @@ module ``Scatter properties`` =
         |> Chart.Show
 
 
+module ``Heatmap properties`` =
+
+    [<Fact>]
+    let ``Time Heatmap``() =
+        let xt = [
+            DateTime(2020,9,12,22,30,0)
+            DateTime(2020,9,13,22,30,0)
+            DateTime(2020,9,15,22,30,0)
+            DateTime(2020,9,19,22,30,0)]
+        let z = [
+                [0.1;0.3;0.8]
+                [0.2;0.35;0.85]
+                [0.9;1.0;1.4]
+                [1.2;1.3;1.8]] |> Seq.map (Seq.ofList)
+
+        z
+        |> Chart.Heatmap
+        |> Chart.With (Chart.Props.traces.[0].asHeatmap.xt_ xt)
+        |> Chart.WithWidth 1200
+        |> Chart.WithHeight 900
+        |> Chart.WithTitle "Heatmap"
+        |> Chart.Show
+
+    [<Fact>]
+    let ``Time HeatmapGl``() =
+        let xt = [
+            DateTime(2020,9,12,22,30,0)
+            DateTime(2020,9,13,22,30,0)
+            DateTime(2020,9,15,22,30,0)
+            DateTime(2020,9,19,22,30,0)]
+        let z = [
+                [0.1;0.3;0.8]
+                [0.2;0.35;0.85]
+                [0.9;1.0;1.4]
+                [1.2;1.3;1.8]] |> Seq.map (Seq.ofList)
+
+        z
+        |> Chart.HeatmapGl
+        |> Chart.With (Chart.Props.traces.[0].asHeatmapgl.xt_ xt)
+        |> Chart.WithWidth 1200
+        |> Chart.WithHeight 900
+        |> Chart.WithTitle "Heatmap GL"
+        |> Chart.Show
+
+
 module ``Surface properties`` =
     
     [<Fact>]
@@ -212,31 +242,21 @@ module ``Surface properties`` =
 
     [<Fact>]
     let ``Time Surface``() =
-        let surface =
-            Surface(
-                xt_ = [
-                    DateTime(2020,9,12,22,30,0)
-                    DateTime(2020,9,13,22,30,0)
-                    DateTime(2020,9,15,22,30,0)
-                    DateTime(2020,9,19,22,30,0)],
-                z = [
-                    [0.1;0.3;0.8]
-                    [0.2;0.35;0.85]
-                    [0.9;1.0;1.4]
-                    [1.2;1.3;1.8]],
-                iplot_type = "surface"
-            )
+        let xt = [
+            DateTime(2020,9,12,22,30,0)
+            DateTime(2020,9,13,22,30,0)
+            DateTime(2020,9,15,22,30,0)
+            DateTime(2020,9,19,22,30,0)]
+        let z = [
+                [0.1;0.3;0.8]
+                [0.2;0.35;0.85]
+                [0.9;1.0;1.4]
+                [1.2;1.3;1.8]] |> Seq.map (Seq.ofList)
 
-        let layout =
-            Layout(
-                title = Title(
-                    text = "Time Surface"
-                )
-            )
-
-        surface
-        |> Chart.Plot
+        z
+        |> Chart.Surface
+        |> Chart.With (Chart.Props.traces.[0].asSurface.xt_ xt)
         |> Chart.WithWidth 1200
         |> Chart.WithHeight 900
-        |> Chart.WithLayout layout
+        |> Chart.WithTitle "Time Surface"
         |> Chart.Show

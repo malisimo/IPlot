@@ -6,14 +6,15 @@
 
   <ItemGroup>
     <Compile Include="Templates.fs" />
-    <Compile Include="ElementType.fs" />
+    <Compile Include="Trace.fs" />
     <Compile Include="Property.fs" />
     <Compile Include="Hacks.fs" />
+    <Compile Include="DictUtils.fs" />
     <Compile Include="Gen.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NewtonSoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
   <ItemGroup>

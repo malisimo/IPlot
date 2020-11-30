@@ -74,7 +74,7 @@ namespace IPlot.Plotly
                     {
                         NullValueHandling = NullValueHandling.Ignore
                     })
-                    .Replace("iplot_", string.Empty)
+                    .Replace("_iplot", string.Empty)
                     .Replace("xt_", "x")
                     .Replace("xs_", "x")
                     .Replace("yt_", "y")
@@ -141,7 +141,7 @@ namespace IPlot.Plotly
             var layoutJson = JsonConvert.SerializeObject(layout, Formatting.None, new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore
-            }).Replace("iplot_", string.Empty);
+            }).Replace("_iplot", string.Empty);
 
             return
                 Html.jsFunctionTemplate

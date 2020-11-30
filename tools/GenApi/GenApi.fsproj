@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../GenApi.Plotly/GenApi.Plotly.fsproj" />
+    <ProjectReference Include="../GenApi.HighCharts/GenApi.HighCharts.fsproj" />
   </ItemGroup>
 
 </Project>

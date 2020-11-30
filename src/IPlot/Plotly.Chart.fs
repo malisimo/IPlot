@@ -266,18 +266,65 @@ type Chart() =
             )
         Chart.Plot scatters
 
+    static member ScatterGl(data:seq<#value>) =
+        let scatter = Scattergl(y = (data |> Chart.ToFloatArray), mode = "markers")
+        Chart.Plot [scatter]
+
+    static member ScatterGl(data:seq<#key * #value>) =
+        let x = Seq.map fst data |> Chart.ToFloatArray
+        let y = Seq.map snd data |> Chart.ToFloatArray
+        let scatter = Scattergl(x = x, y = y, mode = "markers")
+        Chart.Plot [scatter]
+
+    static member ScatterGl(data:seq<#seq<#key * #value>>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                let x = Seq.map fst series |> Chart.ToFloatArray
+                let y = Seq.map snd series |> Chart.ToFloatArray
+                Scattergl(x = x, y = y, mode = "markers")
+            )
+        Chart.Plot scatters
+
+    static member Heatmap(data:seq<seq<#value>>) =
+        let zData =
+            data
+            |> Seq.map (fun arr ->
+                arr
+                |> Seq.map (fun v -> (v :> IConvertible).ToDouble(null)))
+        
+        let heatmap =
+            Heatmap(
+                z = zData,
+                type_iplot = "heatmapgl"
+            )
+        Chart.Plot heatmap
+
+    static member HeatmapGl(data:seq<seq<#value>>) =
+        let zData =
+            data
+            |> Seq.map (fun arr ->
+                arr
+                |> Seq.map (fun v -> (v :> IConvertible).ToDouble(null)))
+        
+        let heatmap =
+            Heatmapgl(
+                z = zData,
+                type_iplot = "heatmapgl"
+            )
+        Chart.Plot heatmap
+
     static member Surface(data:seq<seq<#value>>) =
         let zData =
             data
             |> Seq.map (fun arr ->
                 arr
                 |> Seq.map (fun v -> (v :> IConvertible).ToDouble(null)))
-            |> Seq.toArray
         
         let surface =
             Surface(
-                z = zData.AsEnumerable(),
-                iplot_type = "surface",
+                z = zData,
+                type_iplot = "surface",
                 contours = Contours(
                     z = Z(
                         show = !< true,
