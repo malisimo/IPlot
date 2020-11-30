@@ -65,8 +65,20 @@ module Gen =
                 |> getObjectPropFromDict "doclet"
                 |> Option.bind (getBooleanPropFromDict "deprecated")
                 |> Option.defaultValue false
+
+            let products =
+                propertyDict
+                |> getObjectPropFromDict "doclet"
+                |> Option.bind (getArrayPropFromDict "products")
+                |> Option.map (fun a -> Seq.map string a)
+                |> Option.defaultValue (seq {"highcharts"})
+
+            let isValid =
+                let isHighCharts = products |> Seq.contains "highcharts"
+                let isHighMaps = products |> Seq.contains "highmaps"
+                (isHighCharts || isHighMaps) && (isDeprecated |> not)
             
-            desc,propTypes,extendsFrom,isDeprecated
+            desc,propTypes,extendsFrom,isValid
 
             
         // Given a heirarchy of properties that extend other base properties,
@@ -139,7 +151,7 @@ module Gen =
         // Get a nested list of properties
         let rec getPropertiesFromDict curPath curType parentPropType (plotOptions:Property option) (seriesProp:Property option) (propertyDict: IDictionary<string, obj>) =
             if propertyDict.ContainsKey "children" then
-                let desc,propTypes,extendsFrom,isDeprecated =
+                let desc,propTypes,extendsFrom,isValid =
                     propertyDict
                     |> parseDocletFromDict
 
@@ -168,7 +180,7 @@ module Gen =
                     | _ ->
                         OtherPropertyType
 
-                if isDeprecated |> not then
+                if isValid then
                     match propertyDict.["children"] with
                     | :? JObject as o ->                        
                         let childProps = [

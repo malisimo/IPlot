@@ -282,26 +282,6 @@ namespace IPlot.HighCharts
             };
         }
 
-        public HighChart_Series_Abands_IProp asAbands
-        {
-            get { return new HighChart_Series_Abands_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Ad_IProp asAd
-        {
-            get { return new HighChart_Series_Ad_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Ao_IProp asAo
-        {
-            get { return new HighChart_Series_Ao_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Apo_IProp asApo
-        {
-            get { return new HighChart_Series_Apo_IProp() { _parent = _parent }; }
-        }
-
         public HighChart_Series_Area_IProp asArea
         {
             get { return new HighChart_Series_Area_IProp() { _parent = _parent }; }
@@ -322,29 +302,9 @@ namespace IPlot.HighCharts
             get { return new HighChart_Series_Areasplinerange_IProp() { _parent = _parent }; }
         }
 
-        public HighChart_Series_Aroon_IProp asAroon
-        {
-            get { return new HighChart_Series_Aroon_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Aroonoscillator_IProp asAroonoscillator
-        {
-            get { return new HighChart_Series_Aroonoscillator_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Atr_IProp asAtr
-        {
-            get { return new HighChart_Series_Atr_IProp() { _parent = _parent }; }
-        }
-
         public HighChart_Series_Bar_IProp asBar
         {
             get { return new HighChart_Series_Bar_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Bb_IProp asBb
-        {
-            get { return new HighChart_Series_Bb_IProp() { _parent = _parent }; }
         }
 
         public HighChart_Series_Bellcurve_IProp asBellcurve
@@ -367,21 +327,6 @@ namespace IPlot.HighCharts
             get { return new HighChart_Series_Bullet_IProp() { _parent = _parent }; }
         }
 
-        public HighChart_Series_Cci_IProp asCci
-        {
-            get { return new HighChart_Series_Cci_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Chaikin_IProp asChaikin
-        {
-            get { return new HighChart_Series_Chaikin_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Cmf_IProp asCmf
-        {
-            get { return new HighChart_Series_Cmf_IProp() { _parent = _parent }; }
-        }
-
         public HighChart_Series_Column_IProp asColumn
         {
             get { return new HighChart_Series_Column_IProp() { _parent = _parent }; }
@@ -402,19 +347,9 @@ namespace IPlot.HighCharts
             get { return new HighChart_Series_Cylinder_IProp() { _parent = _parent }; }
         }
 
-        public HighChart_Series_Dema_IProp asDema
-        {
-            get { return new HighChart_Series_Dema_IProp() { _parent = _parent }; }
-        }
-
         public HighChart_Series_Dependencywheel_IProp asDependencywheel
         {
             get { return new HighChart_Series_Dependencywheel_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Dpo_IProp asDpo
-        {
-            get { return new HighChart_Series_Dpo_IProp() { _parent = _parent }; }
         }
 
         public HighChart_Series_Dumbbell_IProp asDumbbell
@@ -422,19 +357,9 @@ namespace IPlot.HighCharts
             get { return new HighChart_Series_Dumbbell_IProp() { _parent = _parent }; }
         }
 
-        public HighChart_Series_Ema_IProp asEma
-        {
-            get { return new HighChart_Series_Ema_IProp() { _parent = _parent }; }
-        }
-
         public HighChart_Series_Errorbar_IProp asErrorbar
         {
             get { return new HighChart_Series_Errorbar_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Flags_IProp asFlags
-        {
-            get { return new HighChart_Series_Flags_IProp() { _parent = _parent }; }
         }
 
         public HighChart_Series_Funnel_IProp asFunnel
@@ -445,11 +370,6 @@ namespace IPlot.HighCharts
         public HighChart_Series_Funnel3d_IProp asFunnel3d
         {
             get { return new HighChart_Series_Funnel3d_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Gantt_IProp asGantt
-        {
-            get { return new HighChart_Series_Gantt_IProp() { _parent = _parent }; }
         }
 
         public HighChart_Series_Gauge_IProp asGauge
@@ -467,19 +387,9 @@ namespace IPlot.HighCharts
             get { return new HighChart_Series_Histogram_IProp() { _parent = _parent }; }
         }
 
-        public HighChart_Series_Ikh_IProp asIkh
-        {
-            get { return new HighChart_Series_Ikh_IProp() { _parent = _parent }; }
-        }
-
         public HighChart_Series_Item_IProp asItem
         {
             get { return new HighChart_Series_Item_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Keltnerchannels_IProp asKeltnerchannels
-        {
-            get { return new HighChart_Series_Keltnerchannels_IProp() { _parent = _parent }; }
         }
 
         public HighChart_Series_Line_IProp asLine
@@ -487,34 +397,9 @@ namespace IPlot.HighCharts
             get { return new HighChart_Series_Line_IProp() { _parent = _parent }; }
         }
 
-        public HighChart_Series_Linearregression_IProp asLinearregression
-        {
-            get { return new HighChart_Series_Linearregression_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Linearregressionangle_IProp asLinearregressionangle
-        {
-            get { return new HighChart_Series_Linearregressionangle_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Linearregressionintercept_IProp asLinearregressionintercept
-        {
-            get { return new HighChart_Series_Linearregressionintercept_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Linearregressionslope_IProp asLinearregressionslope
-        {
-            get { return new HighChart_Series_Linearregressionslope_IProp() { _parent = _parent }; }
-        }
-
         public HighChart_Series_Lollipop_IProp asLollipop
         {
             get { return new HighChart_Series_Lollipop_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Macd_IProp asMacd
-        {
-            get { return new HighChart_Series_Macd_IProp() { _parent = _parent }; }
         }
 
         public HighChart_Series_Map_IProp asMap
@@ -537,29 +422,9 @@ namespace IPlot.HighCharts
             get { return new HighChart_Series_Mappoint_IProp() { _parent = _parent }; }
         }
 
-        public HighChart_Series_Mfi_IProp asMfi
-        {
-            get { return new HighChart_Series_Mfi_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Momentum_IProp asMomentum
-        {
-            get { return new HighChart_Series_Momentum_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Natr_IProp asNatr
-        {
-            get { return new HighChart_Series_Natr_IProp() { _parent = _parent }; }
-        }
-
         public HighChart_Series_Networkgraph_IProp asNetworkgraph
         {
             get { return new HighChart_Series_Networkgraph_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Ohlc_IProp asOhlc
-        {
-            get { return new HighChart_Series_Ohlc_IProp() { _parent = _parent }; }
         }
 
         public HighChart_Series_Organization_IProp asOrganization
@@ -572,39 +437,14 @@ namespace IPlot.HighCharts
             get { return new HighChart_Series_Pareto_IProp() { _parent = _parent }; }
         }
 
-        public HighChart_Series_Pc_IProp asPc
-        {
-            get { return new HighChart_Series_Pc_IProp() { _parent = _parent }; }
-        }
-
         public HighChart_Series_Pie_IProp asPie
         {
             get { return new HighChart_Series_Pie_IProp() { _parent = _parent }; }
         }
 
-        public HighChart_Series_Pivotpoints_IProp asPivotpoints
-        {
-            get { return new HighChart_Series_Pivotpoints_IProp() { _parent = _parent }; }
-        }
-
         public HighChart_Series_Polygon_IProp asPolygon
         {
             get { return new HighChart_Series_Polygon_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Ppo_IProp asPpo
-        {
-            get { return new HighChart_Series_Ppo_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Priceenvelopes_IProp asPriceenvelopes
-        {
-            get { return new HighChart_Series_Priceenvelopes_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Psar_IProp asPsar
-        {
-            get { return new HighChart_Series_Psar_IProp() { _parent = _parent }; }
         }
 
         public HighChart_Series_Pyramid_IProp asPyramid
@@ -615,16 +455,6 @@ namespace IPlot.HighCharts
         public HighChart_Series_Pyramid3d_IProp asPyramid3d
         {
             get { return new HighChart_Series_Pyramid3d_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Roc_IProp asRoc
-        {
-            get { return new HighChart_Series_Roc_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Rsi_IProp asRsi
-        {
-            get { return new HighChart_Series_Rsi_IProp() { _parent = _parent }; }
         }
 
         public HighChart_Series_Sankey_IProp asSankey
@@ -642,16 +472,6 @@ namespace IPlot.HighCharts
             get { return new HighChart_Series_Scatter3d_IProp() { _parent = _parent }; }
         }
 
-        public HighChart_Series_Slowstochastic_IProp asSlowstochastic
-        {
-            get { return new HighChart_Series_Slowstochastic_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Sma_IProp asSma
-        {
-            get { return new HighChart_Series_Sma_IProp() { _parent = _parent }; }
-        }
-
         public HighChart_Series_Solidgauge_IProp asSolidgauge
         {
             get { return new HighChart_Series_Solidgauge_IProp() { _parent = _parent }; }
@@ -662,11 +482,6 @@ namespace IPlot.HighCharts
             get { return new HighChart_Series_Spline_IProp() { _parent = _parent }; }
         }
 
-        public HighChart_Series_Stochastic_IProp asStochastic
-        {
-            get { return new HighChart_Series_Stochastic_IProp() { _parent = _parent }; }
-        }
-
         public HighChart_Series_Streamgraph_IProp asStreamgraph
         {
             get { return new HighChart_Series_Streamgraph_IProp() { _parent = _parent }; }
@@ -675,16 +490,6 @@ namespace IPlot.HighCharts
         public HighChart_Series_Sunburst_IProp asSunburst
         {
             get { return new HighChart_Series_Sunburst_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Supertrend_IProp asSupertrend
-        {
-            get { return new HighChart_Series_Supertrend_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Tema_IProp asTema
-        {
-            get { return new HighChart_Series_Tema_IProp() { _parent = _parent }; }
         }
 
         public HighChart_Series_Tilemap_IProp asTilemap
@@ -702,16 +507,6 @@ namespace IPlot.HighCharts
             get { return new HighChart_Series_Treemap_IProp() { _parent = _parent }; }
         }
 
-        public HighChart_Series_Trendline_IProp asTrendline
-        {
-            get { return new HighChart_Series_Trendline_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Trix_IProp asTrix
-        {
-            get { return new HighChart_Series_Trix_IProp() { _parent = _parent }; }
-        }
-
         public HighChart_Series_Variablepie_IProp asVariablepie
         {
             get { return new HighChart_Series_Variablepie_IProp() { _parent = _parent }; }
@@ -720,11 +515,6 @@ namespace IPlot.HighCharts
         public HighChart_Series_Variwide_IProp asVariwide
         {
             get { return new HighChart_Series_Variwide_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Vbp_IProp asVbp
-        {
-            get { return new HighChart_Series_Vbp_IProp() { _parent = _parent }; }
         }
 
         public HighChart_Series_Vector_IProp asVector
@@ -737,29 +527,14 @@ namespace IPlot.HighCharts
             get { return new HighChart_Series_Venn_IProp() { _parent = _parent }; }
         }
 
-        public HighChart_Series_Vwap_IProp asVwap
-        {
-            get { return new HighChart_Series_Vwap_IProp() { _parent = _parent }; }
-        }
-
         public HighChart_Series_Waterfall_IProp asWaterfall
         {
             get { return new HighChart_Series_Waterfall_IProp() { _parent = _parent }; }
         }
 
-        public HighChart_Series_Williamsr_IProp asWilliamsr
-        {
-            get { return new HighChart_Series_Williamsr_IProp() { _parent = _parent }; }
-        }
-
         public HighChart_Series_Windbarb_IProp asWindbarb
         {
             get { return new HighChart_Series_Windbarb_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Wma_IProp asWma
-        {
-            get { return new HighChart_Series_Wma_IProp() { _parent = _parent }; }
         }
 
         public HighChart_Series_Wordcloud_IProp asWordcloud
@@ -770,11 +545,6 @@ namespace IPlot.HighCharts
         public HighChart_Series_Xrange_IProp asXrange
         {
             get { return new HighChart_Series_Xrange_IProp() { _parent = _parent }; }
-        }
-
-        public HighChart_Series_Zigzag_IProp asZigzag
-        {
-            get { return new HighChart_Series_Zigzag_IProp() { _parent = _parent }; }
         }
     }
 }
