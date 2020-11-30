@@ -1,1 +1,3 @@
-dotnet pack .\src\IPlot\IPlot.fsproj -c Release -o ./
+dotnet build .\src\IPlot\IPlot.fsproj -c Release
+
+nuget pack IPlot.nuspec
