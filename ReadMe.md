@@ -1,27 +1,43 @@
 # IPlot
 
-.NET Charting library based off the excellent work done on [XPlot.Plotly](https://fslab.org/XPlot/).
-This differs slightly from XPlot in the following ways:
+.NET Charting library for .NET, rendered using Plotly or HighCharts in the browser.
 
-* All chart properties are strongly typed
-* There is an added Chart.With function which allows you to set any property on the chart, with help from intellisense
+## Table of contents
 
-## Motivation
+- [About](#about)
+- [Chart Backends](#chart-backends)
+- [Basic Usage](#basic-usage)
+- [Plotly API](https://github.com/malisimo/iplot/blob/master/src/IPlot.Plotly/ReadMe.md)
+- [HighCharts API](https://github.com/malisimo/iplot/blob/master/src/IPlot.HighCharts/ReadMe.md)
 
-The XPlot API is really nice for throwing plots together, although if you want to tweak the appearance of the chart and harness the full power of Plotly you need to search the docs, and build up the objects prior to plotting.  In F# this is not the greatest experience, and prevents API exploration and discovery.
+## About
 
-This project aims to demonstrate a nicer way of curating a plot, where intellisense can help you find appropriate properties to set, along with their types.
+This library aims to provide a fast and fluid way of curating a chart, where you being by throwing some data at a chart and later refine its properties to adjust its appearance or behaviour.  Intellisense can help discovery of appropriate properties to set, and provide info on the expected arguments via static typing.  This can reduce the amount of documentation lookup required to set up a plot and adjust its visual elements.
+
+> The API is intentionally similar to [XPlot.Plotly](https://fslab.org/XPlot/), where most access is achieved through interacting with the ```Chart``` element.
 
 ## Chart Backends
 
 You can choose to render charts using Plotly or HighCharts. Either import ```IPlot.Plotly``` or ```IPlot.HighCharts``` - the chart API is very similar.
 
-## Basic API
+## Basic Usage
 
 Using the Ploty API, a basic line chart can be generated as follows:
 
+```csharp
+using IPlot.Plotly
+
+var data = new double[] { 0.2, 0.8, 0.5, 1.1 };
+Chart.Area(data)
+    .WithWidth(1200)
+    .WithHeight(800)
+    .WithTitle("Area plot")
+    .With(Chart.props.layout.plot_bgcolor("#ddd"))
+    .Show();
+
+```
+
 ```fsharp
-/// Plotly API
 open IPlot.Plotly
 
 let trace1 =
@@ -44,9 +60,24 @@ let trace2 =
 |> Chart.Show
 ```
 
-Aletnatively, the same could be shown using the HighCharts API as follows:
+### Chart
+
+Most functionality can be achieved by using the functions (static methods) contained in the Chart class.  There are two main ways of generating a chart:
+
+* Traces (or *series*) can be created first, and then provided to the ```Chart.Plot``` function, before being shown.
+* You can directly use one of the utility methods of Chart (e.g. ```Chart.Cylinder()``` or ```Chart.Heatmap()```) to create the traces, simply passing the data.  For example, ```Chart.Area()``` will create a trace of type ```Àrea``` and avoid the need to instantiate any specific traces or properties.
+
+### Property setting
+
+Once a chart has been created (using either ```Chart.Plot``` or another utility method of the ```Chart``` class) then its properties can be manipulated.
+
+### Unified API
+
+Regardless of the renderer (Plotly or HighCharts), the workflow is intended to feel the same.  Both use the Chart functions to set up and manipulate charts, and both allow use of the Chart.With function to adjust chart element properties.
+
+To show how similar the API's are, here is how to display the same plot as above, but in HighCharts:
+
 ```fsharp
-/// HighCharts API
 open IPlot.HighCharts
 
 let trace1 =
@@ -67,7 +98,7 @@ let trace2 =
 |> Chart.Show
 ```
 
-In order to set other properties, you can use Chart.With as follows:
+Calls to ```Chart.With()``` calls can be chained as follows:
 
 ```fsharp
 open IPlot.Plotly
@@ -84,47 +115,7 @@ open IPlot.Plotly
 |> Chart.Show
 ```
 
-The C# API is somewhat different, instead chaining together property changes using instance methods:
-
-```csharp
-using IPlot.Plotly
-
-var data = new double[] {0.2, 0.8, 0.5, 1.1};
-Chart.Area(data)
-    .WithWidth(1200)
-    .WithHeight(800)
-    .WithTitle("Area plot")
-    .With(Chart.props.layout.plot_bgcolor("#ddd"))
-
-```
-
-## Two approaches
-
-Generally you can choose one of two ways to generate a chart:
-
-* Create the series / trace(s) first and call Chart.Plot to generate the chart
-* Call one of the utility methods to create a specific chart type, such as Chart.Cylinder or Chart.Heatmap (API specific).
-
-Either will generate a chart whose properties can be edited later.
-
-```fsharp
-open IPlot.HighCharts
-
-let trace =
-    Cylinder(
-        data = [1.; 2.; 3.; 4.; 3.; 2.; 1.],
-        name = "Cylinder"
-    ) :> Trace
-
-[trace]
-|> Chart.Plot
-|> Chart.With (Chart.Props.chart_iplot.type_iplot "cylinder")
-|> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
-|> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 25.)
-|> Chart.WithWidth 700
-|> Chart.WithHeight 500
-|> Chart.Show
-```
+In HighCharts the access pattern is the same:
 
 ```fsharp
 open IPlot.HighCharts
@@ -134,38 +125,5 @@ Chart.Cylinder [1.; 2.; 3.; 4.; 3.; 2.; 1.]
 |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 25.)
 |> Chart.WithWidth 700
 |> Chart.WithHeight 500
-|> Chart.Show
-```
-
-## Polymorphic data types
-
-Some trace types allow using date times, and/or strings as the data arrays, which allow plotting time series and categorical data.  The following trace types support these:
-
-* Scatter (and Scattergl)
-* Heatmap (and Heatmapgl)
-* Surface
-
-For these, you can use the additional ``xs_`` (string) and ``xt_`` (DateTime) properties as follows:
-
-```fsharp
-let surface =
-    Surface(
-        xt_ = [
-            DateTime(2020,9,12,22,30,0)
-            DateTime(2020,9,13,22,30,0)
-            DateTime(2020,9,15,22,30,0)
-            DateTime(2020,9,19,22,30,0)],
-        z = [
-            [0.1;0.3;0.8]
-            [0.2;0.35;0.85]
-            [0.9;1.0;1.4]
-            [1.2;1.3;1.8]],
-        type_iplot = "surface"
-    )
-
-[surface]
-|> Chart.Plot
-|> Chart.WithWidth 1200
-|> Chart.WithHeight 800
 |> Chart.Show
 ```
