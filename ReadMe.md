@@ -9,6 +9,7 @@
 - [Basic Usage](#basic-usage)
 - [Plotly API](https://github.com/malisimo/iplot/blob/master/src/IPlot.Plotly/ReadMe.md)
 - [HighCharts API](https://github.com/malisimo/iplot/blob/master/src/IPlot.HighCharts/ReadMe.md)
+- [Building From Source](#building-from-source)
 
 ## About
 
@@ -126,4 +127,19 @@ Chart.Cylinder [1.; 2.; 3.; 4.; 3.; 2.; 1.]
 |> Chart.WithWidth 700
 |> Chart.WithHeight 500
 |> Chart.Show
+```
+
+## Building From Source
+
+The library can be built from source by running the following CMD files, in order:
+
+```
+./gensrc.cmd
+./buildsrc.cmd
+```
+
+All tests can also be run using the following command:
+
+```
+./runtests.cmd
 ```

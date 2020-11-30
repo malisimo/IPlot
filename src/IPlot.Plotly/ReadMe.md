@@ -10,6 +10,7 @@ Plotly renderer for IPlot.
 - [Time Series Plots](#time-series)
 - [Heatmaps](#heatmaps)
 - [Surface Plots](#surface-plots)
+- [Polymorphic Data Types](#polymorphic-data-types)
 
 # Chart Functions
 
@@ -97,6 +98,8 @@ let trace2 =
 |> Chart.Show
 ```
 
+![PL_TwoLines](https://user-images.githubusercontent.com/24556021/100584680-5383a200-32e4-11eb-93e5-042f4bf15365.png)
+
 ```fsharp
 let lineTrace1 =
     Scatter(
@@ -134,6 +137,8 @@ let layout =
 |> Chart.Show
 ```
 
+![PL_Line_Scatter](https://user-images.githubusercontent.com/24556021/100584655-4961a380-32e4-11eb-9b8e-381b65c040e8.png)
+
 # Time series plots
 
 ## Time series (strings)
@@ -159,6 +164,8 @@ let layout =
 |> Chart.WithLayout layout
 |> Chart.Show
 ```
+
+![PL_TimeSeries_String](https://user-images.githubusercontent.com/24556021/100584586-351da680-32e4-11eb-8dff-43622d004b2e.png)
 
 ## Time series (DateTimes)
 
@@ -189,6 +196,8 @@ let layout =
 |> Chart.Show
 ```
 
+![PL_TimeSeries_Date](https://user-images.githubusercontent.com/24556021/100584672-51214800-32e4-11eb-83cd-c68946de83f5.png)
+
 # Heatmaps
 
 ## Time Heatmap
@@ -214,6 +223,8 @@ z
 |> Chart.Show
 ```
 
+![PL_Heatmap](https://user-images.githubusercontent.com/24556021/100584663-4d8dc100-32e4-11eb-9e7e-641801c32e1f.png)
+
 ## Time HeatmapGL
 
 ```fsharp
@@ -236,6 +247,8 @@ z
 |> Chart.WithTitle "Heatmap GL"
 |> Chart.Show
 ```
+
+![PL_HeatmapGL](https://user-images.githubusercontent.com/24556021/100584508-246d3080-32e4-11eb-82f6-ae85a8dfa80e.png)
 
 # Surface plots
 
@@ -265,6 +278,8 @@ zData
 |> Chart.Show
 ```
 
+![PL_Surface](https://user-images.githubusercontent.com/24556021/100584473-17504180-32e4-11eb-9f62-0b6ce21a651f.png)
+
 ## Time surface plot
 ```fsharp
 let xt = [
@@ -287,7 +302,9 @@ z
 |> Chart.Show
 ```
 
-# Polymorphic data types
+![PL_TimeSurface](https://user-images.githubusercontent.com/24556021/100584644-45ce1c80-32e4-11eb-90b5-e66900ebbb80.png)
+
+# Polymorphic Data Types
 
 Some trace types allow using date times, and/or strings as the data arrays, which allow plotting time series and categorical data.  The following trace types support these:
 

@@ -6,10 +6,16 @@ HighCharts renderer for IPlot.
 
 - [Chart Functions](#chart-functions)
 - [Setting Basic Properties](#setting-basic-properties)
+- [Line / Scatter Plots](#line-/-scatter-plots)
 - [Scatter Plots](#scatter-plots)
-- [Time Series Plots](#time-series)
+- [3D Charts](#3d-charts)
 - [Heatmaps](#heatmaps)
-- [Surface Plots](#surface-plots)
+- [Streamgraphs](#streamgraphs)
+- [Spline Charts](#spline-charts)
+- [Vector Plots](#vector-plots)
+- [Trees](#trees)
+- [Tilemaps](#tilemaps)
+- [Polymorphic Data Types](#polymorphic-data-types)
 
 # Chart Functions
 
@@ -51,8 +57,7 @@ The following types of HighCharts series types are available:
 ## Set name of trace
 
 ```fsharp
-Chart.Scatter [1.;2.;3.;5.]
-|> Chart.With (Chart.Props.series.[0].name "Mr Susan")
+Chart.With (Chart.Props.series.[0].name "Mr Susan")
 ```
 
 ## Set line width
@@ -80,6 +85,8 @@ let trace2 =
 |> Chart.Show
 ```
 
+![HC_TwoLines](https://user-images.githubusercontent.com/24556021/100584695-57afbf80-32e4-11eb-953b-40d782a07b88.png)
+
 # Scatter plots
 
 ## X/Y Scatter Plot
@@ -99,6 +106,8 @@ let trace1 =
 |> Chart.WithHeight 500
 |> Chart.Show
 ```
+
+![HC_XYScatter](https://user-images.githubusercontent.com/24556021/100625996-21426680-331d-11eb-9a7a-89cca6a9dad7.png)
 
 # 3D Charts
 
@@ -125,6 +134,8 @@ let trace1 =
 |> Chart.Show
 ```
 
+![HC_Cylinder](https://user-images.githubusercontent.com/24556021/100584729-639b8180-32e4-11eb-8791-a01841f2ef38.png)
+
 ## 3D Funnel plot
 
 ```fsharp
@@ -146,6 +157,8 @@ let trace1 =
 |> Chart.WithHeight 500
 |> Chart.Show
 ```
+
+![HC_Funnel](https://user-images.githubusercontent.com/24556021/100584714-5e3e3700-32e4-11eb-90b7-a51280dca519.png)
 
 ## 3D Pyramid plot
 
@@ -171,6 +184,8 @@ let trace1 =
 Assert.True(true)
 ```
 
+![HC_Pyramid](https://user-images.githubusercontent.com/24556021/100584719-6007fa80-32e4-11eb-88d2-f86308081674.png)
+
 # Error Bars
 
 ## Simple error bar plot
@@ -194,13 +209,15 @@ let trace1 =
 |> Chart.Show
 ```
 
+![HC_ErrorBar](https://user-images.githubusercontent.com/24556021/100584737-64ccae80-32e4-11eb-8a6a-8e5a68a02eec.png)
+
 # Heatmaps
 
 ## Colourful heatmap
 
 ```fsharp
 let r = Random(931)
-let trace1 =        
+let trace1 =
     Heatmap(
         data_mat = [ for x in 1..100 do
                         for y in 1..40 do
@@ -212,14 +229,18 @@ let trace1 =
 |> Chart.Plot
 |> Chart.With (Chart.Props.chart_iplot.type_iplot "heatmap")
 |> Chart.With (Chart.Props.series.[0].asHeatmap.borderWidth 0.)
-|> Chart.With (Chart.Props.colorAxis.[0].stops "[(0.0,\"#433\"),(1.0,\"#f33\")]")
+|> Chart.With (Chart.Props.colorAxis.[0].min 0.)
+|> Chart.With (Chart.Props.colorAxis.[0].max 1.)
+|> Chart.With (Chart.Props.colorAxis.[0].minColor "#033")
 |> Chart.With (Chart.Props.colorAxis.[0].maxColor "#f33")
 |> Chart.WithWidth 700
 |> Chart.WithHeight 500
 |> Chart.Show
 ```
 
-# Streamgraph plots
+![HC_Heatmap](https://user-images.githubusercontent.com/24556021/100625994-20a9d000-331d-11eb-9580-0f9e713ca111.png)
+
+# Streamgraphs
 
 ## Basic streamgraph
 
@@ -241,6 +262,8 @@ let trace1 =
 |> Chart.Show
 ```
 
+![HC_Streamgraph](https://user-images.githubusercontent.com/24556021/100584726-61392780-32e4-11eb-985f-bf9e7ae1f7b8.png)
+
 # Spline charts
 
 ## Basic Spline chart
@@ -261,6 +284,8 @@ let trace1 =
 |> Chart.WithHeight 500
 |> Chart.Show
 ```
+
+![HC_Spline](https://user-images.githubusercontent.com/24556021/100584687-55e5fc00-32e4-11eb-97b1-8544b4574fc6.png)
 
 # Vector plots
 
@@ -286,6 +311,8 @@ let trace1 =
 |> Chart.WithHeight 500
 |> Chart.Show
 ```
+
+![HC_Vector](https://user-images.githubusercontent.com/24556021/100584706-5c747380-32e4-11eb-9027-8fb6c1e72a2e.png)
 
 # Trees
 
@@ -340,7 +367,9 @@ let ``Colourful Sunburst``() =
     |> Chart.WithWidth 700
     |> Chart.WithHeight 500
     |> Chart.Show
-    ```
+```
+
+![HC_Sunburst](https://user-images.githubusercontent.com/24556021/100584702-5a121980-32e4-11eb-99d7-3610022a2d10.png)
 
 # Tilemaps
 
@@ -390,6 +419,8 @@ let trace1 =
 |> Chart.Show
 ```
 
-# Polymorphic data types
+![HC_Tilemap](https://user-images.githubusercontent.com/24556021/100584745-68f8cc00-32e4-11eb-872e-659cab0ee7c6.png)
+
+# Polymorphic Data Types
 
 Some series types allow using datapoints which are objects with numerous fields.  For these, you can use the additional ``data_obj``  property to set the properties of these datapoint objects.
