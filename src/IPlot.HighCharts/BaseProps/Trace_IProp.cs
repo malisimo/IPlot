@@ -21,7 +21,7 @@ namespace IPlot.HighCharts
                     i++;
                 }
 
-                var thisElement = el as Series;
+                var thisElement = el as Trace;
                 if (thisElement != null)
                     thisElement.id = ChartProp.SafeConvert(thisElement.id, v);
 
@@ -44,7 +44,7 @@ namespace IPlot.HighCharts
                     i++;
                 }
 
-                var thisElement = el as Series;
+                var thisElement = el as Trace;
                 if (thisElement != null)
                     thisElement.index = ChartProp.SafeConvert(thisElement.index, v);
 
@@ -67,7 +67,7 @@ namespace IPlot.HighCharts
                     i++;
                 }
 
-                var thisElement = el as Trace;
+                var thisElement = el  as Trace;
                 if (thisElement != null)
                     thisElement.data = ChartProp.SafeConvert(thisElement.data, v);
 
@@ -90,7 +90,7 @@ namespace IPlot.HighCharts
                     i++;
                 }
 
-                var thisElement = el as Trace;
+                var thisElement = el  as Trace;
                 if (thisElement != null)
                     thisElement.data_mat = ChartProp.SafeConvert(thisElement.data_mat, v);
 
@@ -113,7 +113,7 @@ namespace IPlot.HighCharts
                     i++;
                 }
 
-                var thisElement = el as Series;
+                var thisElement = el as Trace;
                 if (thisElement != null)
                     thisElement.legendIndex = ChartProp.SafeConvert(thisElement.legendIndex, v);
 
@@ -136,7 +136,7 @@ namespace IPlot.HighCharts
                     i++;
                 }
 
-                var thisElement = el as Series;
+                var thisElement = el as Trace;
                 if (thisElement != null)
                     thisElement.mapData = ChartProp.SafeConvert(thisElement.mapData, v);
 
@@ -159,7 +159,7 @@ namespace IPlot.HighCharts
                     i++;
                 }
 
-                var thisElement = el as Series;
+                var thisElement = el as Trace;
                 if (thisElement != null)
                     thisElement.name = ChartProp.SafeConvert(thisElement.name, v);
 
@@ -182,7 +182,7 @@ namespace IPlot.HighCharts
                     i++;
                 }
 
-                var thisElement = el as Series;
+                var thisElement = el as Trace;
                 if (thisElement != null)
                     thisElement.stack = ChartProp.SafeConvert(thisElement.stack, v);
 
@@ -205,7 +205,7 @@ namespace IPlot.HighCharts
                     i++;
                 }
 
-                var thisElement = el as Series;
+                var thisElement = el as Trace;
                 if (thisElement != null)
                     thisElement.type_iplot = ChartProp.SafeConvert(thisElement.type_iplot, v);
 
@@ -228,7 +228,7 @@ namespace IPlot.HighCharts
                     i++;
                 }
 
-                var thisElement = el as Series;
+                var thisElement = el as Trace;
                 if (thisElement != null)
                     thisElement.xAxis = ChartProp.SafeConvert(thisElement.xAxis, v);
 
@@ -251,7 +251,7 @@ namespace IPlot.HighCharts
                     i++;
                 }
 
-                var thisElement = el as Series;
+                var thisElement = el as Trace;
                 if (thisElement != null)
                     thisElement.yAxis = ChartProp.SafeConvert(thisElement.yAxis, v);
 
@@ -274,7 +274,7 @@ namespace IPlot.HighCharts
                     i++;
                 }
 
-                var thisElement = el as Series;
+                var thisElement = el as Trace;
                 if (thisElement != null)
                     thisElement.zIndex = ChartProp.SafeConvert(thisElement.zIndex, v);
 

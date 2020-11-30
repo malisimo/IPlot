@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <Compile Include="Templates.fs" />
-    <Compile Include="Trace.fs" />
     <Compile Include="Property.fs" />
     <Compile Include="Hacks.fs" />
     <Compile Include="DictUtils.fs" />

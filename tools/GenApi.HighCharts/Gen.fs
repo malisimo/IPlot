@@ -142,8 +142,6 @@ module Gen =
                 let desc,propTypes,extendsFrom,isDeprecated =
                     propertyDict
                     |> parseDocletFromDict
-                if curType = "data" then
-                    printfn "debug"
 
                 let curPropType =
                     match parentPropType with
@@ -196,9 +194,6 @@ module Gen =
                             let parentFullType = 
                                 let s = (pathToPropName (List.skip 2 curPath))
                                 s.Substring(0,s.Length - 5)
-
-                            if seriesProp.IsSome then
-                                printfn "debug"
                             
                             // Add data point properties to those from other series
                             let dataProps =
@@ -230,21 +225,6 @@ module Gen =
 
                             makeArrayProp 1 1 (dataProps@childProps)
                             |> Seq.tryHead
-
-                            // {
-                            //     fullType = pathToPropName curPath
-                            //     name = curType
-                            //     childProps = dataProps@childProps
-                            //     types = propTypes
-                            //     description = desc
-                            //     elementType = "data_obj"
-                            //     isObjectArray = false
-                            //     baseType = "ChartElement"
-                            //     extends = extendsFrom
-                            //     isRoot = false
-                            //     isChartSeries = false
-                            // }
-                            // |> Some
                         | SeriesTrace(t) ->
                             // Else if a series type, then merge properties with those from plotOptions (even if no children)
                             // (assume it's not an array)
@@ -285,10 +265,6 @@ module Gen =
                             let parentFullType = 
                                 let s = (pathToPropName (List.skip 1 curPath))
                                 s.Substring(0,s.Length - 5)
-                            if t = "column" then
-                                printfn "debug"
-                            elif t = "cylinder" then
-                                printfn "debug"
 
                             // Add trace properties to those from plotOptions
                             let fullChildProps =
@@ -317,10 +293,7 @@ module Gen =
                                 isChartSeries = false
                             }
                             |> Some
-                        | _ ->
-                            if curPropType = Series then
-                                printfn "debug"
-
+                        | _ ->                            
                             // Else for any other property, first check if is array and has children, in which case add arrays
                             // prior to child props, otherwise just add property
                             let hasChildren = childProps |> List.isEmpty |> not
@@ -344,7 +317,7 @@ module Gen =
                                             baseType = "ChartElement"
                                             extends = extendsFrom
                                             isRoot = false
-                                            isChartSeries = false
+                                            isChartSeries = curPropType = Series
                                         }
                                         
                                         makeArrayProp n (i-1) [next]

@@ -1,7 +1,6 @@
 module Property
 
 open Utils
-open Trace
 open Templates
 
 type Property =
@@ -89,17 +88,6 @@ type Property =
                 IsBaseType = hasChildren |> not
                 IsObjectArray = prop.isObjectArray
             }
-            
-        static member ToPropertyTokens (trace: TracePropInfo) : Templates.PropertyTokens =             
-            {
-                Description = trace.Description
-                PropertyName = trace.PropName
-                PropertyNullableType = trace.PropType
-                PropertyType = trace.PropTypeNullable
-                FullType = trace.FullType
-                IsBaseType = true
-                IsObjectArray = false
-            }
 
         static member Union (p1: Property) (p2: Property) =
             let baseType =
@@ -163,9 +151,12 @@ let rec toFlatPropList (items:Property list) (prop:Property) =
 
 let rec toPropFile (prop:Property) =
     match prop.childProps,prop.baseType with
-    | [],"ChartElement" ->                 
+    | [],"ChartElement" ->
         None
     | _ ->
+        if prop.isChartSeries && (prop.isObjectArray |> not) then
+            None
+        else
         let arraySubType =
             if prop.isObjectArray then
                 if prop.isChartSeries then
@@ -179,13 +170,9 @@ let rec toPropFile (prop:Property) =
                 None
 
         let childTokens =
-            if prop.isChartSeries then
-                Trace.traceProperties
-                |> Seq.map Property.ToPropertyTokens
-            else
-                prop.childProps
-                |> Seq.distinctBy (fun x -> x.name)
-                |> Seq.map Property.ToPropertyTokens
+            prop.childProps
+            |> Seq.distinctBy (fun x -> x.name)
+            |> Seq.map Property.ToPropertyTokens
         
         let fileStr =
             childTokens

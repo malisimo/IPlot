@@ -162,7 +162,7 @@ module ``Heatmap properties`` =
     [<Fact>]
     let ``Colourful Heatmap``() =
         let r = Random(931)
-        let trace1 =        
+        let trace1 =
             Heatmap(
                 data_mat = [ for x in 1..100 do
                                 for y in 1..40 do
@@ -174,7 +174,9 @@ module ``Heatmap properties`` =
         |> Chart.Plot
         |> Chart.With (Chart.Props.chart_iplot.type_iplot "heatmap")
         |> Chart.With (Chart.Props.series.[0].asHeatmap.borderWidth 0.)
-        |> Chart.With (Chart.Props.colorAxis.[0].stops "[(0.0,\"#433\"),(1.0,\"#f33\")]")
+        |> Chart.With (Chart.Props.colorAxis.[0].min 0.)
+        |> Chart.With (Chart.Props.colorAxis.[0].max 1.)
+        |> Chart.With (Chart.Props.colorAxis.[0].minColor "#033")
         |> Chart.With (Chart.Props.colorAxis.[0].maxColor "#f33")
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
