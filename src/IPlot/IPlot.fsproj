@@ -2,6 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Id>IPlot</Id>
+    <Version>0.0.1-pre1</Version>
+    <Authors>Matt Jones</Authors>
+    <Title>IPlot</Title>
+    <Description>Charting library for generating charts with HighCharts or Plotly</Description>
+    <PackageDescription>Charting library for generating charts with HighCharts or Plotly</PackageDescription>
+    <RequireLicenseAcceptance>false</RequireLicenseAcceptance>
+    <PackageProjectUrl>https://github.com/malisimo/IPlot</PackageProjectUrl>
+    <Icon>Icon.png</Icon>
+    <PackageIcon>Icon.png</PackageIcon>
+    <PackageTags>iplot;plot;chart;interactive;highcharts;plotly</PackageTags>
+    <RepositoryUrl>https://github.com/malisimo/IPlot.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryBranch>master</RepositoryBranch>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,8 +25,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="../../Icon.png">
+      <Pack>true</Pack>
+      <PackagePath>Icon.png</PackagePath>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="../IPlot.Plotly/IPlot.Plotly.csproj" />
     <ProjectReference Include="../IPlot.HighCharts/IPlot.HighCharts.csproj" />
   </ItemGroup>
+  
+  <PropertyGroup>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
 
 </Project>

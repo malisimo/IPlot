@@ -1,6 +1,6 @@
 # IPlot
 
-.NET Charting library for .NET, rendered using Plotly or HighCharts in the browser.
+Charting library for .NET, rendered using Plotly or HighCharts in the browser.
 
 ## Table of contents
 
@@ -131,15 +131,21 @@ Chart.Cylinder [1.; 2.; 3.; 4.; 3.; 2.; 1.]
 
 ## Building From Source
 
-The library can be built from source by running the following CMD files, in order:
+The library can be built from source by running the following CMD files in a console, in order:
 
 ```
-./gensrc.cmd
-./buildsrc.cmd
+.\gensrc.cmd
+.\buildsrc.cmd
 ```
 
 All tests can also be run using the following command:
 
 ```
-./runtests.cmd
+.\runtests.cmd
+```
+
+The nuget package can be created by running:
+
+```
+.\pack.cmd
 ```

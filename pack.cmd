@@ -1,0 +1,1 @@
+dotnet pack .\src\IPlot\IPlot.fsproj -c Release -o ./

@@ -1,7 +1,11 @@
 bin/
 obj/
+lib/
 .ionide/
 .vscode/
+
+*.nupkg
+
 src/IPlot.Plotly/Elements/
 src/IPlot.Plotly/Props/
 src/IPlot.HighCharts/Elements/
