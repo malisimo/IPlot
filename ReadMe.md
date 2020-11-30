@@ -5,6 +5,7 @@ Charting library for .NET, rendered using Plotly or HighCharts in the browser.
 ## Table of contents
 
 - [About](#about)
+- [Install](#install)
 - [Chart Backends](#chart-backends)
 - [Basic Usage](#basic-usage)
 - [Plotly API](https://github.com/malisimo/iplot/blob/master/src/IPlot.Plotly/ReadMe.md)
@@ -13,13 +14,21 @@ Charting library for .NET, rendered using Plotly or HighCharts in the browser.
 
 ## About
 
-This library aims to provide a fast and fluid way of curating a chart, where you being by throwing some data at a chart and later refine its properties to adjust its appearance or behaviour.  Intellisense can help discovery of appropriate properties to set, and provide info on the expected arguments via static typing.  This can reduce the amount of documentation lookup required to set up a plot and adjust its visual elements.
+This library aims to provide a fast and fluid way of curating a chart in both C# and F#, where you begin by throwing some data at a chart and later refine its properties to adjust its appearance or behaviour.  Intellisense can help discovery of appropriate properties to set, and provide info on the expected arguments via static typing.  This can reduce the amount of documentation lookup required to set up a plot and adjust its visual elements.
 
 > The API is intentionally similar to [XPlot.Plotly](https://fslab.org/XPlot/), where most access is achieved through interacting with the ```Chart``` element.
 
-## Chart Backends
+### Chart Backends
 
 You can choose to render charts using Plotly or HighCharts. Either import ```IPlot.Plotly``` or ```IPlot.HighCharts``` - the chart API is very similar.
+
+## Install
+
+Install as a nuget package using the dotnet CLI.  Whilst in the directory containing your csproj or fsproj file, enter:
+
+```
+dotnet add package IPlot --version=0.0.1-pre2
+```
 
 ## Basic Usage
 
