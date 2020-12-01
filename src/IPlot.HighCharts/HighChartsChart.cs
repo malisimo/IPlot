@@ -122,6 +122,7 @@ namespace IPlot.HighCharts
             var plotting = GetPlottingJS();
             return
                 Html.jsTemplate
+                    .Replace("[THEME]", Html.themeString)
                     .Replace("[ID]", id)
                     .Replace("[PLOTTING]", plotting);
         }
@@ -133,6 +134,7 @@ namespace IPlot.HighCharts
 
             return
                 Html.jsFunctionTemplate
+                    .Replace("[THEME]", Html.themeString)
                     .Replace("[ID]", this.id)
                     .Replace("[CHARTOBJ]", chartJson);
         }

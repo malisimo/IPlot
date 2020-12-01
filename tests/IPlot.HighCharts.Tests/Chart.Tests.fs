@@ -82,8 +82,8 @@ module ``3D properties`` =
         |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
         |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 15.)
         |> Chart.With (Chart.Props.chart_iplot.options3d.beta 15.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 50.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 25.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 20.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 500.)
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show
@@ -94,7 +94,7 @@ module ``3D properties`` =
     let ``3D Funnel Plot``() =
         let trace1 =
             Funnel3d(
-                data = [1010.; 202.; 96.; 46.; 3.; 20.; 8.],
+                data = [101.; 202.; 96.; 46.; 66.; 20.; 121.],
                 name = "Funnel3d"
             )
         
@@ -116,7 +116,7 @@ module ``3D properties`` =
     let ``3D Pyramid Plot``() =
         let trace1 =
             Pyramid3d(
-                data = [1010.; 202.; 96.; 46.; 3.; 20.; 8.],
+                data = [31.; 16.; 29.; 4.; 11.; 19.; 22.],
                 name = "Pyramid3d"
             )
         
@@ -147,9 +147,9 @@ module ``Error bar properties`` =
         [trace1]
         |> Chart.Plot
         |> Chart.With (Chart.Props.chart_iplot.type_iplot "errorbar")
-        |> Chart.With (Chart.Props.chart_iplot.backgroundColor "#edf")
+        |> Chart.With (Chart.Props.chart_iplot.backgroundColor "#444")
         |> Chart.With (Chart.Props.plotOptions.errorbar.lineWidth 5.0)
-        |> Chart.With (Chart.Props.plotOptions.errorbar.color "#333")
+        |> Chart.With (Chart.Props.plotOptions.errorbar.color "#AAE")
         |> Chart.With (Chart.Props.series.[0].asErrorbar.whiskerWidth 6.0) 
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
