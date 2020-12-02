@@ -366,7 +366,7 @@ module Gen =
                     prop.childProps
                     |> Seq.distinctBy (fun x -> x.name)
                     |> Seq.map Property.ToPropertyTokens
-                    |> (Templates.genElementFile (firstCharToUpper prop.name) prop.baseType prop.isRoot)
+                    |> (Templates.genElementFile (firstCharToUpper prop.name) prop.description prop.baseType prop.isRoot)
 
                 (firstCharToUpper prop.name,fileStr)
                 |> Some

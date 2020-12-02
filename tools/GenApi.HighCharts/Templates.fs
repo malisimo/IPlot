@@ -31,6 +31,9 @@ namespace IPlot.HighCharts
 }
 "
 let templateElementClass = @"
+    /// <summary>
+    /// ##DESCRIPTION##
+    /// </summary>
     public class ##ELEMENTTYPE## : ##ELEMENTBASE##
     {
 ##ELEMENTMEMBERS##
@@ -47,7 +50,9 @@ let templateElementClass = @"
 "
 
 let templateElementMember = @"
+        /// <summary>
         /// ##DESCRIPTION##
+        /// </summary>
         public ##NEW####PROPTYPE## ##PROPNAME## { get; set; } = null;"
 
 let templateElementTraceType = @"
@@ -61,6 +66,9 @@ let templateElementTraceClone = @"
 let templateElementClone = @"            obj.##PROPNAME## = ##PROPNAME##;"
 
 let templatePropClass = @"
+    /// <summary>
+    /// ##DESCRIPTION##
+    /// </summary>
     public class ##ELEMENTPROPTYPE## : ChartProp
     {        
         public Func<HighChartsChart,HighChartsChart> Of(##ELEMENTTYPE## v)
@@ -92,6 +100,9 @@ let templatePropClass = @"
 "
 
 let templateArrayPropClass = @"
+    /// <summary>
+    /// ##DESCRIPTION##
+    /// </summary>
     public class ##ELEMENTPROPTYPE## : ChartProp, IArrayProp
     {
         private int _index;
@@ -113,6 +124,9 @@ let templateArrayPropClass = @"
 "
 
 let templatePropGetter = @"
+        /// <summary>
+        /// ##DESCRIPTION##
+        /// </summary>
         public ##PROPTYPE## ##JSONPROPNAME##
         {
             get
@@ -121,7 +135,10 @@ let templatePropGetter = @"
             }
         }"
 
-let templatePropSetter = @"
+let templatePropSetter = @"    
+        /// <summary>
+        /// ##DESCRIPTION##
+        /// </summary>
         public Func<HighChartsChart, HighChartsChart> ##JSONPROPNAME##(##ELEMENTPROPTYPE## v)
         {
             var propPath = GetPath();
@@ -161,7 +178,14 @@ type PropertyTokens = {
             else
                 this.FullType + "_" + Utils.firstCharToUpper this.PropertyName + "_IProp"
 
-let genElementFile elType baseType isRootElement (props:PropertyTokens seq) =
+let makeSafeDesc tabs (desc:string) =
+    let tabStr =
+        Array.init tabs (fun _ -> "    ")
+        |> String.concat ""
+
+    desc.Replace("\n",sprintf "\r\n%s/// " tabStr)
+
+let genElementFile elType elDesc baseType isRootElement (props:PropertyTokens seq) =
     let validProps =
         props
         |> Seq.filter (fun p ->
@@ -184,7 +208,7 @@ let genElementFile elType baseType isRootElement (props:PropertyTokens seq) =
                     (Utils.makeSafeTypeName p.PropertyNullableType)
             
             templateElementMember
-            |> strRep description desc
+            |> strRep description (makeSafeDesc 2 desc)
             |> strRep elementPropName name
             |> strRep propType propTypeStr
             |> strRep newProp newStr)
@@ -211,6 +235,7 @@ let genElementFile elType baseType isRootElement (props:PropertyTokens seq) =
     let elClass =
         templateElementClass
         |> strRep elementType (Utils.makeSafeTypeName elType)
+        |> strRep description (makeSafeDesc 1 elDesc)
         |> strRep elementMembers elMembers
         |> strRep elementClone elClone
         |> strRep elementBase baseType
@@ -224,15 +249,16 @@ let genPropFile propClass =
     templateFile
     |> strRep classBody propClass
 
-let genArrayPropClass elPropType elSubType =
+let genArrayPropClass elPropType elSubType elDesc =
     templateArrayPropClass
     |> strRep elementPropType elPropType
     |> strRep arraySubType elSubType
+    |> strRep description (makeSafeDesc 1 elDesc)
 
-let genPropClass elPropType elType elJsonName arraySubType (props:PropertyTokens seq) =
+let genPropClass elPropType elType elJsonName arraySubType elDesc (props:PropertyTokens seq) =
     match arraySubType with
     | Some(subType) ->
-        genArrayPropClass elPropType subType
+        genArrayPropClass elPropType subType elDesc
     | None ->
         let validProps =
             props
@@ -246,6 +272,7 @@ let genPropClass elPropType elType elJsonName arraySubType (props:PropertyTokens
             |> Seq.map (fun p ->
                 templatePropGetter
                 |> strRep jsonPropName (Utils.makeSafeTypeName p.PropertyName)
+                |> strRep description (makeSafeDesc 2 p.Description)
                 |> strRep propType (Utils.makeSafeTypeName (p.ToFullPropertyType())))
             |> String.concat "\n"
 
@@ -255,6 +282,7 @@ let genPropClass elPropType elType elJsonName arraySubType (props:PropertyTokens
             |> Seq.map (fun p ->
                 templatePropSetter
                 |> strRep jsonPropName (Utils.makeSafeTypeName p.PropertyName)
+                |> strRep description (makeSafeDesc 2 p.Description)
                 |> strRep elementPropName (Utils.makeSafeTypeName p.PropertyName)
                 |> strRep elementPropType (Utils.makeSafeTypeName p.PropertyType)
                 |> strRep elementType (Utils.makeSafeTypeName elType))
@@ -263,5 +291,6 @@ let genPropClass elPropType elType elJsonName arraySubType (props:PropertyTokens
         templatePropClass
         |> strRep elementPropType (Utils.makeSafeTypeName elPropType)
         |> strRep elementType (Utils.makeSafeTypeName elType)
+        |> strRep description (makeSafeDesc 1 elDesc)
         |> strRep jsonPropName (Utils.makeSafeTypeName (Utils.firstCharToLower elJsonName))
         |> strRep body (propGetters + propSetters)

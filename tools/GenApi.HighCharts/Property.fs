@@ -176,8 +176,8 @@ let rec toPropFile (prop:Property) =
         
         let fileStr =
             childTokens
-            |> Templates.genPropClass prop.fullType (firstCharToUpper prop.elementType) prop.name arraySubType
-            |> Templates.genPropFile
+            |> genPropClass prop.fullType (firstCharToUpper prop.elementType) prop.name arraySubType prop.description
+            |> genPropFile
 
         (prop.fullType,fileStr,prop.ToNiceString())
         |> Some
