@@ -27,7 +27,7 @@ You can choose to render charts using Plotly or HighCharts. Either import ```IPl
 Install as a nuget package using the dotnet CLI.  Whilst in the directory containing your csproj or fsproj file, enter:
 
 ```
-dotnet add package IPlot --version=0.0.1-pre3
+dotnet add package IPlot --version=0.0.1-pre4
 ```
 
 ## Basic Usage

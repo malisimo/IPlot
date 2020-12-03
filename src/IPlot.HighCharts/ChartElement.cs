@@ -5,8 +5,10 @@ using System.Reflection;
 
 namespace IPlot.HighCharts
 {
+    /// Root ChartElement class, from which all chart elements (axes, titles, etc) derive
     public class ChartElement
     {
+        /// Cast from a general array type to a specific one
         static IEnumerable<T> CastArray<T>(IEnumerable<ChartElement> array, T example)
         {    
             var castMethod = typeof(Enumerable).GetMethod("Cast", BindingFlags.Static | BindingFlags.Public);
@@ -15,6 +17,7 @@ namespace IPlot.HighCharts
             return castArr as IEnumerable<T>;
         }
 
+        /// Set a property value as array of specific type
         static void SetProperty(PropertyInfo p, ChartElement el, IEnumerable<ChartElement> arr, Type t)
         {
             var example = Activator.CreateInstance(t);
@@ -23,6 +26,7 @@ namespace IPlot.HighCharts
             p.SetValue(el, castArr);
         }
 
+        /// Use reflection to get a property from a property name
         public static ChartElement GetElement(string prop, ChartElement el)
         {
             ChartElement propEl = null;
@@ -84,6 +88,7 @@ namespace IPlot.HighCharts
             return propEl;
         }
 
+        /// Base implementation of deep clone for this element and all properties
         public virtual ChartElement DeepClone()
         {
             return new ChartElement();

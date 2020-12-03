@@ -4,8 +4,10 @@ using System.Collections.Generic;
 
 namespace IPlot.Plotly
 {
+    /// Root ChartElement class, from which all chart elements (axes, titles, etc) derive
     public class ChartElement
     {
+        /// Use reflection to get a property from a property name
         public static ChartElement GetElement(string prop, ChartElement el)
         {
             ChartElement propEl = null;
@@ -43,6 +45,7 @@ namespace IPlot.Plotly
             return propEl;
         }
 
+        /// Base implementation of deep clone for this element and all properties
         public virtual ChartElement DeepClone()
         {
             return new ChartElement();

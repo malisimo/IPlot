@@ -78,21 +78,21 @@ module Gen =
                                 yield! getPropertiesFromDict (curKey::curPath) curKey (el.``type``.IsArray()) None traceType propDict   
             ]
 
-        let toElementFile ((elType:string, elBaseType:string option), elMembers:Property seq) =
+        let toElementFile ((elType:string, elBaseType:string option, elDesc:string), elMembers:Property seq) =
             let fileStr =
                 elMembers
                 |> Seq.distinctBy (fun x -> x.name)
                 |> Seq.map Property.ToPropertyTokens
-                |> Templates.genElementFile elType elBaseType
+                |> Templates.genElementFile elType elDesc elBaseType
 
             elType,fileStr
 
-        let toPropFile ((propType:string, elType:string, isArrayProp:bool), props:Property seq) =
+        let toPropFile ((propType:string, elType:string, elDesc:string), props:Property seq) =
             let fileStr =
                 props
                 |> Seq.distinctBy (fun x -> x.name)
                 |> Seq.map Property.ToPropertyTokens
-                |> Templates.genPropClass propType elType
+                |> Templates.genPropClass propType elType elDesc
                 |> Templates.genPropFile
 
             propType,fileStr
@@ -163,7 +163,7 @@ module Gen =
         // Export elements
         List.append traceProperties layoutProperties
         |> List.distinctBy (fun p -> (p.name,p.``type``,p.elementType))
-        |> groupBy (fun p -> Utils.firstCharToUpper p.elementType) (fun p -> (Utils.firstCharToUpper p.elementType, p.rootElement))
+        |> groupBy (fun p -> Utils.firstCharToUpper p.elementType) (fun p -> (Utils.firstCharToUpper p.elementType, p.rootElement, p.description))
         |> Seq.map toElementFile
         |> Seq.toArray
         |> Array.map (fun (typeName,str) ->
@@ -173,7 +173,7 @@ module Gen =
 
         // Export property helpers
         List.append traceProperties layoutProperties
-        |> groupBy (fun p -> p.fullType) (fun p -> (p.fullType, Utils.firstCharToUpper p.elementType, p.isElementArray))
+        |> groupBy (fun p -> p.fullType) (fun p -> (p.fullType, Utils.firstCharToUpper p.elementType, p.description))
         |> Seq.map toPropFile
         |> Seq.toArray
         |> Array.map (fun (typeName,str) ->

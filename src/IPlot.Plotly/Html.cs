@@ -3,10 +3,13 @@ using System.Runtime.InteropServices;
 
 namespace IPlot.Plotly
 {
+    /// Class containing HTML templates and browser display code
     public class Html
     {
+        /// Plotly source URL
         public const string DefaultPlotlySrc = "https://cdn.plot.ly/plotly-latest.min.js";
 
+        /// HTML template for full page
         public const string pageTemplate =
         @"<!DOCTYPE html>
 <html>
@@ -19,17 +22,20 @@ namespace IPlot.Plotly
     </body>
 </html>";
 
+        /// Inline HTML
         public const string inlineTemplate =
         @"<div id=""[ID]"" style=""width: [WIDTH] px; height: [HEIGHT] px;""></div>
         <script>
             [PLOTTING]
         </script>";
 
+        /// Javascript plotting code only
         public const string jsTemplate =
         @"<script>
             [PLOTTING]
         </script>";
 
+        /// Template for Plotly plotting code
         public const string jsFunctionTemplate =
         @"var data = [DATA];
            var layout = [LAYOUT];

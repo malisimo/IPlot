@@ -2,8 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PreserveCompilationContext>false</PreserveCompilationContext>
     <Id>IPlot</Id>
-    <Version>0.0.1-pre3</Version>
+    <Version>0.0.1-pre4</Version>
     <Authors>Matt Jones</Authors>
     <Title>IPlot</Title>
     <Description>Charting library for generating charts with HighCharts or Plotly</Description>

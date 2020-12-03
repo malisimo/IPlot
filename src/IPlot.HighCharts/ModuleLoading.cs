@@ -3,8 +3,10 @@ using System.Linq;
 
 namespace IPlot.HighCharts
 {
+    /// Class to group utility functions for module loading and dependency management
     public static class ModuleLoading
     {
+        /// List of required dependencies for each series type
         public static readonly Dictionary<string, IEnumerable<string>> SeriesDependencies = new Dictionary<string, IEnumerable<string>>() {
             { "bullet", new string[]{"bullet"} },
             { "bellcurve", new string[]{"histogram-bellcurve"} },
@@ -34,6 +36,7 @@ namespace IPlot.HighCharts
             { "xrange", new string[]{"xrange"} }
         };
     
+        /// Return list of dependencies for given series type
         public static IEnumerable<string> GetDependencies(string seriesName)
         {
             if (SeriesDependencies.ContainsKey(seriesName))

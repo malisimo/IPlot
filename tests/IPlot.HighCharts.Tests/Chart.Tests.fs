@@ -53,8 +53,7 @@ module ``Scatter properties`` =
             Scatter(
                 data_mat = [[1.;-1.]; [2.;1.5]; [3.;-0.5]; [4.;4.8]]
             )
-        
-        
+                
         [trace1]
         |> Chart.Plot
         |> Chart.With (Chart.Props.series.[0].name "XY Trace")

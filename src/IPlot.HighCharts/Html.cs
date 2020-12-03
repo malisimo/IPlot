@@ -3,10 +3,13 @@ using System.Runtime.InteropServices;
 
 namespace IPlot.HighCharts
 {
+    /// Class containing HTML templates and browser display code
     public class Html
     {
+        /// HighCharts source URL
         public const string DefaultHighChartsSrc = "https://code.highcharts.com/";
 
+        /// HTML template for full page
         public const string pageTemplate =
         @"<!DOCTYPE html>
 <html>
@@ -28,15 +31,18 @@ namespace IPlot.HighCharts
     </body>
 </html>";
 
+        /// Template for HighCharts module includes
         public const string moduleTemplate =
         @"<script src=""[HIGHCHARTSSRC]modules/[MODULENAME].js""></script>";
 
+        /// Inline HTML
         public const string inlineTemplate =
         @"<div id=""[ID]"" style=""width: [WIDTH] px; height: [HEIGHT] px;""></div>
         <script>
             [PLOTTING]
         </script>";
 
+        /// Default theme properties
         public const string themeString =
         @"Highcharts.theme = {
                 colors: ['#DDDF0C', '#54BF3A', '#EC272A', '#41D8FE', '#5B47D1',
@@ -252,12 +258,14 @@ namespace IPlot.HighCharts
             
             Highcharts.setOptions(Highcharts.theme);";
 
+        /// Javascript plotting code only
         public const string jsTemplate =
         @"<script>
             [THEME]
             [PLOTTING]
         </script>";
 
+        /// Template for Plotly plotting code
         public const string jsFunctionTemplate =
         @"[THEME]
             Highcharts.chart('[ID]', [CHARTOBJ]);";

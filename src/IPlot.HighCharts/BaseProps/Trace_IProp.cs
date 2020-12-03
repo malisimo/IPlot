@@ -282,6 +282,7 @@ namespace IPlot.HighCharts
             };
         }
 
+        /// <summary>Cast Series to Area type</summary>
         public HighChart_Series_Area_IProp asArea
         {
             get { return new HighChart_Series_Area_IProp() { _parent = _parent }; }

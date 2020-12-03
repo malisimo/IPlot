@@ -39,6 +39,7 @@ let templateElementClass = @"
 ##ELEMENTMEMBERS##
 ##TRACETYPE##
 
+        /// <summary>Deep clone of chart element and all properties</summary>
         public override ChartElement DeepClone()
         {
             var obj = new ##ELEMENTTYPE##();
@@ -56,6 +57,7 @@ let templateElementMember = @"
         public ##NEW####PROPTYPE## ##PROPNAME## { get; set; } = null;"
 
 let templateElementTraceType = @"
+        /// <summary>The type of this series (##TRACETYPE##)</summary>
         public override string type_iplot { get { return ""##TRACETYPE##""; } }"
 
 let templateElementTraceClone = @"
@@ -70,7 +72,10 @@ let templatePropClass = @"
     /// ##DESCRIPTION##
     /// </summary>
     public class ##ELEMENTPROPTYPE## : ChartProp
-    {        
+    {
+        /// <summary>
+        /// Set ##ELEMENTPROPTYPE## property directly from element instance
+        /// </summary>
         public Func<HighChartsChart,HighChartsChart> Of(##ELEMENTTYPE## v)
         {
             var propPath = GetPath();
@@ -105,12 +110,16 @@ let templateArrayPropClass = @"
     /// </summary>
     public class ##ELEMENTPROPTYPE## : ChartProp, IArrayProp
     {
+        /// <summary>Last accessed array index</summary>
         private int _index;
+        
+        /// <summary>Last accessed array index</summary>
         public int Index
         {
             get => _index;
         }
 
+        /// <summary>Access specific element in this array</summary>
         public ##ARRAYSUBTYPE## this[int i]
         {
             get
@@ -135,7 +144,7 @@ let templatePropGetter = @"
             }
         }"
 
-let templatePropSetter = @"    
+let templatePropSetter = @"
         /// <summary>
         /// ##DESCRIPTION##
         /// </summary>

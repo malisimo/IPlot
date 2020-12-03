@@ -3,7 +3,7 @@
     <metadata>
         <id>IPlot</id>
         <title>IPlot</title>
-        <version>0.0.1-pre3</version>
+        <version>0.0.1-pre4</version>
         <description>Charting library for generating charts with HighCharts or Plotly</description>
         <authors>Matt Jones</authors>
         <license type="expression">MIT</license>
@@ -21,7 +21,9 @@
         <icon>Icon.png</icon>
     </metadata>
     <files>
-        <file src="src\IPlot\bin\Release\netstandard2.0\*.*" target="lib\netstandard2.0" />
+        <file src="src\IPlot\bin\Release\netstandard2.0\*.dll" target="lib\netstandard2.0" />
+        <file src="src\IPlot\bin\Release\netstandard2.0\*.pdb" target="lib\netstandard2.0" />
+        <file src="src\IPlot\bin\Release\netstandard2.0\*.xml" target="lib\netstandard2.0" />
         <file src="Icon.png" target="" />
     </files>
 </package>

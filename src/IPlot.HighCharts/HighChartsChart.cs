@@ -6,8 +6,10 @@ using Newtonsoft.Json;
 
 namespace IPlot.HighCharts
 {
+    /// The HighCharts chart object, containing all chart properties and traces
     public class HighChartsChart : ChartElement
     {
+        /// Constructor with default chart property initialisation
         public HighChartsChart()
         {
             this.chart.chart_iplot = new Chart_iplot()
@@ -24,14 +26,16 @@ namespace IPlot.HighCharts
         /// The chart object containing all chart properties
         public HighChart chart { get; set; } = new HighChart();
 
-        /// The chart's container div id.
+        /// The chart's container div id
         public string id { get; set; } = Guid.NewGuid().ToString();
 
-        /// The highcharts.js src.
+        /// The highcharts.js src
         public string highchartsSrc { get; set; } = Html.DefaultHighChartsSrc;
 
+        /// The collection of trace labels
         private IEnumerable<string> _labels;
 
+        /// Set a specific chart property, using the Chart.Props helper (F# style)
         public static FSharpFunc<Func<HighChartsChart, HighChartsChart>, FSharpFunc<HighChartsChart, HighChartsChart>> WithFs
         {
             get
@@ -43,16 +47,19 @@ namespace IPlot.HighCharts
             }
         }
 
+        /// Set a specific chart property, using the Chart.Props helper
         public static HighChartsChart With(Func<HighChartsChart, HighChartsChart> propFun, HighChartsChart HighChartsChart)
         {
             return propFun((HighChartsChart)HighChartsChart.DeepClone());
         }
 
+        /// Set a specific chart property, using the Chart.Props helper
         public HighChartsChart With(Func<HighChartsChart, HighChartsChart> propFun)
         {
             return With(propFun, this);
         }
 
+        /// Deep clone of the chart and all its properties
         public override ChartElement DeepClone()
         {
             var highchartsChart = new HighChartsChart();
@@ -62,6 +69,7 @@ namespace IPlot.HighCharts
             return highchartsChart;
         }
 
+        /// Serialise chart object to JSON
         public string serializeChart(HighChart chart)
         {
             return JsonConvert.SerializeObject(chart, Formatting.None, new JsonSerializerSettings
@@ -139,11 +147,13 @@ namespace IPlot.HighCharts
                     .Replace("[CHARTOBJ]", chartJson);
         }
 
+        /// Generate a chart from a collection of traces
         public void Plot(IEnumerable<Trace> data)
         {
             this.chart.series = data.ToList();
         }
 
+        /// Display the chart in a browser
         public void Show()
         {
             var html = GetHtml();
@@ -151,47 +161,47 @@ namespace IPlot.HighCharts
         }
 
 
-        /// Sets the chart's width.
+        /// Sets the chart's title
         public void WithTitle(string title)
         {
             this.chart.title.text = title;
         }
 
 
-        /// Sets the chart's width.
+        /// Sets the chart's width
         public void WithWidth(int width)
         {
             this.chart.chart_iplot.width = width;
         }
 
 
-        /// Sets the chart's height.
+        /// Sets the chart's height
         public void WithHeight(int height)
         {
             this.chart.chart_iplot.height = height;
         }
 
-        /// Sets the chart's container div id.
+        /// Sets the chart's container div id
         public void WithId(string id)
         {
             this.id = id;
         }
 
         /// Sets the data series label. Use this member if the
-        /// chart's data is a single series.
+        /// chart's data is a single series
         public void WithLabel(string label)
         {
             _labels = new string[] { label };
         }
 
         /// Sets the data series labels. Use this method if the
-        /// chart's data is a series collection.
+        /// chart's data is a series collection
         public void WithLabels(IEnumerable<string> labels)
         {
             _labels = labels.ToArray();
         }
 
-        /// Sets the chart's width and height.
+        /// Sets the chart's width and height
         public void WithSize(int width, int height)
         {
             WithWidth(width);
