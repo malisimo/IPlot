@@ -49,7 +49,7 @@ namespace IPlot.HighCharts
             return new List<string>() { };
         }
 
-        // Convert element type to a property name
+        /// Convert element type to a property name
         public static string ToPropertyName(string typeName)
         {
             var propName = typeName.Replace("_iplot","-iplot");

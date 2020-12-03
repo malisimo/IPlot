@@ -66,6 +66,11 @@ type Chart() =
         |> Seq.map (fun v -> (v :> IConvertible).ToDouble(null))
         |> Seq.toArray
 
+    static member internal ToFloatArray2d s =
+        s
+        |> Seq.map (fun (x,y) -> seq{(x :> IConvertible).ToDouble(null);(y :> IConvertible).ToDouble(null)})
+        |> Seq.toArray
+
     static member internal ToStringArray s =
         s
         |> Seq.map (fun s -> s.ToString())
@@ -78,26 +83,39 @@ type Chart() =
         Chart.Plot [scatter :> Trace]
 
     static member Line(data:seq<#key * #value>) =
-        let x = Seq.map fst data |> Chart.ToFloatArray
-        let y = Seq.map snd data |> Chart.ToFloatArray
-        let scatter = Scatter(data = x)
+        let scatter = Scatter(data_mat = Chart.ToFloatArray2d data)
         Chart.Plot [scatter :> Trace]
 
-    // static member Line(data:seq<#seq<#key * #value>>) =
-    //     let scatters =
-    //         data
-    //         |> Seq.map (fun series ->
-    //             let x = Seq.map fst series |> Chart.ToFloatArray
-    //             let y = Seq.map snd series |> Chart.ToFloatArray
-    //             Series(line = Line(data = Data(x = x, y = y))
-    //         )
-    //     Chart.Plot scatters
+    static member Line(data:seq<#seq<#key * #value>>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Scatter(data_mat = Chart.ToFloatArray2d series))
+        Chart.Plot scatters
 
     static member Cylinder(data:seq<#value>) =
         let cylinder = Cylinder(data = (data |> Chart.ToFloatArray))
         Chart.Plot [cylinder :> Trace]
-        |> Chart.With (Chart.Props.chart_iplot.type_iplot "cylinder")
         |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
         |> Chart.With (Chart.Props.chart_iplot.options3d.depth 50.)
         |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 25.)
+
+    static member Funnel(data:seq<#value>) =
+        let funnel = Funnel(data = (data |> Chart.ToFloatArray))
+        Chart.Plot [funnel :> Trace]
+
+    static member Funnel3d(data:seq<#value>) =
+        let funnel = Funnel3d(data = (data |> Chart.ToFloatArray))
+        Chart.Plot [funnel :> Trace]
+        |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 50.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 50.)
+
+    static member Pyramid3d(data:seq<#value>) =
+        let pyramid = Pyramid3d(data = (data |> Chart.ToFloatArray))
+        Chart.Plot [pyramid :> Trace]
+        |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 50.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 50.)
+
         

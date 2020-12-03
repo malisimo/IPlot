@@ -9,6 +9,16 @@ type value = IConvertible
 
 type Chart() =
     static member val Props = Chart_IProp() with get
+
+    static member internal ToFloatArray s =
+        s
+        |> Seq.map (fun v -> (v :> IConvertible).ToDouble(null))
+        |> Seq.toArray
+
+    static member internal ToStringArray s =
+        s
+        |> Seq.map (fun s -> s.ToString())
+        |> Seq.toArray
     
     static member With (propFun: Func<PlotlyChart, PlotlyChart>) (chart: PlotlyChart) =
         propFun.Invoke (chart.DeepClone() :?> PlotlyChart)
@@ -123,16 +133,6 @@ type Chart() =
             |> Chart.ToFloatArray
         let area = Scatter(x = x, y = y, fill = "tozeroy")
         Chart.Plot [area]
-
-    static member internal ToFloatArray s =
-        s
-        |> Seq.map (fun v -> (v :> IConvertible).ToDouble(null))
-        |> Seq.toArray
-
-    static member internal ToStringArray s =
-        s
-        |> Seq.map (fun s -> s.ToString())
-        |> Seq.toArray
 
     static member Area(data:seq<#key * #value>) =
         let x = Seq.map fst data |> Chart.ToFloatArray
@@ -315,6 +315,28 @@ type Chart() =
         Chart.Plot heatmap
 
     static member Surface(data:seq<seq<#value>>) =
+        let zData =
+            data
+            |> Seq.map (fun arr ->
+                arr
+                |> Seq.map (fun v -> (v :> IConvertible).ToDouble(null)))
+        
+        let surface =
+            Surface(
+                z = zData,
+                type_iplot = "surface",
+                contours = Contours(
+                    z = Z(
+                        show = !< true,
+                        usecolormap = !< true,
+                        highlightcolor = "#42f462",
+                        project = Project( z = !< true)
+                    )
+                )
+            )
+        Chart.Plot surface
+
+    static member Surface(data:#value [][]) =
         let zData =
             data
             |> Seq.map (fun arr ->
