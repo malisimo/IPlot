@@ -78,15 +78,32 @@ type Chart() =
 
     static member Line(data:seq<#value>) =
         let scatter =
-            Scatter(data = (data |> Chart.ToFloatArray),
+            Line(data = (data |> Chart.ToFloatArray),
                 name = "Trace 0")
         Chart.Plot [scatter :> Trace]
 
     static member Line(data:seq<#key * #value>) =
-        let scatter = Scatter(data_mat = Chart.ToFloatArray2d data)
+        let scatter = Line(data_mat = Chart.ToFloatArray2d data)
         Chart.Plot [scatter :> Trace]
 
     static member Line(data:seq<#seq<#key * #value>>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Line(data_mat = Chart.ToFloatArray2d series))
+        Chart.Plot scatters
+
+    static member Scatter(data:seq<#value>) =
+        let scatter =
+            Scatter(data = (data |> Chart.ToFloatArray),
+                name = "Trace 0")
+        Chart.Plot [scatter :> Trace]
+
+    static member Scatter(data:seq<#key * #value>) =
+        let scatter = Scatter(data_mat = Chart.ToFloatArray2d data)
+        Chart.Plot [scatter :> Trace]
+
+    static member Scatter(data:seq<#seq<#key * #value>>) =
         let scatters =
             data
             |> Seq.map (fun series ->

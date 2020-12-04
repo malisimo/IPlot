@@ -192,7 +192,13 @@ let makeSafeDesc tabs (desc:string) =
         Array.init tabs (fun _ -> "    ")
         |> String.concat ""
 
-    desc.Replace("\n",sprintf "\r\n%s/// " tabStr)
+    desc
+        .Replace("\r","")
+        .Replace("\n",sprintf "\n%s/// " tabStr)
+        .Replace("<","")
+        .Replace(">","")
+        .Replace("&","and")
+
 
 let genElementFile elType elDesc baseType isRootElement (props:PropertyTokens seq) =
     let validProps =
@@ -205,7 +211,7 @@ let genElementFile elType elDesc baseType isRootElement (props:PropertyTokens se
         validProps
         |> Seq.map (fun p ->
             let name = Utils.makeSafeTypeName p.PropertyName
-            let desc = if p.Description <> "" then p.Description.Replace("\n","\n        /// ") else p.PropertyName
+            let desc = if p.Description <> "" then p.Description else p.PropertyName
             let newStr = ""
                 // match elBaseType with
                 // | Some(_) when name = "name" -> "new "

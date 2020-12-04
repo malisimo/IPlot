@@ -17,6 +17,17 @@ module ``Line properties`` =
 
     [<Fact>]
     let ``Basic Line Plot``() =
+        [0.2; 0.8; 0.5; 1.1]
+        |> Chart.Line
+        |> Chart.WithWidth 700
+        |> Chart.WithHeight 500
+        |> Chart.WithTitle "Basic line plot"
+        |> Chart.Show
+
+        Assert.True(true)
+
+    [<Fact>]
+    let ``Two Lines``() =
         let trace1 =
             Line(
                 data = [0.2; 0.8; 0.5; 1.1]
@@ -40,7 +51,7 @@ module ``Scatter properties`` =
     open TestUtils
     
     [<Fact>]
-    let ``Set name`` () =
+    let ``Set Name`` () =
         let chart =
             createChart()
             |> Chart.With (Chart.Props.series.[0].name "Mr Susan")
@@ -54,10 +65,10 @@ module ``Scatter properties`` =
                 data_mat = [[1.;-1.]; [2.;1.5]; [3.;-0.5]; [4.;4.8]]
             )
                 
-        [trace1]
-        |> Chart.Plot
-        |> Chart.With (Chart.Props.series.[0].name "XY Trace")
-        |> Chart.With (Chart.Props.plotOptions.scatter.lineWidth 4.)
+        [[1.;-1.]; [2.;1.5]; [3.;-0.5]; [4.;4.8]]
+        |> Chart.Scatter
+        |> Chart.With (Chart.Props.series.[0].name "XY scatter plot")
+        |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "d")
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show
@@ -76,7 +87,6 @@ module ``3D properties`` =
         
         [trace1]
         |> Chart.Plot
-        |> Chart.With (Chart.Props.chart_iplot.type_iplot "cylinder")
         |> Chart.With (Chart.Props.series.[0].asCylinder.colorByPoint true)
         |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
         |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 15.)
@@ -99,7 +109,6 @@ module ``3D properties`` =
         
         [trace1]
         |> Chart.Plot
-        |> Chart.With (Chart.Props.chart_iplot.type_iplot "funnel3d")
         |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
         |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 10.)
         |> Chart.With (Chart.Props.chart_iplot.options3d.beta 100.)
@@ -121,7 +130,6 @@ module ``3D properties`` =
         
         [trace1]
         |> Chart.Plot
-        |> Chart.With (Chart.Props.chart_iplot.type_iplot "pyramid3d")
         |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
         |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 10.)
         |> Chart.With (Chart.Props.chart_iplot.options3d.beta 100.)
@@ -145,7 +153,6 @@ module ``Error bar properties`` =
         
         [trace1]
         |> Chart.Plot
-        |> Chart.With (Chart.Props.chart_iplot.type_iplot "errorbar")
         |> Chart.With (Chart.Props.chart_iplot.backgroundColor "#444")
         |> Chart.With (Chart.Props.plotOptions.errorbar.lineWidth 5.0)
         |> Chart.With (Chart.Props.plotOptions.errorbar.color "#AAE")
@@ -171,7 +178,6 @@ module ``Heatmap properties`` =
         
         [trace1]
         |> Chart.Plot
-        |> Chart.With (Chart.Props.chart_iplot.type_iplot "heatmap")
         |> Chart.With (Chart.Props.series.[0].asHeatmap.borderWidth 0.)
         |> Chart.With (Chart.Props.colorAxis.[0].min 0.)
         |> Chart.With (Chart.Props.colorAxis.[0].max 1.)
@@ -196,7 +202,6 @@ module ``Streamgraph properties`` =
         
         [trace1]
         |> Chart.Plot
-        |> Chart.With (Chart.Props.chart_iplot.type_iplot "streamgraph")
         |> Chart.With (Chart.Props.series.[0].asStreamgraph.borderColor "#f32")
         |> Chart.With (Chart.Props.series.[0].asStreamgraph.borderWidth 5.)
         |> Chart.WithWidth 700
@@ -218,7 +223,6 @@ module ``Spline properties`` =
         
         [trace1]
         |> Chart.Plot
-        |> Chart.With (Chart.Props.chart_iplot.type_iplot "spline")
         |> Chart.With (Chart.Props.series.[0].asSpline.dashStyle "ShortDashDot")
         |> Chart.With (Chart.Props.series.[0].asSpline.lineWidth 6.)
         |> Chart.WithWidth 700
@@ -243,7 +247,6 @@ module ``Vector properties`` =
         
         [trace1]
         |> Chart.Plot
-        |> Chart.With (Chart.Props.chart_iplot.type_iplot "vector")
         |> Chart.With (Chart.Props.series.[0].asVector.lineWidth 5.)
         |> Chart.With (Chart.Props.series.[0].asVector.color "red")
         |> Chart.WithWidth 700
@@ -297,7 +300,6 @@ module ``Tree properties`` =
         
         [trace1]
         |> Chart.Plot
-        |> Chart.With (Chart.Props.chart_iplot.type_iplot "sunburst")
         |> Chart.With (Chart.Props.series.[0].asSunburst.lineWidth 2.0)
         |> Chart.With (Chart.Props.series.[0].asSunburst.colorByPoint true)
         |> Chart.WithWidth 700
@@ -346,7 +348,6 @@ module ``Tilemap properties`` =
         
         [trace1]
         |> Chart.Plot
-        |> Chart.With (Chart.Props.chart_iplot.type_iplot "tilemap")
         |> Chart.With (Chart.Props.series.[0].asTilemap.dataLabels.[0].enabled true)
         |> Chart.With (Chart.Props.series.[0].asTilemap.dataLabels.[0].format "{point.name}")
         |> Chart.With (Chart.Props.series.[0].asTilemap.pointPadding 4.)

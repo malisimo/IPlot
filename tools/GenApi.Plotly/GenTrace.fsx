@@ -4,6 +4,7 @@
 let templateClass = @"
 namespace IPlot.Plotly
 {
+    /// <summary>Base class for all Series types</summary>
     public class Trace_IProp : ChartProp
     {##TRACES##
     }
@@ -11,6 +12,7 @@ namespace IPlot.Plotly
 "
 
 let templateProp = @"
+        /// ##DESCRIPTION##
         public ##TRACE##_IProp as##TRACE##
         {
             get { return new ##TRACE##_IProp() { _parent = _parent }; }
@@ -18,8 +20,8 @@ let templateProp = @"
 
 open System.IO
 
-let elPath = Path.Combine(__SOURCE_DIRECTORY__,"../src/IPlot.Plotly/Elements")
-let outFile = Path.Combine(__SOURCE_DIRECTORY__,"../src/IPlot.Plotly/BaseProps/Trace_IProp.cs")
+let elPath = Path.Combine(__SOURCE_DIRECTORY__,"../../src/IPlot.Plotly/Elements")
+let outFile = Path.Combine(__SOURCE_DIRECTORY__,"../../src/IPlot.Plotly/BaseProps/Trace_IProp.cs")
 
 let traceTypes =
     Directory.GetFiles elPath
@@ -29,9 +31,15 @@ let traceTypes =
 
 printfn "Found %i trace types" (Seq.length traceTypes)
 
+let makeDesc t =
+    sprintf "<summary>Cast trace to %s type for setting specific parameters</summary>" t
+
 let propStr =
     traceTypes
-    |> Seq.map (fun t -> templateProp.Replace("##TRACE##", t))
+    |> Seq.map (fun t ->
+        templateProp
+            .Replace("##TRACE##", t)
+            .Replace("##DESCRIPTION##", makeDesc t))
     |> String.concat "\n"
 
 let classStr =

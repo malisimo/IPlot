@@ -4,6 +4,7 @@
 let templateClass = @"
 namespace IPlot.HighCharts
 {
+    /// <summary>Base class for all Trace types</summary>
     public class Trace_IProp : ChartProp
     {##TRACES##
     }
@@ -11,6 +12,7 @@ namespace IPlot.HighCharts
 "
 
 let templateProp = @"
+        /// ##DESCRIPTION##
         public ##TRACE## as##TRACESHORT##
         {
             get { return new ##TRACE##() { _parent = _parent }; }
@@ -25,6 +27,9 @@ let outFile = Path.Combine(__SOURCE_DIRECTORY__,"../../src/IPlot.HighCharts/Base
 let makeTraceType t =
     "HighChart_Series_" + t + "_IProp"
 
+let makeDesc t =
+    sprintf "<summary>Cast trace to %s type for setting specific parameters</summary>" t
+
 let traceTypes =
     Directory.GetFiles elPath
     |> Seq.map (fun f -> (f, File.ReadAllText f))
@@ -38,7 +43,11 @@ printfn "Found %i trace types" (Seq.length traceTypes)
 
 let propStr =
     traceTypes
-    |> Seq.map (fun t -> templateProp.Replace("##TRACE##", makeTraceType t).Replace("##TRACESHORT##", t))
+    |> Seq.map (fun t ->
+        templateProp
+            .Replace("##TRACE##", makeTraceType t)
+            .Replace("##TRACESHORT##", t)
+            .Replace("##DESCRIPTION##", makeDesc t))
     |> String.concat "\n"
 
 let classStr =

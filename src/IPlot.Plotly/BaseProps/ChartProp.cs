@@ -2,11 +2,14 @@ using System.Collections.Generic;
 
 namespace IPlot.Plotly
 {
+    /// Base class for chart property helpers
     public class ChartProp
     {
+        /// The parent property
         internal ChartProp _parent { get; set; }
 
 
+        /// Return the full path of this property, as a heirachy list
         public virtual List<string> GetPath()
         {
             var isArray = false;
@@ -47,6 +50,7 @@ namespace IPlot.Plotly
             return new List<string>() { };
         }
 
+        /// Convert element type to a property name
         public static string ToPropertyName(string typeName)
         {
             var propName = typeName;
@@ -66,6 +70,7 @@ namespace IPlot.Plotly
             return propName;
         }
 
+        /// Convert a value in as best a way as possible, even if types do not match
         public static T SafeConvert<T, U>(T _, U value)
         {
             var underlyingType = System.Nullable.GetUnderlyingType(typeof(T));

@@ -178,7 +178,12 @@ let makeSafeDesc tabs (desc:string) =
         Array.init tabs (fun _ -> "    ")
         |> String.concat ""
 
-    desc.Replace("\n",sprintf "\r\n%s/// " tabStr)
+    desc
+        .Replace("\r","")
+        .Replace("\n",sprintf "\n%s/// " tabStr)
+        .Replace("<","")
+        .Replace(">","")
+        .Replace("&","and")
 
 let genElementFile elType elDesc elBaseType (props:PropertyTokens seq) =
     let validProps =
