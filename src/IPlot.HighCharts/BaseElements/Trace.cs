@@ -35,7 +35,7 @@ namespace IPlot.HighCharts
         /// <summary>Define the z index of the series.</summary>
         public double zIndex { get; set; }
 
-        /// <summary>Deep clone of chart element and all properties</summary>
+        /// <summary>Deep copy of chart element and all properties</summary>
         public static void DeepCopy(Trace src, Trace dest)
         {
             dest.name = src.name;

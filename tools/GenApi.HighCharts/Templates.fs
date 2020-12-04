@@ -212,10 +212,6 @@ let genElementFile elType elDesc baseType isRootElement (props:PropertyTokens se
         |> Seq.map (fun p ->
             let name = Utils.makeSafeTypeName p.PropertyName
             let desc = if p.Description <> "" then p.Description else p.PropertyName
-            let newStr = ""
-                // match elBaseType with
-                // | Some(_) when name = "name" -> "new "
-                // | _ -> ""
             let propTypeStr =
                 if isRootElement && p.PropertyName = "series" then
                     "IEnumerable<Trace>"
@@ -226,7 +222,7 @@ let genElementFile elType elDesc baseType isRootElement (props:PropertyTokens se
             |> strRep description (makeSafeDesc 2 desc)
             |> strRep elementPropName name
             |> strRep propType propTypeStr
-            |> strRep newProp newStr)
+            |> strRep newProp "")
         |> String.concat "\n"
 
     let elClone =

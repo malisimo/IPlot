@@ -18,6 +18,8 @@ let classBody = "##CLASS##"
 let body = "##BODY##"
 let newProp = "##NEW##"
 let description = "##DESCRIPTION##"
+let traceType = "##TRACETYPE##"
+let traceClone = "##TRACECLONE##"
 
 let templateFile = @"
 using System;
@@ -35,11 +37,13 @@ let templateElementClass = @"
     public class ##ELEMENTTYPE## : ##ELEMENTBASE##
     {
 ##ELEMENTMEMBERS##
+##TRACETYPE##
 
         /// <summary>Deep clone of chart element and all properties</summary>
         public override ChartElement DeepClone()
         {
             var obj = new ##ELEMENTTYPE##();
+##TRACECLONE##
 ##ELEMENTCLONE##
             return obj;
         }
@@ -51,6 +55,15 @@ let templateElementMember = @"
         /// ##DESCRIPTION##
         /// </summary>
         public ##NEW####PROPTYPE## ##PROPNAME## { get; set; } = null;"
+
+let templateElementTraceType = @"
+        /// <summary>The type of this series (##TRACETYPE##)</summary>
+        public override string type_iplot { get { return ""##TRACETYPE##""; } }"
+
+let templateElementTraceClone = @"
+            if (this is Trace trace)
+                Trace.DeepCopy(trace, obj);
+"
 
 let templateElementClone = @"            obj.##PROPNAME## = ##PROPNAME##;"
 
@@ -217,6 +230,17 @@ let genElementFile elType elDesc elBaseType (props:PropertyTokens seq) =
             |> strRep elementPropName name)
         |> String.concat "\n"
 
+    let traceTypeStr,traceCloneStr =
+        match elBaseType with
+        | Some(baseType) when baseType <> "ChartElement" ->
+            let tt =
+                templateElementTraceType
+                |> strRep traceType (Utils.firstCharToLower elType)
+
+            tt,templateElementTraceClone
+        | _ ->
+            "",""
+
     let elClass =
         templateElementClass
         |> strRep elementType elType
@@ -224,6 +248,8 @@ let genElementFile elType elDesc elBaseType (props:PropertyTokens seq) =
         |> strRep elementMembers elMembers
         |> strRep elementClone elClone
         |> strRep elementBase (elBaseType |> Option.defaultValue "ChartElement")
+        |> strRep traceType traceTypeStr
+        |> strRep traceClone traceCloneStr
 
     templateFile
     |> strRep classBody elClass

@@ -79,8 +79,19 @@ module Gen =
             ]
 
         let toElementFile ((elType:string, elBaseType:string option, elDesc:string), elMembers:Property seq) =
-            let fileStr =
+            let validMembers =
                 elMembers
+                |> Seq.filter (fun p ->                    
+                    match p.name,p.``type``,p.rootElement with
+                    | "type",ElementString,Some("Trace") ->
+                        false
+                    | "name",ElementString,Some("Trace") ->
+                        false
+                    | _ ->
+                        true)
+
+            let fileStr =
+                validMembers
                 |> Seq.distinctBy (fun x -> x.name)
                 |> Seq.map Property.ToPropertyTokens
                 |> Templates.genElementFile elType elDesc elBaseType
