@@ -261,7 +261,7 @@ module ``Surface properties`` =
         ]
         |> Chart.Surface
         |> Chart.With (Chart.Props.traces.[0].asSurface.yt_ t)
-        |> Chart.With (Chart.Props.layout.paper_bgcolor "#333")
+        |> Chart.With (Chart.Props.layout.paper_bgcolor "#DDD")
         |> Chart.WithWidth 1200
         |> Chart.WithHeight 900
         |> Chart.WithTitle "Time Surface"

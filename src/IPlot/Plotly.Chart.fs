@@ -330,6 +330,9 @@ type Chart() =
                 type_iplot = "surface"
             )
         Chart.Plot surface
+        |> Chart.With (Chart.Props.layout.scene.xaxis.showspikes false)
+        |> Chart.With (Chart.Props.layout.scene.yaxis.showspikes false)
+        |> Chart.With (Chart.Props.layout.scene.zaxis.showspikes false)
 
     static member Surface(xData:seq<#value>, yData:seq<#value>, zData:seq<seq<#value>>) =
         let xData2 =
@@ -353,6 +356,9 @@ type Chart() =
                 type_iplot = "surface"
             )
         Chart.Plot surface
+        |> Chart.With (Chart.Props.layout.scene.xaxis.showspikes false)
+        |> Chart.With (Chart.Props.layout.scene.yaxis.showspikes false)
+        |> Chart.With (Chart.Props.layout.scene.zaxis.showspikes false)
 
     static member Surface(data:#value [][]) =
         let zData =
@@ -368,4 +374,7 @@ type Chart() =
                 type_iplot = "surface"
             )
         Chart.Plot surface
+        |> Chart.With (Chart.Props.layout.scene.xaxis.showspikes false)
+        |> Chart.With (Chart.Props.layout.scene.yaxis.showspikes false)
+        |> Chart.With (Chart.Props.layout.scene.zaxis.showspikes false)
 
