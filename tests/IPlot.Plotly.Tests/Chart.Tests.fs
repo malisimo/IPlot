@@ -173,20 +173,20 @@ module ``Heatmap properties`` =
 
     [<Fact>]
     let ``Time Heatmap``() =
-        let xt = [
-            DateTime(2020,9,12,22,30,0)
-            DateTime(2020,9,13,22,30,0)
-            DateTime(2020,9,15,22,30,0)
-            DateTime(2020,9,19,22,30,0)]
+        let n = 365
+        let t =
+            (DateTime(2012,1,1,0,0,0),0)
+            |> Seq.unfold (fun (t,i) ->
+                if i > n then None
+                else Some(t,(t.AddDays(1.),i+1)))
         let z = [
-                [0.1;0.3;0.8]
-                [0.2;0.35;0.85]
-                [0.9;1.0;1.4]
-                [1.2;1.3;1.8]] |> Seq.map (Seq.ofList)
+            for i in 1..n ->
+                seq { for a in -1. .. 0.1 .. 1. -> Math.Cos(0.1 * float i) * Math.Sin(10.0*a) / Math.Exp(a) }
+            ]
 
         z
         |> Chart.Heatmap
-        |> Chart.With (Chart.Props.traces.[0].asHeatmap.xt_ xt)
+        |> Chart.With (Chart.Props.traces.[0].asHeatmap.yt_ t)
         |> Chart.WithWidth 1200
         |> Chart.WithHeight 900
         |> Chart.WithTitle "Heatmap"
@@ -194,20 +194,20 @@ module ``Heatmap properties`` =
 
     [<Fact>]
     let ``Time HeatmapGl``() =
-        let xt = [
-            DateTime(2020,9,12,22,30,0)
-            DateTime(2020,9,13,22,30,0)
-            DateTime(2020,9,15,22,30,0)
-            DateTime(2020,9,19,22,30,0)]
+        let n = 365
+        let t =
+            (DateTime(2012,1,1,0,0,0),0)
+            |> Seq.unfold (fun (t,i) ->
+                if i > n then None
+                else Some(t,(t.AddDays(1.),i+1)))
         let z = [
-                [0.1;0.3;0.8]
-                [0.2;0.35;0.85]
-                [0.9;1.0;1.4]
-                [1.2;1.3;1.8]] |> Seq.map (Seq.ofList)
+            for i in 1..n ->
+                seq { for a in -1. .. 0.1 .. 1. -> Math.Cos(0.1 * float i) * Math.Sin(10.0*a) / Math.Exp(a) }
+            ]
 
         z
         |> Chart.HeatmapGl
-        |> Chart.With (Chart.Props.traces.[0].asHeatmapgl.xt_ xt)
+        |> Chart.With (Chart.Props.traces.[0].asHeatmapgl.yt_ t)
         |> Chart.WithWidth 1200
         |> Chart.WithHeight 900
         |> Chart.WithTitle "Heatmap GL"
@@ -245,20 +245,26 @@ module ``Surface properties`` =
 
     [<Fact>]
     let ``Time Surface``() =
-        let xt = [
-            DateTime(2020,9,12,22,30,0)
-            DateTime(2020,9,13,22,30,0)
-            DateTime(2020,9,15,22,30,0)
-            DateTime(2020,9,19,22,30,0)]
-        let z = [
-                [0.1;0.3;0.8]
-                [0.2;0.35;0.85]
-                [0.9;1.0;1.4]
-                [1.2;1.3;1.8]] |> Seq.map (Seq.ofList)
+        let n = 365
+        let t =
+            (DateTime(2012,1,1,0,0,0),0)
+            |> Seq.unfold (fun (t,i) ->
+                if i > n then None
+                else Some(t,(t.AddDays(1.),i+1)))
 
-        z
+        let nf = float n
+        let rad = 2. * Math.PI
+
+        [ for i in 1..n ->
+            let x = ((float i) - (0.5*nf)) * rad / nf
+            seq { for y in -rad .. 0.1 .. rad -> x * Math.Exp(-(x*x)-(y*y)) }
+        ]
         |> Chart.Surface
-        |> Chart.With (Chart.Props.traces.[0].asSurface.xt_ xt)
+        |> Chart.With (Chart.Props.traces.[0].asSurface.yt_ t)
+        |> Chart.With (Chart.Props.layout.paper_bgcolor "#333")
+        |> Chart.With (Chart.Props.traces.[0].asSurface.contours.x.show false)
+        |> Chart.With (Chart.Props.traces.[0].asSurface.contours.y.show false)
+        |> Chart.With (Chart.Props.traces.[0].asSurface.contours.z.show false)
         |> Chart.WithWidth 1200
         |> Chart.WithHeight 900
         |> Chart.WithTitle "Time Surface"
