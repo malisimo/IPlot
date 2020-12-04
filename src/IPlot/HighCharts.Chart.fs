@@ -79,12 +79,48 @@ type Chart() =
     static member Line(data:seq<#value>) =
         let scatter =
             Line(data = (data |> Chart.ToFloatArray),
-                name = "Trace 0")
+                marker = Marker(enabled = Nullable<bool>(false)))
+        Chart.Plot [scatter :> Trace]
+
+    static member Line(data:seq<float []>) =
+        let scatter =
+            Line(
+                data_mat = (data |> Seq.map (Seq.ofArray)),
+                marker = Marker(enabled = Nullable<bool>(false)))
+        Chart.Plot [scatter :> Trace]
+
+    static member Line(data:seq<float list>) =
+        let scatter =
+            Line(
+                data_mat = (data |> Seq.map (Seq.ofList)),
+                marker = Marker(enabled = Nullable<bool>(false)))
+        Chart.Plot [scatter :> Trace]
+
+    static member Line(data:seq<seq<float>>) =
+        let scatter =
+            Line(data_mat = data)
         Chart.Plot [scatter :> Trace]
 
     static member Line(data:seq<#key * #value>) =
-        let scatter = Line(data_mat = Chart.ToFloatArray2d data)
+        let scatter =
+            Line(
+                data_mat = Chart.ToFloatArray2d data,
+                marker = Marker(enabled = Nullable<bool>(false)))
         Chart.Plot [scatter :> Trace]
+
+    static member Line(data:seq<(float * float) []>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Line(data_mat = (series |> Seq.map (fun (x,y) -> seq { x; y }))))
+        Chart.Plot scatters
+
+    static member Line(data:seq<(float * float) list>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Line(data_mat = (series |> Seq.map (fun (x,y) -> seq { x; y }))))
+        Chart.Plot scatters
 
     static member Line(data:seq<#seq<#key * #value>>) =
         let scatters =
@@ -99,9 +135,28 @@ type Chart() =
                 name = "Trace 0")
         Chart.Plot [scatter :> Trace]
 
+    static member Scatter(data:seq<float []>) =
+        let scatter = Scatter(data_mat = (data |> Seq.map (Seq.ofArray)))
+        Chart.Plot [scatter :> Trace]
+
+    static member Scatter(data:seq<float list>) =
+        let scatter = Scatter(data_mat = (data |> Seq.map (Seq.ofList)))
+        Chart.Plot [scatter :> Trace]
+
+    static member Scatter(data:seq<seq<float>>) =
+        let scatter = Scatter(data_mat = data)
+        Chart.Plot [scatter :> Trace]
+
     static member Scatter(data:seq<#key * #value>) =
         let scatter = Scatter(data_mat = Chart.ToFloatArray2d data)
         Chart.Plot [scatter :> Trace]
+
+    static member Scatter(data:seq<(float * float) []>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Scatter(data_mat = (series |> Seq.map (fun (x,y) -> seq { x; y }))))
+        Chart.Plot scatters
 
     static member Scatter(data:seq<#seq<#key * #value>>) =
         let scatters =
@@ -114,8 +169,10 @@ type Chart() =
         let cylinder = Cylinder(data = (data |> Chart.ToFloatArray))
         Chart.Plot [cylinder :> Trace]
         |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 50.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 25.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 15.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.beta 15.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 20.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 500.)
 
     static member Funnel(data:seq<#value>) =
         let funnel = Funnel(data = (data |> Chart.ToFloatArray))
@@ -125,14 +182,17 @@ type Chart() =
         let funnel = Funnel3d(data = (data |> Chart.ToFloatArray))
         Chart.Plot [funnel :> Trace]
         |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 50.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 50.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 10.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.beta 100.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 200.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 50.)        
 
     static member Pyramid3d(data:seq<#value>) =
         let pyramid = Pyramid3d(data = (data |> Chart.ToFloatArray))
         Chart.Plot [pyramid :> Trace]
         |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 50.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 10.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.beta 100.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 200.)
         |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 50.)
-
         

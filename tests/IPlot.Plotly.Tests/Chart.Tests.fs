@@ -218,13 +218,16 @@ module ``Surface properties`` =
     
     [<Fact>]
     let ``Basic Surface``() =
-        let r = System.Random(2539)
+        let xData = seq { -2. .. 0.1 .. 2. }
+        let yData = xData
         let zData =
             seq {
-                for _ in 1..100 do
-                    let v = r.NextDouble()
-                    yield [v;v+2.;v+3.] |> List.toSeq
-                    }
+                for x in xData do
+                    yield [
+                        for y in yData do
+                            yield Math.Cos(5. * (x*x + y*y)) / Math.Exp(0.6 * (x*x + y*y))
+                    ] |> List.toSeq
+                }
 
         let layout =
             Layout(
@@ -233,10 +236,10 @@ module ``Surface properties`` =
                 )
             )
 
-        zData
+        (xData,yData,zData)
         |> Chart.Surface
-        |> Chart.WithWidth 700
-        |> Chart.WithHeight 900
+        |> Chart.WithWidth 900
+        |> Chart.WithHeight 700
         |> Chart.WithLayout layout
         |> Chart.Show
 

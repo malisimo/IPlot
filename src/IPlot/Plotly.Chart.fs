@@ -296,6 +296,7 @@ type Chart() =
         let heatmap =
             Heatmap(
                 z = zData,
+                colorscale = "Portland",
                 type_iplot = "heatmapgl"
             )
         Chart.Plot heatmap
@@ -310,6 +311,7 @@ type Chart() =
         let heatmap =
             Heatmapgl(
                 z = zData,
+                colorscale = "Portland",
                 type_iplot = "heatmapgl"
             )
         Chart.Plot heatmap
@@ -324,15 +326,31 @@ type Chart() =
         let surface =
             Surface(
                 z = zData,
-                type_iplot = "surface",
-                contours = Contours(
-                    z = Z(
-                        show = !< true,
-                        usecolormap = !< true,
-                        highlightcolor = "#42f462",
-                        project = Project( z = !< true)
-                    )
-                )
+                colorscale = "Portland",
+                type_iplot = "surface"
+            )
+        Chart.Plot surface
+
+    static member Surface(xData:seq<#value>, yData:seq<#value>, zData:seq<seq<#value>>) =
+        let xData2 =
+            xData |> Seq.map (fun v -> (v :> IConvertible).ToDouble(null))
+        
+        let yData2 =
+            yData |> Seq.map (fun v -> (v :> IConvertible).ToDouble(null))
+        
+        let zData2 =
+            zData
+            |> Seq.map (fun arr ->
+                arr
+                |> Seq.map (fun v -> (v :> IConvertible).ToDouble(null)))
+        
+        let surface =
+            Surface(
+                x = xData2,
+                y = yData2,
+                z = zData2,
+                colorscale = "Portland",
+                type_iplot = "surface"
             )
         Chart.Plot surface
 
@@ -346,15 +364,8 @@ type Chart() =
         let surface =
             Surface(
                 z = zData,
-                type_iplot = "surface",
-                contours = Contours(
-                    z = Z(
-                        show = !< true,
-                        usecolormap = !< true,
-                        highlightcolor = "#42f462",
-                        project = Project( z = !< true)
-                    )
-                )
+                colorscale = "Portland",
+                type_iplot = "surface"
             )
         Chart.Plot surface
 

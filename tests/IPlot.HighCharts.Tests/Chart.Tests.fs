@@ -59,16 +59,11 @@ module ``Scatter properties`` =
         Assert.Equal("Mr Susan", chart.chart.series.ElementAt(0).name)
 
     [<Fact>]
-    let ``X/Y Scatter Plot``() =
-        let trace1 =
-            Scatter(
-                data_mat = [[1.;-1.]; [2.;1.5]; [3.;-0.5]; [4.;4.8]]
-            )
-                
+    let ``X/Y Scatter Plot``() =                
         [[1.;-1.]; [2.;1.5]; [3.;-0.5]; [4.;4.8]]
         |> Chart.Scatter
         |> Chart.With (Chart.Props.series.[0].name "XY scatter plot")
-        |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "d")
+        |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "diamond")
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show
@@ -79,20 +74,10 @@ module ``3D properties`` =
 
     [<Fact>]
     let ``3D Cylinder Plot``() =
-        let trace1 =
-            Cylinder(
-                data = [1.; 2.; 3.; 4.; 3.; 2.; 1.],
-                name = "Cylinder"
-            )
         
-        [trace1]
-        |> Chart.Plot
+        [1.; 2.; 3.; 4.; 3.; 2.; 1.]
+        |> Chart.Cylinder
         |> Chart.With (Chart.Props.series.[0].asCylinder.colorByPoint true)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 15.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.beta 15.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 20.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 500.)
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show
@@ -107,13 +92,8 @@ module ``3D properties`` =
                 name = "Funnel3d"
             )
         
-        [trace1]
-        |> Chart.Plot
-        |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 10.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.beta 100.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 200.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 50.)
+        [101.; 202.; 96.; 46.; 66.; 20.; 121.]
+        |> Chart.Funnel3d
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show
@@ -121,20 +101,9 @@ module ``3D properties`` =
         Assert.True(true)
 
     [<Fact>]
-    let ``3D Pyramid Plot``() =
-        let trace1 =
-            Pyramid3d(
-                data = [31.; 16.; 29.; 4.; 11.; 19.; 22.],
-                name = "Pyramid3d"
-            )
-        
-        [trace1]
-        |> Chart.Plot
-        |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 10.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.beta 100.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 200.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 50.)
+    let ``3D Pyramid Plot``() =        
+        [31.; 16.; 29.; 4.; 11.; 19.; 22.]
+        |> Chart.Pyramid3d
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show
