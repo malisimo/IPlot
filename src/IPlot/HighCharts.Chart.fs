@@ -46,39 +46,32 @@ type Chart() =
     /// Sets the chart's width.
     static member WithTitle title (chart:HighChartsChart) =
         chart.WithTitle title
-        chart
 
     /// Sets the chart's width.
     static member WithWidth width (chart:HighChartsChart) =
         chart.WithWidth width
-        chart
     
     /// Sets the chart's height.
     static member WithHeight height (chart:HighChartsChart) =
         chart.WithHeight height
-        chart
 
     /// Sets the chart's container div id.
     static member WithId id (chart:HighChartsChart) =
         chart.WithId id
-        chart
 
     /// Sets the data series label. Use this member if the
     /// chart's data is a single series.
     static member WithLabel label (chart:HighChartsChart) =
         chart.WithLabel label
-        chart
 
     /// Sets the data series labels. Use this member if the
     /// chart's data is a series collection.
     static member WithLabels labels (chart:HighChartsChart) =
         chart.WithLabels labels
-        chart
 
     /// Sets the chart's height.
     static member WithSize size (chart:HighChartsChart) =
         chart.WithSize size
-        chart
 
     static member internal ToFloatArray s =
         s
@@ -94,6 +87,28 @@ type Chart() =
         s
         |> Seq.map (fun s -> s.ToString())
         |> Seq.toArray
+
+    static member Cylinder(data:seq<#value>) =
+        let cylinder = Cylinder(data = (data |> Chart.ToFloatArray))
+        Chart.Plot [cylinder :> Trace]
+        |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 15.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.beta 15.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 20.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 500.)
+
+    static member Funnel(data:seq<#value>) =
+        let funnel = Funnel(data = (data |> Chart.ToFloatArray))
+        Chart.Plot [funnel :> Trace]
+
+    static member Funnel3d(data:seq<#value>) =
+        let funnel = Funnel3d(data = (data |> Chart.ToFloatArray))
+        Chart.Plot [funnel :> Trace]
+        |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 10.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.beta 100.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 200.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 50.)    
 
     static member Line(data:seq<#value>) =
         let scatter =
@@ -146,7 +161,16 @@ type Chart() =
             data
             |> Seq.map (fun series ->
                 Line(data_mat = Chart.ToFloatArray2d series))
-        Chart.Plot scatters
+        Chart.Plot scatters    
+
+    static member Pyramid3d(data:seq<#value>) =
+        let pyramid = Pyramid3d(data = (data |> Chart.ToFloatArray))
+        Chart.Plot [pyramid :> Trace]
+        |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 10.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.beta 100.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 200.)
+        |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 50.)
 
     static member Scatter(data:seq<#value>) =
         let scatter =
@@ -183,35 +207,52 @@ type Chart() =
             |> Seq.map (fun series ->
                 Scatter(data_mat = Chart.ToFloatArray2d series))
         Chart.Plot scatters
-
-    static member Cylinder(data:seq<#value>) =
-        let cylinder = Cylinder(data = (data |> Chart.ToFloatArray))
-        Chart.Plot [cylinder :> Trace]
-        |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 15.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.beta 15.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 20.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 500.)
-
-    static member Funnel(data:seq<#value>) =
-        let funnel = Funnel(data = (data |> Chart.ToFloatArray))
-        Chart.Plot [funnel :> Trace]
-
-    static member Funnel3d(data:seq<#value>) =
-        let funnel = Funnel3d(data = (data |> Chart.ToFloatArray))
-        Chart.Plot [funnel :> Trace]
-        |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 10.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.beta 100.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 200.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 50.)        
-
-    static member Pyramid3d(data:seq<#value>) =
-        let pyramid = Pyramid3d(data = (data |> Chart.ToFloatArray))
-        Chart.Plot [pyramid :> Trace]
-        |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 10.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.beta 100.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.depth 200.)
-        |> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 50.)
         
+    // static member Area
+    // static member Arearange
+    // static member Areaspline
+    // static member Areasplinerange
+    // static member Bar
+    // static member Bellcurve
+    // static member Boxplot
+    // static member Bubble
+    // static member Bullet
+    // static member Column
+    // static member Columnpyramid
+    // static member Columnrange
+    // static member Dependencywheel
+    // static member Dumbbell
+    // static member Errorbar
+    // static member Gauge
+    // static member Heatmap
+    // static member Histogram
+    // static member Item
+    // static member Line
+    // static member Lollipop
+    // static member Map
+    // static member Mapbubble
+    // static member Mapline
+    // static member Mappoint
+    // static member Networkgraph
+    // static member Organization
+    // static member Pareto
+    // static member Pie
+    // static member Polygon
+    // static member Pyramid
+    // static member Sankey
+    // static member Scatter3d
+    // static member Solidgauge
+    // static member Spline
+    // static member Streamgraph
+    // static member Sunburst
+    // static member Tilemap
+    // static member Timeline
+    // static member Treemap
+    // static member Variablepie
+    // static member Variwide
+    // static member Vector
+    // static member Venn
+    // static member Waterfall
+    // static member Windbarb
+    // static member Wordcloud
+    // static member Xrange

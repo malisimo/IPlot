@@ -162,50 +162,57 @@ namespace IPlot.HighCharts
 
 
         /// Sets the chart's title
-        public void WithTitle(string title)
+        public HighChartsChart WithTitle(string title)
         {
             this.chart.title.text = title;
+            return this;
         }
 
 
         /// Sets the chart's width
-        public void WithWidth(int width)
+        public HighChartsChart WithWidth(int width)
         {
             this.chart.chart_iplot.width = width;
+            return this;
         }
 
 
         /// Sets the chart's height
-        public void WithHeight(int height)
+        public HighChartsChart WithHeight(int height)
         {
             this.chart.chart_iplot.height = height;
+            return this;
         }
 
         /// Sets the chart's container div id
-        public void WithId(string id)
+        public HighChartsChart WithId(string id)
         {
             this.id = id;
+            return this;
         }
 
         /// Sets the data series label. Use this member if the
         /// chart's data is a single series
-        public void WithLabel(string label)
+        public HighChartsChart WithLabel(string label)
         {
             _labels = new string[] { label };
+            return this;
         }
 
         /// Sets the data series labels. Use this method if the
         /// chart's data is a series collection
-        public void WithLabels(IEnumerable<string> labels)
+        public HighChartsChart WithLabels(IEnumerable<string> labels)
         {
             _labels = labels.ToArray();
+            return this;
         }
 
         /// Sets the chart's width and height
-        public void WithSize(int width, int height)
+        public HighChartsChart WithSize(int width, int height)
         {
             WithWidth(width);
             WithHeight(height);
+            return this;
         }
     }
 }

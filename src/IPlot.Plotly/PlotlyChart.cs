@@ -71,6 +71,20 @@ namespace IPlot.Plotly
             if (this.layout != null)
                 plotlyChart.layout = (Layout)this.layout.DeepClone();
 
+            plotlyChart.width = this.width;
+            plotlyChart.height = this.height;
+            plotlyChart.id = this.id;
+            plotlyChart.plotlySrc = this.plotlySrc;
+
+            if (this._labels != null)
+            {
+                var newLabels = new List<string>();
+                foreach (var label in this._labels)
+                    newLabels.Add(label);
+
+                plotlyChart._labels = newLabels;
+            }
+
             return plotlyChart;
         }
 
@@ -175,76 +189,88 @@ namespace IPlot.Plotly
         }
 
         /// Sets the chart's plotly.js src
-        public void WithPlotlySrc(string src)
+        public PlotlyChart WithPlotlySrc(string src)
         {
             this.plotlySrc = src;
+            return this;
         }
 
         /// Sets the chart's height
-        public void WithHeight(int height)
+        public PlotlyChart WithHeight(int height)
         {
             this.height = height;
+            return this;
         }
 
         /// Sets the chart's container div id
-        public void WithId(string id)
+        public PlotlyChart WithId(string id)
         {
             this.id = id;
+            return this;
         }
 
         /// Sets the data series label. Use this member if the
         /// chart's data is a single series
-        public void WithLabel(string label)
+        public PlotlyChart WithLabel(string label)
         {
             _labels = new string[] { label };
+            return this;
         }
 
         /// Sets the data series labels. Use this method if the
         /// chart's data is a series collection
-        public void WithLabels(IEnumerable<string> labels)
+        public PlotlyChart WithLabels(IEnumerable<string> labels)
         {
             _labels = labels.ToArray();
+            return this;
         }
 
         /// Sets the chart's configuration options
-        public void WithLayout(Layout layout)
+        public PlotlyChart WithLayout(Layout layout)
         {
             this.layout = layout;
+            return this;
         }
 
         /// Display/hide the legend
-        public void WithLegend(bool enabled)
+        public PlotlyChart WithLegend(bool enabled)
         {
             if (this.layout == null)
                 this.layout = new Layout() { showlegend = enabled };
             else
                 this.layout.showlegend = enabled;
+
+            return this;
         }
 
         /// Sets the chart's width and height
-        public void WithSize(int width, int height)
+        public PlotlyChart WithSize(int width, int height)
         {
             this.height = height;
             this.width = width;
+            return this;
         }
 
         /// Sets the chart's title
-        public void WithTitle(string title)
+        public PlotlyChart WithTitle(string title)
         {
             if (this.layout == null)
                 this.layout = new Layout() { title = new Title() { text = title } };
             else
                 this.layout.title = new Title() { text = title };
+
+            return this;
         }
 
         /// Sets the chart's width
-        public void WithWidth(int width)
+        public PlotlyChart WithWidth(int width)
         {
             this.width = width;
+            return this;
         }
 
         /// Sets the chart's X-axis title
-        public void WithXTitle(string xTitle)
+        public PlotlyChart WithXTitle(string xTitle)
         {
             if (this.layout == null)
                 this.layout = new Layout() { xaxis = new Xaxis() { title = new Title() { text = xTitle } } };
@@ -260,10 +286,12 @@ namespace IPlot.Plotly
                         this.layout.xaxis.title.text = xTitle;
                 }
             }
+
+            return this;
         }
 
         /// Sets the chart's Y-axis title
-        public void WithYTitle(string yTitle)
+        public PlotlyChart WithYTitle(string yTitle)
         {
             if (this.layout == null)
                 this.layout = new Layout() { yaxis = new Yaxis() { title = new Title() { text = yTitle } } };
@@ -279,6 +307,8 @@ namespace IPlot.Plotly
                         this.layout.yaxis.title.text = yTitle;
                 }
             }
+            
+            return this;
         }
     }
 }

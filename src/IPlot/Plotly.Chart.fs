@@ -68,63 +68,51 @@ type Chart() =
     /// Sets the chart's plotly.js src. Default is https://cdn.plot.ly/plotly-latest.min.js
     static member WithPlotlySrc src (chart:PlotlyChart) =
         chart.WithPlotlySrc src
-        chart
+
+    /// Sets the chart's width.
+    static member WithWidth width (chart:PlotlyChart) =
+        chart.WithWidth width
 
     /// Sets the chart's height.
     static member WithHeight height (chart:PlotlyChart) =
         chart.WithHeight height
-        chart
 
     /// Sets the chart's container div id.
     static member WithId id (chart:PlotlyChart) =
         chart.WithId id
-        chart
 
     /// Sets the data series label. Use this member if the
     /// chart's data is a single series.
     static member WithLabel label (chart:PlotlyChart) =
         chart.WithLabel label
-        chart
 
     /// Sets the data series labels. Use this member if the
     /// chart's data is a series collection.
     static member WithLabels labels (chart:PlotlyChart) =
         chart.WithLabels labels
-        chart
 
     static member WithLayout layout (chart:PlotlyChart) =
         chart.WithLayout layout
-        chart
 
     /// Display/hide the legend.
     static member WithLegend enabled (chart:PlotlyChart) =
         chart.WithLegend enabled
-        chart
 
     /// Sets the chart's height.
     static member WithSize size (chart:PlotlyChart) =
         chart.WithSize size
-        chart
 
     /// Sets the chart's title.
     static member WithTitle title (chart:PlotlyChart) =
         chart.WithTitle title
-        chart
-
-    /// Sets the chart's width.
-    static member WithWidth width (chart:PlotlyChart) =
-        chart.WithWidth width
-        chart
 
     /// Sets the chart's X-axis title.
     static member WithXTitle xTitle (chart:PlotlyChart) =
         chart.WithXTitle xTitle
-        chart
 
     /// Sets the chart's Y-axis title.
     static member WithYTitle yTitle (chart:PlotlyChart) =
         chart.WithYTitle yTitle
-        chart
 
     static member Area (data:seq<#value>) =
         let x = Seq.mapi (fun i _ -> float i) data |> Seq.toArray
@@ -219,6 +207,34 @@ type Chart() =
             )
         Chart.Plot bars
 
+    static member Heatmap(data:seq<seq<#value>>) =
+        let zData =
+            data
+            |> Seq.map (fun arr ->
+                arr
+                |> Seq.map (fun v -> (v :> IConvertible).ToDouble(null)))
+        
+        let heatmap =
+            Heatmap(
+                z = zData,
+                colorscale = "Portland"
+            )
+        Chart.Plot heatmap
+
+    static member HeatmapGl(data:seq<seq<#value>>) =
+        let zData =
+            data
+            |> Seq.map (fun arr ->
+                arr
+                |> Seq.map (fun v -> (v :> IConvertible).ToDouble(null)))
+        
+        let heatmap =
+            Heatmapgl(
+                z = zData,
+                colorscale = "Portland"
+            )
+        Chart.Plot heatmap
+
     static member Line(data:seq<#value>) =
         let scatter = Scatter(y = (data |> Chart.ToFloatArray))
         Chart.Plot [scatter]
@@ -285,34 +301,6 @@ type Chart() =
             )
         Chart.Plot scatters
 
-    static member Heatmap(data:seq<seq<#value>>) =
-        let zData =
-            data
-            |> Seq.map (fun arr ->
-                arr
-                |> Seq.map (fun v -> (v :> IConvertible).ToDouble(null)))
-        
-        let heatmap =
-            Heatmap(
-                z = zData,
-                colorscale = "Portland"
-            )
-        Chart.Plot heatmap
-
-    static member HeatmapGl(data:seq<seq<#value>>) =
-        let zData =
-            data
-            |> Seq.map (fun arr ->
-                arr
-                |> Seq.map (fun v -> (v :> IConvertible).ToDouble(null)))
-        
-        let heatmap =
-            Heatmapgl(
-                z = zData,
-                colorscale = "Portland"
-            )
-        Chart.Plot heatmap
-
     static member Surface(data:seq<seq<#value>>) =
         let zData =
             data
@@ -371,3 +359,44 @@ type Chart() =
         |> Chart.With (Chart.Props.layout.scene.xaxis.showspikes false)
         |> Chart.With (Chart.Props.layout.scene.yaxis.showspikes false)
         |> Chart.With (Chart.Props.layout.scene.zaxis.showspikes false)
+
+    // static member Barpolar
+    // static member Box
+    // static member Carpet
+    // static member Choropleth
+    // static member Choroplethmapbox
+    // static member Cone
+    // static member Contour
+    // static member Contourcarpet
+    // static member Densitymapbox
+    // static member Funnel
+    // static member Funnelarea
+    // static member Histogram
+    // static member Histogram2d
+    // static member Histogram2dcontour
+    // static member Image
+    // static member Indicator
+    // static member Isosurface
+    // static member Mesh3d
+    // static member Ohlc
+    // static member Parcats
+    // static member Parcoords
+    // static member Pie
+    // static member Pointcloud
+    // static member Sankey
+    // static member Scatter3d
+    // static member Scattercarpet
+    // static member Scattergeo
+    // static member Scattermapbox
+    // static member Scatterpolar
+    // static member Scatterpolargl
+    // static member Scatterternary
+    // static member Splom
+    // static member Streamtube
+    // static member Sunburst
+    // static member Surface
+    // static member Table
+    // static member Treemap
+    // static member Violin
+    // static member Volume
+    // static member Waterfall

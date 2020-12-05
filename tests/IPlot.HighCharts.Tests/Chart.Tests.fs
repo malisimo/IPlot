@@ -16,8 +16,6 @@ module ``Line properties`` =
         |> Chart.WithTitle "Basic line plot"
         |> Chart.Show
 
-        Assert.True(true)
-
     [<Fact>]
     let ``Two Lines``() =
         let trace1 =
@@ -36,8 +34,6 @@ module ``Line properties`` =
         |> Chart.WithHeight 500
         |> Chart.WithTitle "Two lines"
         |> Chart.Show
-
-        Assert.True(true)
 
 module ``Scatter properties`` =
     
@@ -201,7 +197,6 @@ module ``Vector properties`` =
 
     [<Fact>]
     let ``Vector Flow``() =
-        let r = Random(392)
         let trace1 =        
             Vector(
                 data_mat = [
@@ -221,7 +216,7 @@ module ``Vector properties`` =
         |> Chart.Show
 
 module ``Tree properties`` =
-    let r = Random(7)
+    let r = Random(77)
     let rec makeTree parent curDepth curName =        
         let curVal = r.Next(10) + 1 |> float
         let cur =
