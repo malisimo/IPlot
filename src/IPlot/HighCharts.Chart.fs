@@ -23,6 +23,25 @@ type Chart() =
     
     /// Displays a chart in the default browser
     static member Show (chart: HighChartsChart) = chart.Show()
+    
+    /// Combine charts together and display as a single page in default browser
+    static member ShowAll(charts: seq<HighChartsChart>) =
+        let html =
+            charts
+            |> Seq.map (fun c->c.GetInlineHtml()) |> Seq.reduce (+)
+
+        let highchartsSrc charts =
+            match charts |> Seq.tryHead<HighChartsChart> with
+            | Some s -> s.highchartsSrc
+            | None -> Html.DefaultHighChartsSrc
+
+        let pageHtml =
+            Html.pageTemplate
+                .Replace("[HIGHCHARTSSRC]", highchartsSrc charts)
+                .Replace("[CHART]", html)
+                
+        let combinedChartId = Guid.NewGuid().ToString()
+        Html.showInBrowser(pageHtml, combinedChartId)
 
     /// Sets the chart's width.
     static member WithTitle title (chart:HighChartsChart) =

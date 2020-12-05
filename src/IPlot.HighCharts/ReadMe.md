@@ -53,16 +53,28 @@ The following types of HighCharts series types are available:
 # Setting Basic Properties
 
 ## Set title
+```fsharp
+Chart.Scatter [1.;2.;3.;5.]
+|> Chart.WithTitle "Lovejoy"
+```
 
 ## Set name of trace
-
 ```fsharp
-Chart.With (Chart.Props.series.[0].name "Mr Susan")
+Chart.Scatter [1.;2.;3.;5.]
+|> Chart.With (Chart.Props.series.[0].name "Mr Susan")
 ```
 
 ## Set line width
+```fsharp
+Chart.Scatter [1.;2.;3.;5.]
+|> Chart.With (Chart.Props.series.[0].asScatter.lineWidth 5.)
+```
 
 ## Set line color
+```fsharp
+Chart.Scatter [1.;2.;3.;5.]
+|> Chart.With (Chart.Props.series.[0].asScatter.color "#14b")
+```
 
 # Line / Scatter plots
 
@@ -92,16 +104,10 @@ let trace2 =
 ## X/Y Scatter Plot
 
 ```fsharp
-let trace1 =
-    Scatter(
-        data_mat = [[1.;-1.]; [2.;1.5]; [3.;-0.5]; [4.;4.8]]
-    )
-
-
-[trace1]
-|> Chart.Plot
-|> Chart.With (Chart.Props.series.[0].name "XY Trace")
-|> Chart.With (Chart.Props.plotOptions.scatter.lineWidth 4.)
+[[1.;-1.]; [2.;1.5]; [3.;-0.5]; [4.;4.8]]
+|> Chart.Scatter
+|> Chart.With (Chart.Props.series.[0].name "XY scatter plot")
+|> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "diamond")
 |> Chart.WithWidth 700
 |> Chart.WithHeight 500
 |> Chart.Show
@@ -114,21 +120,9 @@ let trace1 =
 ## 3D Cylinder
 
 ```fsharp
-let trace1 =
-    Cylinder(
-        data = [1.; 2.; 3.; 4.; 3.; 2.; 1.],
-        name = "Cylinder"
-    )
-
-[trace1]
-|> Chart.Plot
-|> Chart.With (Chart.Props.chart_iplot.type_iplot "cylinder")
+[1.; 2.; 3.; 4.; 3.; 2.; 1.]
+|> Chart.Cylinder
 |> Chart.With (Chart.Props.series.[0].asCylinder.colorByPoint true)
-|> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
-|> Chart.With (Chart.Props.chart_iplot.options3d.alpha 15.)
-|> Chart.With (Chart.Props.chart_iplot.options3d.beta 15.)
-|> Chart.With (Chart.Props.chart_iplot.options3d.depth 50.)
-|> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 25.)
 |> Chart.WithWidth 700
 |> Chart.WithHeight 500
 |> Chart.Show
@@ -139,23 +133,15 @@ let trace1 =
 ## 3D Funnel plot
 
 ```fsharp
-let trace1 =
-    Funnel3d(
-        data = [1010.; 202.; 96.; 46.; 3.; 20.; 8.],
-        name = "Funnel3d"
-    )
-
-[trace1]
-|> Chart.Plot
-|> Chart.With (Chart.Props.chart_iplot.type_iplot "funnel3d")
-|> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
-|> Chart.With (Chart.Props.chart_iplot.options3d.alpha 10.)
-|> Chart.With (Chart.Props.chart_iplot.options3d.beta 100.)
-|> Chart.With (Chart.Props.chart_iplot.options3d.depth 200.)
-|> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 50.)
+[101.; 202.; 96.; 46.; 66.; 20.; 121.]
+|> Chart.Funnel3d
+|> Chart.With (Chart.Props.subtitle.text "Getting bigger")
+|> Chart.With (Chart.Props.subtitle.x 160.)
+|> Chart.With (Chart.Props.subtitle.y 220.)
 |> Chart.WithWidth 700
 |> Chart.WithHeight 500
 |> Chart.Show
+
 ```
 
 ![HC_Funnel](https://user-images.githubusercontent.com/24556021/100584714-5e3e3700-32e4-11eb-90b7-a51280dca519.png)
@@ -163,25 +149,14 @@ let trace1 =
 ## 3D Pyramid plot
 
 ```fsharp
-let trace1 =
-    Pyramid3d(
-        data = [1010.; 202.; 96.; 46.; 3.; 20.; 8.],
-        name = "Pyramid3d"
-    )
-
-[trace1]
-|> Chart.Plot
-|> Chart.With (Chart.Props.chart_iplot.type_iplot "pyramid3d")
-|> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
-|> Chart.With (Chart.Props.chart_iplot.options3d.alpha 10.)
-|> Chart.With (Chart.Props.chart_iplot.options3d.beta 100.)
-|> Chart.With (Chart.Props.chart_iplot.options3d.depth 200.)
-|> Chart.With (Chart.Props.chart_iplot.options3d.viewDistance 50.)
+[31.; 16.; 29.; 4.; 11.; 19.; 22.]
+|> Chart.Pyramid3d
+|> Chart.With (Chart.Props.subtitle.text "Getting smaller")
+|> Chart.With (Chart.Props.subtitle.x 160.)
+|> Chart.With (Chart.Props.subtitle.y 220.)
 |> Chart.WithWidth 700
 |> Chart.WithHeight 500
 |> Chart.Show
-
-Assert.True(true)
 ```
 
 ![HC_Pyramid](https://user-images.githubusercontent.com/24556021/100584719-6007fa80-32e4-11eb-88d2-f86308081674.png)
@@ -193,16 +168,14 @@ Assert.True(true)
 ```fsharp
 let trace1 =
     Errorbar(
-        data_mat = [[22.;48.];[41.;49.];[31.;48.];[19.;24.];[11.;15.];[40.;49.]],
-        name = "Error Bar"
+        data_mat = [[22.;48.];[41.;49.];[31.;48.];[19.;24.];[11.;15.];[40.;49.]]
     )
 
 [trace1]
 |> Chart.Plot
-|> Chart.With (Chart.Props.chart_iplot.type_iplot "errorbar")
-|> Chart.With (Chart.Props.chart_iplot.backgroundColor "#edf")
+|> Chart.With (Chart.Props.chart_iplot.backgroundColor "#353535")
 |> Chart.With (Chart.Props.plotOptions.errorbar.lineWidth 5.0)
-|> Chart.With (Chart.Props.plotOptions.errorbar.color "#333")
+|> Chart.With (Chart.Props.plotOptions.errorbar.color "#76F")
 |> Chart.With (Chart.Props.series.[0].asErrorbar.whiskerWidth 6.0) 
 |> Chart.WithWidth 700
 |> Chart.WithHeight 500
@@ -227,7 +200,6 @@ let trace1 =
 
 [trace1]
 |> Chart.Plot
-|> Chart.With (Chart.Props.chart_iplot.type_iplot "heatmap")
 |> Chart.With (Chart.Props.series.[0].asHeatmap.borderWidth 0.)
 |> Chart.With (Chart.Props.colorAxis.[0].min 0.)
 |> Chart.With (Chart.Props.colorAxis.[0].max 1.)
@@ -254,7 +226,6 @@ let trace1 =
 
 [trace1]
 |> Chart.Plot
-|> Chart.With (Chart.Props.chart_iplot.type_iplot "streamgraph")
 |> Chart.With (Chart.Props.series.[0].asStreamgraph.borderColor "#f32")
 |> Chart.With (Chart.Props.series.[0].asStreamgraph.borderWidth 5.)
 |> Chart.WithWidth 700
@@ -268,16 +239,15 @@ let trace1 =
 
 ## Basic Spline chart
 ```fsharp
-let r = Random(33)
+let r = Random(78)
 let trace1 =        
     Spline(
-        data_mat = [ for x in 1..12 -> [r.NextDouble(); r.NextDouble()] ],
+        data_mat = [ for x in 1..7 -> [r.NextDouble(); r.NextDouble()] ],
         name = "Spline"
     )
 
 [trace1]
 |> Chart.Plot
-|> Chart.With (Chart.Props.chart_iplot.type_iplot "spline")
 |> Chart.With (Chart.Props.series.[0].asSpline.dashStyle "ShortDashDot")
 |> Chart.With (Chart.Props.series.[0].asSpline.lineWidth 6.)
 |> Chart.WithWidth 700
@@ -304,9 +274,9 @@ let trace1 =
 
 [trace1]
 |> Chart.Plot
-|> Chart.With (Chart.Props.chart_iplot.type_iplot "vector")
 |> Chart.With (Chart.Props.series.[0].asVector.lineWidth 5.)
 |> Chart.With (Chart.Props.series.[0].asVector.color "red")
+|> Chart.With (Chart.Props.yAxis.[0].max "1.0")
 |> Chart.WithWidth 700
 |> Chart.WithHeight 500
 |> Chart.Show
@@ -347,26 +317,25 @@ let rec makeTree parent curDepth curName =
             yield! childTrees
     ]
 
-let ``Colourful Sunburst``() =
-    let trace1 =        
-        Sunburst(
-            data_obj = makeTree None 0 "Base",
-            name = "Sunburst",
-            levels = [
-                Levels(
-                    level = Nullable<float>(2.),
-                    colorByPoint = Nullable<bool>(true))
-            ]
-        )
-    
-    [trace1]
-    |> Chart.Plot
-    |> Chart.With (Chart.Props.chart_iplot.type_iplot "sunburst")
-    |> Chart.With (Chart.Props.series.[0].asSunburst.lineWidth 2.0)
-    |> Chart.With (Chart.Props.series.[0].asSunburst.colorByPoint true)
-    |> Chart.WithWidth 700
-    |> Chart.WithHeight 500
-    |> Chart.Show
+
+let trace1 =
+    Sunburst(
+        data_obj = makeTree None 0 "Base",
+        name = "Sunburst",
+        levels = [
+            Levels(
+                level = Nullable<float>(2.),
+                colorByPoint = Nullable<bool>(true))
+        ]
+    )
+
+[trace1]
+|> Chart.Plot
+|> Chart.With (Chart.Props.series.[0].asSunburst.lineWidth 2.0)
+|> Chart.With (Chart.Props.series.[0].asSunburst.colorByPoint true)
+|> Chart.WithWidth 700
+|> Chart.WithHeight 500
+|> Chart.Show
 ```
 
 ![HC_Sunburst](https://user-images.githubusercontent.com/24556021/100584702-5a121980-32e4-11eb-99d7-3610022a2d10.png)
@@ -376,7 +345,7 @@ let ``Colourful Sunburst``() =
 # Simple tilemap
 
 ```fsharp
-let trace1 =        
+let trace1 =
     Tilemap(
         data_obj = [
             Data_obj(
@@ -389,13 +358,13 @@ let trace1 =
                 name="AB",
                 x=Nullable<float>(2.),
                 y=Nullable<float>(3.),
-                color="#36b"
+                color="#39b"
             );
             Data_obj(
                 name="VZ",
                 x=Nullable<float>(1.),
                 y=Nullable<float>(2.),
-                color="#31c"
+                color="#3cc"
             );
             Data_obj(
                 name="PO",
@@ -409,7 +378,6 @@ let trace1 =
 
 [trace1]
 |> Chart.Plot
-|> Chart.With (Chart.Props.chart_iplot.type_iplot "tilemap")
 |> Chart.With (Chart.Props.series.[0].asTilemap.dataLabels.[0].enabled true)
 |> Chart.With (Chart.Props.series.[0].asTilemap.dataLabels.[0].format "{point.name}")
 |> Chart.With (Chart.Props.series.[0].asTilemap.pointPadding 4.)

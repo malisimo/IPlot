@@ -2,5 +2,5 @@ module Program
 
 [<EntryPoint>]
 let main _ =
-    IPlot.Plotly.Tests.``Surface properties``.``Time Surface``()
+    IPlot.Plotly.Tests.``Scatter properties``.``Time Series Plot (DateTimes)``()
     0

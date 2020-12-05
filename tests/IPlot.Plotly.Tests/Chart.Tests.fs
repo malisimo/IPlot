@@ -4,32 +4,22 @@ open Xunit
 open IPlot.Plotly
 open System
 
-module TestUtils =
-    let createChart() =
-        PlotlyChart(
-            traces = [|
-                Scatter() :> Trace
-            |]
-        )
-
 module ``Layout properties`` =
-    open TestUtils
 
     [<Fact>]
     let ``Set title`` () =
         let chart =
-            createChart()
+            Chart.Scatter [1.;2.;3.;5.]
             |> Chart.With (Chart.Props.layout.title.text "Beard length")
         
         Assert.Equal("Beard length", chart.layout.title.text)
 
 module ``Scatter properties`` =
-    open TestUtils
     
     [<Fact>]
     let ``Set name`` () =
         let chart =
-            createChart()
+            Chart.Scatter [1.;2.;3.;5.]
             |> Chart.With (Chart.Props.traces.[0].asScatter.name "Mr Susan")
         
         Assert.Equal("Mr Susan", (chart.traces.[0]:?>Scatter).name)
@@ -37,7 +27,7 @@ module ``Scatter properties`` =
     [<Fact>]
     let ``Set mode`` () =
         let chart =
-            createChart()
+            Chart.Scatter [1.;2.;3.;5.]
             |> Chart.With (Chart.Props.traces.[0].asScatter.mode "lines+markers")
         
         Assert.Equal("lines+markers", (chart.traces.[0]:?>Scatter).mode)
@@ -45,7 +35,7 @@ module ``Scatter properties`` =
     [<Fact>]
     let ``Set line width`` () =
         let chart =
-            createChart()
+            Chart.Scatter [1.;2.;3.;5.]
             |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 5.0)
         
         Assert.Equal(5.0, (chart.traces.[0]:?>Scatter).line.width.Value)
@@ -53,7 +43,7 @@ module ``Scatter properties`` =
     [<Fact>]
     let ``Set line color`` () =
         let chart =
-            createChart()
+            Chart.Scatter [1.;2.;3.;5.]
             |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#222")
         
         Assert.Equal("#222", (chart.traces.[0]:?>Scatter).line.color)
@@ -79,8 +69,6 @@ module ``Scatter properties`` =
         |> Chart.WithTitle "Two lines"
         |> Chart.Show
 
-        Assert.True(true)
-
     [<Fact>]
     let ``Line and Scatter Plot``() =
         let lineTrace1 =
@@ -103,69 +91,46 @@ module ``Scatter properties`` =
                 y = [12.; 9.; 15.; 12.],
                 mode = "lines+markers"
             )
-
-        let layout =
-            Layout(
-                title = Title(
-                    text = "Line and Scatter Plot"
-                )
-            )
         
         [lineTrace1; lineTrace2; lineTrace3]
         |> Chart.Plot
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
-        |> Chart.WithLayout layout
+        |> Chart.WithTitle "Line and Scatter Plot"
         |> Chart.Show
 
     [<Fact>]
-    let ``Time Series Plot (strings)``() =        
-        let trace =
-            Scatter(
-                xs_ = ["2020-09-12 22:30:00";"2020-09-13 22:30:00";"2020-09-15 22:30:00";"2020-09-19 22:30:00"],
-                y = [-1.; -11.; -4.; 5.],
-                mode = "lines+markers"
-            )
-
-        let layout =
-            Layout(
-                title = Title(
-                    text = "Time Series Plot (strings)"
-                )
-            )
+    let ``Time Series Plot (strings)``() =
+        let x = ["2020-09-12 22:30:00";"2020-09-13 22:30:00";"2020-09-15 22:30:00";"2020-09-19 22:30:00"]
         
-        [trace]
-        |> Chart.Plot
+        [-1.; -11.; -4.; 5.]
+        |> Chart.Line
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
-        |> Chart.WithLayout layout
+        |> Chart.WithTitle "Time Series Plot (strings)"
+        |> Chart.With (Chart.Props.traces.[0].asScatter.xs_ x)
+        |> Chart.With (Chart.Props.traces.[0].asScatter.mode "lines+markers")
         |> Chart.Show
 
     [<Fact>]
-    let ``Time Series Plot (DateTimes)``() =        
-        let trace =
-            Scatter(
-                xt_ = [
-                    DateTime(2020,9,12,22,30,0);
-                    DateTime(2020,9,13,22,30,0);
-                    DateTime(2020,9,15,22,30,0);
-                    DateTime(2020,9,19,22,30,0)],
-                y = [-1.; -11.; -4.; 5.],
-                mode = "lines+markers"
-            )
-
-        let layout =
-            Layout(
-                title = Title(
-                    text = "Time Series Plot (DateTimes)"
-                )
-            )
+    let ``Time Series Plot (DateTimes)``() =
+        let n = 45
+        let r = Random(91)
+        let startDate = DateTime(2012,1,1,0,0,0)
+        let t =
+            (startDate,0)
+            |> Seq.unfold (fun (t,i) ->
+                if i > n then None
+                else Some(t,(t.AddDays(1.),i+1)))
         
-        [trace]
-        |> Chart.Plot
+        t
+        |> Seq.map (fun tt -> r.NextDouble() + exp (0.05 * (tt-startDate).TotalDays))
+        |> Chart.Line
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
-        |> Chart.WithLayout layout
+        |> Chart.WithTitle "Time Series Plot (DateTimes)"
+        |> Chart.With (Chart.Props.traces.[0].asScatter.xt_ t)
+        |> Chart.With (Chart.Props.traces.[0].asScatter.mode "lines+markers")
         |> Chart.Show
 
 
@@ -179,12 +144,10 @@ module ``Heatmap properties`` =
             |> Seq.unfold (fun (t,i) ->
                 if i > n then None
                 else Some(t,(t.AddDays(1.),i+1)))
-        let z = [
-            for i in 1..n ->
-                seq { for a in -1. .. 0.1 .. 1. -> Math.Cos(0.1 * float i) * Math.Sin(10.0*a) / Math.Exp(a) }
-            ]
 
-        z
+        [ for i in 1..n ->
+            seq { for a in -1. .. 0.1 .. 1. -> Math.Cos(0.1 * float i) * Math.Sin(10.0*a) / Math.Exp(a) }
+        ]
         |> Chart.Heatmap
         |> Chart.With (Chart.Props.traces.[0].asHeatmap.yt_ t)
         |> Chart.WithWidth 1200
@@ -200,12 +163,10 @@ module ``Heatmap properties`` =
             |> Seq.unfold (fun (t,i) ->
                 if i > n then None
                 else Some(t,(t.AddDays(1.),i+1)))
-        let z = [
-            for i in 1..n ->
-                seq { for a in -1. .. 0.1 .. 1. -> Math.Cos(0.1 * float i) * Math.Sin(10.0*a) / Math.Exp(a) }
-            ]
 
-        z
+        [ for i in 1..n ->
+            seq { for a in -1. .. 0.1 .. 1. -> Math.Cos(0.1 * float i) * Math.Sin(10.0*a) / Math.Exp(a) }
+        ]
         |> Chart.HeatmapGl
         |> Chart.With (Chart.Props.traces.[0].asHeatmapgl.yt_ t)
         |> Chart.WithWidth 1200
@@ -229,18 +190,11 @@ module ``Surface properties`` =
                     ] |> List.toSeq
                 }
 
-        let layout =
-            Layout(
-                title = Title(
-                    text = "Basic Surface"
-                )
-            )
-
         (xData,yData,zData)
         |> Chart.Surface
         |> Chart.WithWidth 900
         |> Chart.WithHeight 700
-        |> Chart.WithLayout layout
+        |> Chart.WithTitle "Basic surface"
         |> Chart.Show
 
     [<Fact>]
@@ -261,7 +215,7 @@ module ``Surface properties`` =
         ]
         |> Chart.Surface
         |> Chart.With (Chart.Props.traces.[0].asSurface.yt_ t)
-        |> Chart.With (Chart.Props.layout.paper_bgcolor "#DDD")
+        |> Chart.With (Chart.Props.layout.paper_bgcolor "#EEE")
         |> Chart.WithWidth 1200
         |> Chart.WithHeight 900
         |> Chart.WithTitle "Time Surface"

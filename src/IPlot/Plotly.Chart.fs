@@ -197,7 +197,6 @@ type Chart() =
         let c = data |> Seq.map (fun (_, _, _, _, c) -> c) |> Chart.ToFloatArray
 
         let cs = Candlestick(x = x, low = l, ``open``= o, high = h, close = c, showlegend = Nullable<bool>(false))
-
         Chart.Plot [cs]
 
     static member Column(data:seq<#value>) =
@@ -296,8 +295,7 @@ type Chart() =
         let heatmap =
             Heatmap(
                 z = zData,
-                colorscale = "Portland",
-                type_iplot = "heatmapgl"
+                colorscale = "Portland"
             )
         Chart.Plot heatmap
 
@@ -311,8 +309,7 @@ type Chart() =
         let heatmap =
             Heatmapgl(
                 z = zData,
-                colorscale = "Portland",
-                type_iplot = "heatmapgl"
+                colorscale = "Portland"
             )
         Chart.Plot heatmap
 
@@ -326,8 +323,7 @@ type Chart() =
         let surface =
             Surface(
                 z = zData,
-                colorscale = "Portland",
-                type_iplot = "surface"
+                colorscale = "Portland"
             )
         Chart.Plot surface
         |> Chart.With (Chart.Props.layout.scene.xaxis.showspikes false)
@@ -352,8 +348,7 @@ type Chart() =
                 x = xData2,
                 y = yData2,
                 z = zData2,
-                colorscale = "Portland",
-                type_iplot = "surface"
+                colorscale = "Portland"
             )
         Chart.Plot surface
         |> Chart.With (Chart.Props.layout.scene.xaxis.showspikes false)
@@ -370,11 +365,9 @@ type Chart() =
         let surface =
             Surface(
                 z = zData,
-                colorscale = "Portland",
-                type_iplot = "surface"
+                colorscale = "Portland"
             )
         Chart.Plot surface
         |> Chart.With (Chart.Props.layout.scene.xaxis.showspikes false)
         |> Chart.With (Chart.Props.layout.scene.yaxis.showspikes false)
         |> Chart.With (Chart.Props.layout.scene.zaxis.showspikes false)
-

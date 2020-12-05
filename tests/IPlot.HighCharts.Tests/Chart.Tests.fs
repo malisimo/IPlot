@@ -5,14 +5,6 @@ open System.Linq
 open Xunit
 open IPlot.HighCharts
 
-module TestUtils =
-    let createChart() =
-        HighChartsChart(
-            chart = HighChart(
-                series = [|Scatter()|]
-            )
-        )
-
 module ``Line properties`` =
 
     [<Fact>]
@@ -48,18 +40,41 @@ module ``Line properties`` =
         Assert.True(true)
 
 module ``Scatter properties`` =
-    open TestUtils
+    
+    [<Fact>]
+    let ``Set Title`` () =
+        let chart =
+            Chart.Scatter [1.;2.;3.;5.]
+            |> Chart.WithTitle "Lovejoy"
+        
+        Assert.Equal("Lovejoy", chart.chart.title.text)
     
     [<Fact>]
     let ``Set Name`` () =
         let chart =
-            createChart()
+            Chart.Scatter [1.;2.;3.;5.]
             |> Chart.With (Chart.Props.series.[0].name "Mr Susan")
         
         Assert.Equal("Mr Susan", chart.chart.series.ElementAt(0).name)
+    
+    [<Fact>]
+    let ``Set Line Width`` () =
+        let chart =
+            Chart.Scatter [1.;2.;3.;5.]
+            |> Chart.With (Chart.Props.series.[0].asScatter.lineWidth 5.)
+        
+        Assert.Equal(5.0, (chart.chart.series.ElementAt(0) :?> Scatter).lineWidth.Value)
+    
+    [<Fact>]
+    let ``Set Line Color`` () =
+        let chart =
+            Chart.Scatter [1.;2.;3.;5.]
+            |> Chart.With (Chart.Props.series.[0].asScatter.color "#14b")
+        
+        Assert.Equal("#14b", (chart.chart.series.ElementAt(0) :?> Scatter).color)
 
     [<Fact>]
-    let ``X/Y Scatter Plot``() =                
+    let ``X/Y Scatter Plot``() =
         [[1.;-1.]; [2.;1.5]; [3.;-0.5]; [4.;4.8]]
         |> Chart.Scatter
         |> Chart.With (Chart.Props.series.[0].name "XY scatter plot")
@@ -68,13 +83,10 @@ module ``Scatter properties`` =
         |> Chart.WithHeight 500
         |> Chart.Show
 
-        Assert.True(true)
-
 module ``3D properties`` =
 
     [<Fact>]
     let ``3D Cylinder Plot``() =
-        
         [1.; 2.; 3.; 4.; 3.; 2.; 1.]
         |> Chart.Cylinder
         |> Chart.With (Chart.Props.series.[0].asCylinder.colorByPoint true)
@@ -82,33 +94,27 @@ module ``3D properties`` =
         |> Chart.WithHeight 500
         |> Chart.Show
 
-        Assert.True(true)
-
     [<Fact>]
     let ``3D Funnel Plot``() =
-        let trace1 =
-            Funnel3d(
-                data = [101.; 202.; 96.; 46.; 66.; 20.; 121.],
-                name = "Funnel3d"
-            )
-        
         [101.; 202.; 96.; 46.; 66.; 20.; 121.]
         |> Chart.Funnel3d
+        |> Chart.With (Chart.Props.subtitle.text "Getting bigger")
+        |> Chart.With (Chart.Props.subtitle.x 160.)
+        |> Chart.With (Chart.Props.subtitle.y 220.)
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show
-
-        Assert.True(true)
 
     [<Fact>]
-    let ``3D Pyramid Plot``() =        
+    let ``3D Pyramid Plot``() =
         [31.; 16.; 29.; 4.; 11.; 19.; 22.]
         |> Chart.Pyramid3d
+        |> Chart.With (Chart.Props.subtitle.text "Getting smaller")
+        |> Chart.With (Chart.Props.subtitle.x 160.)
+        |> Chart.With (Chart.Props.subtitle.y 220.)
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show
-
-        Assert.True(true)
 
 module ``Error bar properties`` =
 
@@ -116,21 +122,18 @@ module ``Error bar properties`` =
     let ``Simple Error Bar Plot``() =
         let trace1 =
             Errorbar(
-                data_mat = [[22.;48.];[41.;49.];[31.;48.];[19.;24.];[11.;15.];[40.;49.]],
-                name = "Error Bar"
+                data_mat = [[22.;48.];[41.;49.];[31.;48.];[19.;24.];[11.;15.];[40.;49.]]
             )
         
         [trace1]
         |> Chart.Plot
-        |> Chart.With (Chart.Props.chart_iplot.backgroundColor "#444")
+        |> Chart.With (Chart.Props.chart_iplot.backgroundColor "#353535")
         |> Chart.With (Chart.Props.plotOptions.errorbar.lineWidth 5.0)
-        |> Chart.With (Chart.Props.plotOptions.errorbar.color "#AAE")
+        |> Chart.With (Chart.Props.plotOptions.errorbar.color "#76F")
         |> Chart.With (Chart.Props.series.[0].asErrorbar.whiskerWidth 6.0) 
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show
-
-        Assert.True(true)
 
 module ``Heatmap properties`` =
 
@@ -156,8 +159,6 @@ module ``Heatmap properties`` =
         |> Chart.WithHeight 500
         |> Chart.Show
 
-        Assert.True(true)
-
 module ``Streamgraph properties`` =
 
     [<Fact>]
@@ -177,16 +178,14 @@ module ``Streamgraph properties`` =
         |> Chart.WithHeight 500
         |> Chart.Show
 
-        Assert.True(true)
-
 module ``Spline properties`` =
 
     [<Fact>]
     let ``Basic Spline Chart``() =
-        let r = Random(33)
+        let r = Random(78)
         let trace1 =        
             Spline(
-                data_mat = [ for x in 1..12 -> [r.NextDouble(); r.NextDouble()] ],
+                data_mat = [ for x in 1..7 -> [r.NextDouble(); r.NextDouble()] ],
                 name = "Spline"
             )
         
@@ -197,8 +196,6 @@ module ``Spline properties`` =
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show
-
-        Assert.True(true)
 
 module ``Vector properties`` =
 
@@ -218,11 +215,10 @@ module ``Vector properties`` =
         |> Chart.Plot
         |> Chart.With (Chart.Props.series.[0].asVector.lineWidth 5.)
         |> Chart.With (Chart.Props.series.[0].asVector.color "red")
+        |> Chart.With (Chart.Props.yAxis.[0].max "1.0")
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show
-
-        Assert.True(true)
 
 module ``Tree properties`` =
     let r = Random(7)
@@ -275,12 +271,10 @@ module ``Tree properties`` =
         |> Chart.WithHeight 500
         |> Chart.Show
 
-        Assert.True(true)
-
 module ``Tilemap properties`` =
     [<Fact>]
     let ``Simple tilemap``() =
-        let trace1 =        
+        let trace1 =
             Tilemap(
                 data_obj = [
                     Data_obj(
@@ -293,13 +287,13 @@ module ``Tilemap properties`` =
                         name="AB",
                         x=Nullable<float>(2.),
                         y=Nullable<float>(3.),
-                        color="#36b"
+                        color="#39b"
                     );
                     Data_obj(
                         name="VZ",
                         x=Nullable<float>(1.),
                         y=Nullable<float>(2.),
-                        color="#31c"
+                        color="#3cc"
                     );
                     Data_obj(
                         name="PO",
@@ -309,10 +303,6 @@ module ``Tilemap properties`` =
                     )
                 ],
                 name = "Tilemap"
-                // dataLabels = [|
-                //     DataLabels(
-                //         enabled = Nullable<bool>(true),
-                //         format = "{point.name}")|]
             )
         
         [trace1]
@@ -324,6 +314,4 @@ module ``Tilemap properties`` =
         |> Chart.WithWidth 600
         |> Chart.WithHeight 600
         |> Chart.Show
-
-        Assert.True(true)
 

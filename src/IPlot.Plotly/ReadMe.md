@@ -122,18 +122,11 @@ let lineTrace3 =
         mode = "lines+markers"
     )
 
-let layout =
-    Layout(
-        title = Title(
-            text = "Line and Scatter Plot"
-        )
-    )
-
 [lineTrace1; lineTrace2; lineTrace3]
 |> Chart.Plot
 |> Chart.WithWidth 700
 |> Chart.WithHeight 500
-|> Chart.WithLayout layout
+|> Chart.WithTitle "Line and Scatter Plot"
 |> Chart.Show
 ```
 
@@ -142,26 +135,16 @@ let layout =
 # Time series plots
 
 ## Time series (strings)
-```fsharp  
-let trace =
-    Scatter(
-        xs_ = ["2020-09-12 22:30:00";"2020-09-13 22:30:00";"2020-09-15 22:30:00";"2020-09-19 22:30:00"],
-        y = [-1.; -11.; -4.; 5.],
-        mode = "lines+markers"
-    )
+```fsharp
+let x = ["2020-09-12 22:30:00";"2020-09-13 22:30:00";"2020-09-15 22:30:00";"2020-09-19 22:30:00"]
 
-let layout =
-    Layout(
-        title = Title(
-            text = "Time Series Plot (strings)"
-        )
-    )
-
-[trace]
-|> Chart.Plot
+[-1.; -11.; -4.; 5.]
+|> Chart.Line
 |> Chart.WithWidth 700
 |> Chart.WithHeight 500
-|> Chart.WithLayout layout
+|> Chart.WithTitle "Time Series Plot (strings)"
+|> Chart.With (Chart.Props.traces.[0].asScatter.xs_ x)
+|> Chart.With (Chart.Props.traces.[0].asScatter.mode "lines+markers")
 |> Chart.Show
 ```
 
@@ -169,30 +152,24 @@ let layout =
 
 ## Time series (DateTimes)
 
-```fsharp      
-let trace =
-    Scatter(
-        xt_ = [
-            DateTime(2020,9,12,22,30,0);
-            DateTime(2020,9,13,22,30,0);
-            DateTime(2020,9,15,22,30,0);
-            DateTime(2020,9,19,22,30,0)],
-        y = [-1.; -11.; -4.; 5.],
-        mode = "lines+markers"
-    )
+```fsharp
+let n = 45
+let r = Random(91)
+let startDate = DateTime(2012,1,1,0,0,0)
+let t =
+    (startDate,0)
+    |> Seq.unfold (fun (t,i) ->
+        if i > n then None
+        else Some(t,(t.AddDays(1.),i+1)))
 
-let layout =
-    Layout(
-        title = Title(
-            text = "Time Series Plot (DateTimes)"
-        )
-    )
-
-[trace]
-|> Chart.Plot
+t
+|> Seq.map (fun tt -> r.NextDouble() + exp (0.05 * (tt-startDate).TotalDays))
+|> Chart.Line
 |> Chart.WithWidth 700
 |> Chart.WithHeight 500
-|> Chart.WithLayout layout
+|> Chart.WithTitle "Time Series Plot (DateTimes)"
+|> Chart.With (Chart.Props.traces.[0].asScatter.xt_ t)
+|> Chart.With (Chart.Props.traces.[0].asScatter.mode "lines+markers")
 |> Chart.Show
 ```
 
@@ -203,20 +180,18 @@ let layout =
 ## Time Heatmap
 
 ```fsharp
-let xt = [
-    DateTime(2020,9,12,22,30,0)
-    DateTime(2020,9,13,22,30,0)
-    DateTime(2020,9,15,22,30,0)
-    DateTime(2020,9,19,22,30,0)]
-let z = [
-        [0.1;0.3;0.8]
-        [0.2;0.35;0.85]
-        [0.9;1.0;1.4]
-        [1.2;1.3;1.8]] |> Seq.map (Seq.ofList)
-
-z
+let n = 365
+let t =
+    (DateTime(2012,1,1,0,0,0),0)
+    |> Seq.unfold (fun (t,i) ->
+        if i > n then None
+        else Some(t,(t.AddDays(1.),i+1)))
+        
+[ for i in 1..n ->
+    seq { for a in -1. .. 0.1 .. 1. -> Math.Cos(0.1 * float i) * Math.Sin(10.0*a) / Math.Exp(a) }
+]
 |> Chart.Heatmap
-|> Chart.With (Chart.Props.traces.[0].asHeatmap.xt_ xt)
+|> Chart.With (Chart.Props.traces.[0].asHeatmap.yt_ t)
 |> Chart.WithWidth 1200
 |> Chart.WithHeight 900
 |> Chart.WithTitle "Heatmap"
@@ -228,20 +203,18 @@ z
 ## Time HeatmapGL
 
 ```fsharp
-let xt = [
-    DateTime(2020,9,12,22,30,0)
-    DateTime(2020,9,13,22,30,0)
-    DateTime(2020,9,15,22,30,0)
-    DateTime(2020,9,19,22,30,0)]
-let z = [
-        [0.1;0.3;0.8]
-        [0.2;0.35;0.85]
-        [0.9;1.0;1.4]
-        [1.2;1.3;1.8]] |> Seq.map (Seq.ofList)
+let n = 365
+let t =
+    (DateTime(2012,1,1,0,0,0),0)
+    |> Seq.unfold (fun (t,i) ->
+        if i > n then None
+        else Some(t,(t.AddDays(1.),i+1)))
 
-z
+[ for i in 1..n ->
+    seq { for a in -1. .. 0.1 .. 1. -> Math.Cos(0.1 * float i) * Math.Sin(10.0*a) / Math.Exp(a) }
+]
 |> Chart.HeatmapGl
-|> Chart.With (Chart.Props.traces.[0].asHeatmapgl.xt_ xt)
+|> Chart.With (Chart.Props.traces.[0].asHeatmapgl.yt_ t)
 |> Chart.WithWidth 1200
 |> Chart.WithHeight 900
 |> Chart.WithTitle "Heatmap GL"
@@ -255,26 +228,22 @@ z
 ## Basic surface plot
 
 ```fsharp
-let r = System.Random(2539)
+let xData = seq { -2. .. 0.1 .. 2. }
+let yData = xData
 let zData =
     seq {
-        for _ in 1..100 do
-            let v = r.NextDouble()
-            yield [v;v+2.;v+3.] |> List.toSeq
-            }
+        for x in xData do
+            yield [
+                for y in yData do
+                    yield Math.Cos(5. * (x*x + y*y)) / Math.Exp(0.6 * (x*x + y*y))
+            ] |> List.toSeq
+        }
 
-let layout =
-    Layout(
-        title = Title(
-            text = "Basic Surface"
-        )
-    )
-
-zData
+(xData,yData,zData)
 |> Chart.Surface
-|> Chart.WithWidth 700
-|> Chart.WithHeight 900
-|> Chart.WithLayout layout
+|> Chart.WithWidth 900
+|> Chart.WithHeight 700
+|> Chart.WithTitle "Basic surface"
 |> Chart.Show
 ```
 
@@ -282,20 +251,23 @@ zData
 
 ## Time surface plot
 ```fsharp
-let xt = [
-    DateTime(2020,9,12,22,30,0)
-    DateTime(2020,9,13,22,30,0)
-    DateTime(2020,9,15,22,30,0)
-    DateTime(2020,9,19,22,30,0)]
-let z = [
-        [0.1;0.3;0.8]
-        [0.2;0.35;0.85]
-        [0.9;1.0;1.4]
-        [1.2;1.3;1.8]] |> Seq.map (Seq.ofList)
+let n = 365
+let t =
+    (DateTime(2012,1,1,0,0,0),0)
+    |> Seq.unfold (fun (t,i) ->
+        if i > n then None
+        else Some(t,(t.AddDays(1.),i+1)))
 
-z
+let nf = float n
+let rad = 2. * Math.PI
+
+[ for i in 1..n ->
+    let x = ((float i) - (0.5*nf)) * rad / nf
+    seq { for y in -rad .. 0.1 .. rad -> x * Math.Exp(-(x*x)-(y*y)) }
+]
 |> Chart.Surface
-|> Chart.With (Chart.Props.traces.[0].asSurface.xt_ xt)
+|> Chart.With (Chart.Props.traces.[0].asSurface.yt_ t)
+|> Chart.With (Chart.Props.layout.paper_bgcolor "#EEE")
 |> Chart.WithWidth 1200
 |> Chart.WithHeight 900
 |> Chart.WithTitle "Time Surface"
