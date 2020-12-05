@@ -2,7 +2,7 @@
 
 HighCharts renderer for IPlot.
 
-# Table of Contents
+## Table of Contents
 
 - [Chart Functions](#chart-functions)
 - [Setting Basic Properties](#setting-basic-properties)
@@ -97,7 +97,7 @@ let trace2 =
 |> Chart.Show
 ```
 
-![HC_TwoLines](https://user-images.githubusercontent.com/24556021/100584695-57afbf80-32e4-11eb-953b-40d782a07b88.png)
+![HC_TwoLines](https://user-images.githubusercontent.com/24556021/101266907-4c78eb80-374b-11eb-9a7c-4eae4e80ec31.png)
 
 # Scatter plots
 
@@ -113,7 +113,7 @@ let trace2 =
 |> Chart.Show
 ```
 
-![HC_XYScatter](https://user-images.githubusercontent.com/24556021/100625996-21426680-331d-11eb-9a7a-89cca6a9dad7.png)
+![HC_XYScatter](https://user-images.githubusercontent.com/24556021/101266909-4d118200-374b-11eb-962e-f5cb13cafe85.png)
 
 # 3D Charts
 
@@ -128,7 +128,7 @@ let trace2 =
 |> Chart.Show
 ```
 
-![HC_Cylinder](https://user-images.githubusercontent.com/24556021/100584729-639b8180-32e4-11eb-8791-a01841f2ef38.png)
+![HC_Cylinder](https://user-images.githubusercontent.com/24556021/101266897-4aaf2800-374b-11eb-880c-eb1e431b3f8f.png)
 
 ## 3D Funnel plot
 
@@ -144,7 +144,7 @@ let trace2 =
 
 ```
 
-![HC_Funnel](https://user-images.githubusercontent.com/24556021/100584714-5e3e3700-32e4-11eb-90b7-a51280dca519.png)
+![HC_Funnel3d](https://user-images.githubusercontent.com/24556021/101266899-4b47be80-374b-11eb-93f3-f8141590ae1a.png)
 
 ## 3D Pyramid plot
 
@@ -159,7 +159,7 @@ let trace2 =
 |> Chart.Show
 ```
 
-![HC_Pyramid](https://user-images.githubusercontent.com/24556021/100584719-6007fa80-32e4-11eb-88d2-f86308081674.png)
+![HC_Pyramid](https://user-images.githubusercontent.com/24556021/101266901-4b47be80-374b-11eb-81d8-952f82bc3b4d.png)
 
 # Error Bars
 
@@ -182,7 +182,7 @@ let trace1 =
 |> Chart.Show
 ```
 
-![HC_ErrorBar](https://user-images.githubusercontent.com/24556021/100584737-64ccae80-32e4-11eb-8a6a-8e5a68a02eec.png)
+![HC_ErrorBar](https://user-images.githubusercontent.com/24556021/101266898-4aaf2800-374b-11eb-8a84-582d5db3d0b9.png)
 
 # Heatmaps
 
@@ -210,7 +210,7 @@ let trace1 =
 |> Chart.Show
 ```
 
-![HC_Heatmap](https://user-images.githubusercontent.com/24556021/100625994-20a9d000-331d-11eb-9580-0f9e713ca111.png)
+![HC_Heatmap](https://user-images.githubusercontent.com/24556021/101266900-4b47be80-374b-11eb-802a-9e78f234148f.png)
 
 # Streamgraphs
 
@@ -233,7 +233,7 @@ let trace1 =
 |> Chart.Show
 ```
 
-![HC_Streamgraph](https://user-images.githubusercontent.com/24556021/100584726-61392780-32e4-11eb-985f-bf9e7ae1f7b8.png)
+![HC_Streamgraph](https://user-images.githubusercontent.com/24556021/101266904-4be05500-374b-11eb-9de4-48535f4254a4.png)
 
 # Spline charts
 
@@ -255,14 +255,13 @@ let trace1 =
 |> Chart.Show
 ```
 
-![HC_Spline](https://user-images.githubusercontent.com/24556021/100584687-55e5fc00-32e4-11eb-97b1-8544b4574fc6.png)
+![HC_Spline](https://user-images.githubusercontent.com/24556021/101266902-4be05500-374b-11eb-85d9-1409bc2ca2b4.png)
 
 # Vector plots
 
 ## Vector Flow
 
 ```fsharp
-let r = Random(392)
 let trace1 =        
     Vector(
         data_mat = [
@@ -282,13 +281,13 @@ let trace1 =
 |> Chart.Show
 ```
 
-![HC_Vector](https://user-images.githubusercontent.com/24556021/100584706-5c747380-32e4-11eb-9027-8fb6c1e72a2e.png)
+![HC_Vector](https://user-images.githubusercontent.com/24556021/101266908-4c78eb80-374b-11eb-8c2c-c5ca3e3f0f38.png)
 
 # Trees
 
 ## Sunburst
 ```fsharp
-let r = Random(7)
+let r = Random(77)
 let rec makeTree parent curDepth curName =        
     let curVal = r.Next(10) + 1 |> float
     let cur =
@@ -338,11 +337,11 @@ let trace1 =
 |> Chart.Show
 ```
 
-![HC_Sunburst](https://user-images.githubusercontent.com/24556021/100584702-5a121980-32e4-11eb-99d7-3610022a2d10.png)
+![HC_Sunburst](https://user-images.githubusercontent.com/24556021/101266905-4be05500-374b-11eb-83f4-a38f0c2f2d35.png)
 
 # Tilemaps
 
-# Simple tilemap
+## Simple tilemap
 
 ```fsharp
 let trace1 =
@@ -387,7 +386,7 @@ let trace1 =
 |> Chart.Show
 ```
 
-![HC_Tilemap](https://user-images.githubusercontent.com/24556021/100584745-68f8cc00-32e4-11eb-872e-659cab0ee7c6.png)
+![HC_Tilemap](https://user-images.githubusercontent.com/24556021/101266906-4c78eb80-374b-11eb-8165-35d966043ee0.png)
 
 # Polymorphic Data Types
 

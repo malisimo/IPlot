@@ -3,7 +3,7 @@
     <metadata>
         <id>IPlot</id>
         <title>IPlot</title>
-        <version>0.0.1-pre6</version>
+        <version>0.0.1-pre7</version>
         <description>Charting library for generating charts with HighCharts or Plotly</description>
         <authors>Matt Jones</authors>
         <license type="expression">MIT</license>

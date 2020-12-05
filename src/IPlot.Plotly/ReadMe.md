@@ -98,7 +98,7 @@ let trace2 =
 |> Chart.Show
 ```
 
-![PL_TwoLines](https://user-images.githubusercontent.com/24556021/100584680-5383a200-32e4-11eb-93e5-042f4bf15365.png)
+![PL_TwoLines](https://user-images.githubusercontent.com/24556021/101266919-4edb4580-374b-11eb-8c30-be4752a9da87.png)
 
 ```fsharp
 let lineTrace1 =
@@ -130,7 +130,7 @@ let lineTrace3 =
 |> Chart.Show
 ```
 
-![PL_Line_Scatter](https://user-images.githubusercontent.com/24556021/100584655-4961a380-32e4-11eb-9b8e-381b65c040e8.png)
+![PL_LineScatter](https://user-images.githubusercontent.com/24556021/101266912-4daa1880-374b-11eb-82ee-a43a08854e1f.png)
 
 # Time series plots
 
@@ -148,7 +148,7 @@ let x = ["2020-09-12 22:30:00";"2020-09-13 22:30:00";"2020-09-15 22:30:00";"2020
 |> Chart.Show
 ```
 
-![PL_TimeSeries_String](https://user-images.githubusercontent.com/24556021/100584586-351da680-32e4-11eb-8dff-43622d004b2e.png)
+![PL_TS_Strings](https://user-images.githubusercontent.com/24556021/101266916-4edb4580-374b-11eb-848b-5449a548b191.png)
 
 ## Time series (DateTimes)
 
@@ -173,7 +173,7 @@ t
 |> Chart.Show
 ```
 
-![PL_TimeSeries_Date](https://user-images.githubusercontent.com/24556021/100584672-51214800-32e4-11eb-83cd-c68946de83f5.png)
+![PL_TS_DateTimes](https://user-images.githubusercontent.com/24556021/101266915-4edb4580-374b-11eb-8b75-694dce5ec804.png)
 
 # Heatmaps
 
@@ -198,7 +198,7 @@ let t =
 |> Chart.Show
 ```
 
-![PL_Heatmap](https://user-images.githubusercontent.com/24556021/100584663-4d8dc100-32e4-11eb-9e7e-641801c32e1f.png)
+![PL_Heatmap](https://user-images.githubusercontent.com/24556021/101266910-4d118200-374b-11eb-92ea-29a7c8aadc8b.png)
 
 ## Time HeatmapGL
 
@@ -221,7 +221,7 @@ let t =
 |> Chart.Show
 ```
 
-![PL_HeatmapGL](https://user-images.githubusercontent.com/24556021/100584508-246d3080-32e4-11eb-82f6-ae85a8dfa80e.png)
+![PL_HeatmapGL](https://user-images.githubusercontent.com/24556021/101266911-4d118200-374b-11eb-9a8a-b3ad15ed4c6d.png)
 
 # Surface plots
 
@@ -247,7 +247,7 @@ let zData =
 |> Chart.Show
 ```
 
-![PL_Surface](https://user-images.githubusercontent.com/24556021/100584473-17504180-32e4-11eb-9f62-0b6ce21a651f.png)
+![PL_Surface](https://user-images.githubusercontent.com/24556021/101266913-4e42af00-374b-11eb-9801-f3a0443af36d.png)
 
 ## Time surface plot
 ```fsharp
@@ -274,7 +274,7 @@ let rad = 2. * Math.PI
 |> Chart.Show
 ```
 
-![PL_TimeSurface](https://user-images.githubusercontent.com/24556021/100584644-45ce1c80-32e4-11eb-90b5-e66900ebbb80.png)
+![PL_TimeSurface](https://user-images.githubusercontent.com/24556021/101266914-4e42af00-374b-11eb-863c-7e0931704d14.png)
 
 # Polymorphic Data Types
 
@@ -298,8 +298,7 @@ let surface =
             [0.1;0.3;0.8]
             [0.2;0.35;0.85]
             [0.9;1.0;1.4]
-            [1.2;1.3;1.8]],
-        type_iplot = "surface"
+            [1.2;1.3;1.8]]
     )
 
 [surface]
