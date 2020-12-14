@@ -11,7 +11,6 @@ Charting library for .NET, rendered using Plotly or HighCharts in the browser.
 
 - [About](#about)
 - [Install](#install)
-- [Chart Backends](#chart-backends)
 - [Basic Usage](#basic-usage)
 - [Plotly API](https://github.com/malisimo/iplot/blob/master/src/IPlot.Plotly/ReadMe.md)
 - [HighCharts API](https://github.com/malisimo/iplot/blob/master/src/IPlot.HighCharts/ReadMe.md)
