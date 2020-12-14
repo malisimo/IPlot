@@ -57,7 +57,7 @@ open IPlot.Plotly
 |> Chart.WithWidth 1200
 |> Chart.WithHeight 800
 |> Chart.WithTitle "Line Plot"
-|> Chart.With(Chart.Props.layout.plot_bgcolor("#999"))
+|> Chart.With(Chart.Props.layout.plot_bgcolor "#999")
 |> Chart.Show
 ```
 
