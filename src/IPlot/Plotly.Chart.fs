@@ -114,12 +114,12 @@ type Chart() =
     static member WithYTitle yTitle (chart:PlotlyChart) =
         chart.WithYTitle yTitle
 
-    static member Area (data:seq<#value>) =
-        let x = Seq.mapi (fun i _ -> float i) data |> Seq.toArray
-        let y =
-            data
-            |> Chart.ToFloatArray
-        let area = Scatter(x = x, y = y, fill = "tozeroy")
+    static member Area(data:seq<#value>) =
+        let area = Scatter(y = (data |> Chart.ToFloatArray), fill = "tozeroy")
+        Chart.Plot [area]
+
+    static member Area(data:seq<float>) =
+        let area = Scatter(y = data, fill = "tozeroy")
         Chart.Plot [area]
 
     static member Area(data:seq<#key * #value>) =
@@ -127,6 +127,60 @@ type Chart() =
         let y = Seq.map snd data |> Chart.ToFloatArray
         let area = Scatter(x = x, y = y, fill = "tozeroy")
         Chart.Plot [area]
+
+    static member Area(data:seq<float * float>) =
+        let x = Seq.map fst data |> Seq.toArray
+        let y = Seq.map snd data |> Seq.toArray
+        let area = Scatter(x = x, y = y, fill = "tozeroy")
+        Chart.Plot [area]
+
+    static member Area(data:seq<DateTime * float>) =
+        let x = Seq.map fst data |> Seq.toArray
+        let y = Seq.map snd data |> Seq.toArray
+        let area = Scatter(xt_ = x, y = y, fill = "tozeroy")
+        Chart.Plot [area]
+
+    static member Area(data:seq<string * float>) =
+        let x = Seq.map fst data |> Seq.toArray
+        let y = Seq.map snd data |> Seq.toArray
+        let area = Scatter(xs_ = x, y = y, fill = "tozeroy")
+        Chart.Plot [area]
+
+    static member Area(data:seq<seq<#value>>) =
+        let areas =
+            data
+            |> Seq.mapi (fun i series ->
+                match i with
+                | 0 -> Scatter(y = (series |> Chart.ToFloatArray), fill = "tozeroy")
+                | _ -> Scatter(y = (series |> Chart.ToFloatArray), fill = "tonexty"))
+        Chart.Plot areas
+
+    static member Area(data:seq<seq<float>>) =
+        let areas =
+            data
+            |> Seq.mapi (fun i series ->
+                match i with
+                | 0 -> Scatter(y = series, fill = "tozeroy")
+                | _ -> Scatter(y = series, fill = "tonexty"))
+        Chart.Plot areas
+
+    static member Area(data:seq<float []>) =
+        let areas =
+            data
+            |> Seq.mapi (fun i series ->
+                match i with
+                | 0 -> Scatter(y = series, fill = "tozeroy")
+                | _ -> Scatter(y = series, fill = "tonexty"))
+        Chart.Plot areas
+
+    static member Area(data:seq<float list>) =
+        let areas =
+            data
+            |> Seq.mapi (fun i series ->
+                match i with
+                | 0 -> Scatter(y = series, fill = "tozeroy")
+                | _ -> Scatter(y = series, fill = "tonexty"))
+        Chart.Plot areas
 
     static member Area(data:seq<#seq<#key * #value>>) =
         let areas =
@@ -136,8 +190,106 @@ type Chart() =
                 let y = Seq.map snd series |> Chart.ToFloatArray
                 match i with
                 | 0 -> Scatter(x = x, y = y, fill = "tozeroy")
-                | _ -> Scatter(x = x, y = y, fill = "tonexty")
-            )
+                | _ -> Scatter(x = x, y = y, fill = "tonexty"))
+        Chart.Plot areas
+
+    static member Area(data:seq<seq<float * float>>) =
+        let areas =
+            data
+            |> Seq.mapi (fun i series ->
+                let x = Seq.map fst series |> Seq.toArray
+                let y = Seq.map snd series |> Seq.toArray
+                match i with
+                | 0 -> Scatter(x = x, y = y, fill = "tozeroy")
+                | _ -> Scatter(x = x, y = y, fill = "tonexty"))
+        Chart.Plot areas
+
+    static member Area(data:seq<(float * float) []>) =
+        let areas =
+            data
+            |> Seq.mapi (fun i series ->
+                let x = Array.map fst series
+                let y = Array.map snd series
+                match i with
+                | 0 -> Scatter(x = x, y = y, fill = "tozeroy")
+                | _ -> Scatter(x = x, y = y, fill = "tonexty"))
+        Chart.Plot areas
+
+    static member Area(data:seq<(float * float) list>) =
+        let areas =
+            data
+            |> Seq.mapi (fun i series ->
+                let x = List.map fst series
+                let y = List.map snd series
+                match i with
+                | 0 -> Scatter(x = x, y = y, fill = "tozeroy")
+                | _ -> Scatter(x = x, y = y, fill = "tonexty"))
+        Chart.Plot areas
+
+    static member Area(data:seq<seq<DateTime * float>>) =
+        let areas =
+            data
+            |> Seq.mapi (fun i series ->
+                let x = Seq.map fst series |> Seq.toArray
+                let y = Seq.map snd series |> Seq.toArray
+                match i with
+                | 0 -> Scatter(xt_ = x, y = y, fill = "tozeroy")
+                | _ -> Scatter(xt_ = x, y = y, fill = "tonexty"))
+        Chart.Plot areas
+
+    static member Area(data:seq<(DateTime * float) []>) =
+        let areas =
+            data
+            |> Seq.mapi (fun i series ->
+                let x = Array.map fst series
+                let y = Array.map snd series
+                match i with
+                | 0 -> Scatter(xt_ = x, y = y, fill = "tozeroy")
+                | _ -> Scatter(xt_ = x, y = y, fill = "tonexty"))
+        Chart.Plot areas
+
+    static member Area(data:seq<(DateTime * float) list>) =
+        let areas =
+            data
+            |> Seq.mapi (fun i series ->
+                let x = List.map fst series
+                let y = List.map snd series
+                match i with
+                | 0 -> Scatter(xt_ = x, y = y, fill = "tozeroy")
+                | _ -> Scatter(xt_ = x, y = y, fill = "tonexty"))
+        Chart.Plot areas
+
+    static member Area(data:seq<seq<string * float>>) =
+        let areas =
+            data
+            |> Seq.mapi (fun i series ->
+                let x = Seq.map fst series |> Seq.toArray
+                let y = Seq.map snd series |> Seq.toArray
+                match i with
+                | 0 -> Scatter(xs_ = x, y = y, fill = "tozeroy")
+                | _ -> Scatter(xs_ = x, y = y, fill = "tonexty"))
+        Chart.Plot areas
+
+    static member Area(data:seq<(string * float) []>) =
+        let areas =
+            data
+            |> Seq.mapi (fun i series ->
+                let x = Array.map fst series
+                let y = Array.map snd series
+                match i with
+                | 0 -> Scatter(xs_ = x, y = y, fill = "tozeroy")
+                | _ -> Scatter(xs_ = x, y = y, fill = "tonexty"))
+        Chart.Plot areas
+
+    static member Area(data:seq<(string * float) list>) =
+        let areas =
+            data
+            |> Seq.mapi (fun i series ->
+                let x = List.map fst series
+                let y = List.map snd series
+                match i with
+                | 0 -> Scatter(xs_ = x, y = y, fill = "tozeroy")
+                | _ -> Scatter(xs_ = x, y = y, fill = "tonexty"))
         Chart.Plot areas
 
     static member Bar(data:seq<#value>) =
@@ -344,8 +496,8 @@ type Chart() =
         let scatters =
             data
             |> Seq.map (fun series ->
-                let x = Seq.map fst series |> Seq.toArray
-                let y = Seq.map snd series |> Seq.toArray
+                let x = Array.map fst series
+                let y = Array.map snd series
                 Scatter(xt_ = x, y = y))
         Chart.Plot scatters
 
@@ -353,8 +505,8 @@ type Chart() =
         let scatters =
             data
             |> Seq.map (fun series ->
-                let x = Seq.map fst series |> Seq.toArray
-                let y = Seq.map snd series |> Seq.toArray
+                let x = List.map fst series
+                let y = List.map snd series
                 Scatter(xt_ = x, y = y))
         Chart.Plot scatters
 
@@ -371,8 +523,8 @@ type Chart() =
         let scatters =
             data
             |> Seq.map (fun series ->
-                let x = Seq.map fst series |> Seq.toArray
-                let y = Seq.map snd series |> Seq.toArray
+                let x = Array.map fst series
+                let y = Array.map snd series
                 Scatter(xs_ = x, y = y))
         Chart.Plot scatters
 
@@ -380,8 +532,8 @@ type Chart() =
         let scatters =
             data
             |> Seq.map (fun series ->
-                let x = Seq.map fst series |> Seq.toArray
-                let y = Seq.map snd series |> Seq.toArray
+                let x = List.map fst series
+                let y = List.map snd series
                 Scatter(xs_ = x, y = y))
         Chart.Plot scatters
 
