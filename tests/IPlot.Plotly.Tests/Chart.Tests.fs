@@ -49,21 +49,12 @@ module ``Scatter properties`` =
         Assert.Equal("#222", (chart.traces.[0]:?>Scatter).line.color)
 
     [<Fact>]
-    let ``Basic Line Plot``() =
-        let trace1 =
-            Scatter(
-                x = [0.; 1.; 2.; 3.],
-                y = [0.2; 0.8; 0.5; 1.1]
-            )
-
-        let trace2 =
-            Scatter(
-                x = [0.; 1.; 2.; 3.],
-                y = [0.6; 0.1; 0.3; 0.7]
-            )
-
-        [trace1; trace2]
-        |> Chart.Plot
+    let ``Two Lines``() =
+        [
+            [0.2; 0.8; 0.5; 1.1]
+            [0.6; 0.1; 0.3; 0.7]
+        ]
+        |> Chart.Line
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.WithTitle "Two lines"
@@ -113,7 +104,27 @@ module ``Scatter properties`` =
         |> Chart.Show
 
     [<Fact>]
-    let ``Time Series Plot (DateTimes)``() =
+    let ``Time Series Line Plot (DateTimes)``() =
+        let n = 45
+        let r = Random(91)
+        let startDate = DateTime(2012,1,1,0,0,0)
+        let t =
+            (startDate,0)
+            |> Seq.unfold (fun (t,i) ->
+                if i > n then None
+                else Some(t,(t.AddDays(1.),i+1)))
+        
+        t
+        |> Seq.map (fun tt -> (tt, r.NextDouble() + exp (0.05 * (tt-startDate).TotalDays)))
+        |> Chart.Line
+        |> Chart.WithWidth 700
+        |> Chart.WithHeight 500
+        |> Chart.WithTitle "Time Series Plot (DateTimes)"
+        |> Chart.With (Chart.Props.traces.[0].asScatter.mode "lines+markers")
+        |> Chart.Show
+
+    [<Fact>]
+    let ``Time Series Line Plot (DateTimes property)``() =
         let n = 45
         let r = Random(91)
         let startDate = DateTime(2012,1,1,0,0,0)
@@ -128,8 +139,30 @@ module ``Scatter properties`` =
         |> Chart.Line
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
-        |> Chart.WithTitle "Time Series Plot (DateTimes)"
+        |> Chart.WithTitle "Time Series Plot (DateTimes property)"
         |> Chart.With (Chart.Props.traces.[0].asScatter.xt_ t)
+        |> Chart.With (Chart.Props.traces.[0].asScatter.mode "lines+markers")
+        |> Chart.Show
+
+    [<Fact>]
+    let ``Multiple Time Series Line Plot (DateTimes)``() =
+        let n = 45
+        let r = Random(91)
+        let startDate = DateTime(2012,1,1,0,0,0)
+        let t =
+            (startDate,0)
+            |> Seq.unfold (fun (t,i) ->
+                if i > n then None
+                else Some(t,(t.AddDays(1.),i+1)))
+        [
+            t |> Seq.map (fun tt -> (tt, r.NextDouble() + exp (0.05 * (tt-startDate).TotalDays)))
+            t |> Seq.map (fun tt -> (tt, r.NextDouble() + exp (0.08 * (tt-startDate).TotalDays)))
+            t |> Seq.map (fun tt -> (tt, r.NextDouble() + exp (0.14 * (tt-startDate).TotalDays)))
+        ]
+        |> Chart.Line
+        |> Chart.WithWidth 700
+        |> Chart.WithHeight 500
+        |> Chart.WithTitle "Time Series Plot (DateTimes)"
         |> Chart.With (Chart.Props.traces.[0].asScatter.mode "lines+markers")
         |> Chart.Show
 
@@ -220,3 +253,43 @@ module ``Surface properties`` =
         |> Chart.WithHeight 900
         |> Chart.WithTitle "Time Surface"
         |> Chart.Show
+        
+
+    [<Fact>]
+    let ``Multiple Charts``() =
+        let n = 45
+        let r = Random(91)
+        let startDate = DateTime(2012,1,1,0,0,0)
+        let t =
+            (startDate,0)
+            |> Seq.unfold (fun (t,i) ->
+                if i > n then None
+                else Some(t,(t.AddDays(1.),i+1)))
+        let data =
+            [
+                t |> Seq.map (fun tt -> (tt, r.NextDouble() + exp (0.05 * (tt-startDate).TotalDays)))
+                t |> Seq.map (fun tt -> (tt, r.NextDouble() + exp (0.08 * (tt-startDate).TotalDays)))
+                t |> Seq.map (fun tt -> (tt, r.NextDouble() + exp (0.14 * (tt-startDate).TotalDays)))
+            ]
+
+        let chart1 =
+            data
+            |> Chart.Scatter
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+            |> Chart.WithTitle "Chart1"
+        let chart2 =
+            data
+            |> Chart.Line
+            |> Chart.WithWidth 400
+            |> Chart.WithHeight 300
+            |> Chart.WithTitle "Chart2"
+        let chart3 =
+            data
+            |> Chart.ScatterGl
+            |> Chart.WithWidth 900
+            |> Chart.WithHeight 400
+            |> Chart.WithTitle "Chart3"
+            
+        [chart1;chart2;chart3]
+        |> Chart.ShowAll

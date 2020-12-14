@@ -17,22 +17,52 @@ module ``Line properties`` =
         |> Chart.Show
 
     [<Fact>]
+    let ``Time Line Plot``() =
+        [
+            (DateTime(2020,3,1,0,0,0),-1.)
+            (DateTime(2020,3,2,0,0,0),1.5)
+            (DateTime(2020,3,3,0,0,0),-0.5)
+            (DateTime(2020,3,4,0,0,0),4.8)
+        ]
+        |> Chart.Line
+        |> Chart.With (Chart.Props.series.[0].name "Time Line Plot")
+        |> Chart.With (Chart.Props.series.[0].asLine.lineWidth 6.)
+        |> Chart.WithWidth 700
+        |> Chart.WithHeight 500
+        |> Chart.Show
+
+    [<Fact>]
     let ``Two Lines``() =
-        let trace1 =
-            Line(
-                data = [0.2; 0.8; 0.5; 1.1]
-            )
-
-        let trace2 =
-            Line(
-                data = [0.6; 0.1; 0.3; 0.7]
-            )
-
-        [trace1; trace2]
-        |> Chart.Plot
+        [
+            [0.2; 0.8; 0.5; 1.1]
+            [0.6; 0.1; 0.3; 0.7]
+        ]
+        |> Chart.Line
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.WithTitle "Two lines"
+        |> Chart.Show
+
+    [<Fact>]
+    let ``Two Time Lines``() =
+        [
+            [
+                (DateTime(2020,3,1,0,0,0),-1.)
+                (DateTime(2020,3,2,0,0,0),1.5)
+                (DateTime(2020,3,3,0,0,0),-0.5)
+                (DateTime(2020,3,4,0,0,0),4.8)
+            ]
+            [
+                (DateTime(2020,3,1,0,0,0),1.)
+                (DateTime(2020,3,2,0,0,0),1.2)
+                (DateTime(2020,3,3,0,0,0),-1.5)
+                (DateTime(2020,3,4,0,0,0),2.8)
+            ]
+        ]
+        |> Chart.Line
+        |> Chart.WithWidth 700
+        |> Chart.WithHeight 500
+        |> Chart.WithTitle "Two time lines"
         |> Chart.Show
 
 module ``Scatter properties`` =
@@ -75,6 +105,46 @@ module ``Scatter properties`` =
         |> Chart.Scatter
         |> Chart.With (Chart.Props.series.[0].name "XY scatter plot")
         |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "diamond")
+        |> Chart.WithWidth 700
+        |> Chart.WithHeight 500
+        |> Chart.Show
+
+    [<Fact>]
+    let ``Time Scatter Plot``() =
+        [
+            (DateTime(2020,3,1,0,0,0),-1.)
+            (DateTime(2020,3,2,0,0,0),1.5)
+            (DateTime(2020,3,3,0,0,0),-0.5)
+            (DateTime(2020,3,4,0,0,0),4.8)
+        ]
+        |> Chart.Scatter
+        |> Chart.With (Chart.Props.series.[0].name "Time Scatter Plot")
+        |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "square")
+        |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
+        |> Chart.WithWidth 700
+        |> Chart.WithHeight 500
+        |> Chart.Show
+
+    [<Fact>]
+    let ``Time Scatter Plots``() =
+        [
+            [
+                (DateTime(2020,3,1,0,0,0),-1.)
+                (DateTime(2020,3,2,0,0,0),1.5)
+                (DateTime(2020,3,3,0,0,0),-0.5)
+                (DateTime(2020,3,4,0,0,0),4.8)
+            ]
+            [
+                (DateTime(2020,3,1,0,0,0),1.)
+                (DateTime(2020,3,2,0,0,0),1.2)
+                (DateTime(2020,3,3,0,0,0),-1.5)
+                (DateTime(2020,3,4,0,0,0),2.8)
+            ]
+        ]
+        |> Chart.Scatter
+        |> Chart.With (Chart.Props.series.[0].name "Time Scatter Plots")
+        |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "diamond")
+        |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.Show

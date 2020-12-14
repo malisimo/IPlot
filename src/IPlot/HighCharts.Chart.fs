@@ -47,6 +47,14 @@ type Chart() =
     static member WithTitle title (chart:HighChartsChart) =
         chart.WithTitle title
 
+    /// Sets the chart's X-axis title.
+    static member WithXTitle xTitle (chart:HighChartsChart) =
+        chart.WithXTitle xTitle
+
+    /// Sets the chart's Y-axis title.
+    static member WithYTitle yTitle (chart:HighChartsChart) =
+        chart.WithYTitle yTitle
+
     /// Sets the chart's width.
     static member WithWidth width (chart:HighChartsChart) =
         chart.WithWidth width
@@ -80,7 +88,12 @@ type Chart() =
 
     static member internal ToFloatArray2d s =
         s
-        |> Seq.map (fun (x,y) -> seq{(x :> IConvertible).ToDouble(null);(y :> IConvertible).ToDouble(null)})
+        |> Seq.map (fun (x,y) -> seq {(x :> IConvertible).ToDouble(null);(y :> IConvertible).ToDouble(null)})
+        |> Seq.toArray
+
+    static member internal ToTimeFloatArray s =
+        s
+        |> Seq.map (fun (x:DateTime,y:float) -> seq { x.Subtract(DateTime(1970, 1, 1)).TotalSeconds; y })
         |> Seq.toArray
 
     static member internal ToStringArray s =
@@ -135,10 +148,17 @@ type Chart() =
             Line(data_mat = data)
         Chart.Plot [scatter :> Trace]
 
-    static member Line(data:seq<#key * #value>) =
+    static member Line(data:seq<float * float>) =
         let scatter =
             Line(
                 data_mat = Chart.ToFloatArray2d data,
+                marker = Marker(enabled = Nullable<bool>(false)))
+        Chart.Plot [scatter :> Trace]
+
+    static member Line(data:seq<DateTime * float>) =
+        let scatter =
+            Line(
+                data_mat = Chart.ToTimeFloatArray data,
                 marker = Marker(enabled = Nullable<bool>(false)))
         Chart.Plot [scatter :> Trace]
 
@@ -146,21 +166,54 @@ type Chart() =
         let scatters =
             data
             |> Seq.map (fun series ->
-                Line(data_mat = (series |> Seq.map (fun (x,y) -> seq { x; y }))))
+                Line(
+                    data_mat = (series |> Seq.map (fun (x,y) -> seq { x; y })),
+                    marker = Marker(enabled = Nullable<bool>(false))))
         Chart.Plot scatters
 
     static member Line(data:seq<(float * float) list>) =
         let scatters =
             data
             |> Seq.map (fun series ->
-                Line(data_mat = (series |> Seq.map (fun (x,y) -> seq { x; y }))))
+                Line(
+                    data_mat = (series |> Seq.map (fun (x,y) -> seq { x; y })),
+                    marker = Marker(enabled = Nullable<bool>(false))))
+        Chart.Plot scatters
+
+    static member Line(data:seq<seq<DateTime * float>>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Line(
+                    data_mat = (series |> Seq.map (fun (x,y) -> seq { x.Subtract(DateTime(1970,1,1)).TotalSeconds; y })),
+                    marker = Marker(enabled = Nullable<bool>(false))))
+        Chart.Plot scatters
+
+    static member Line(data:seq<(DateTime * float) []>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Line(
+                    data_mat = (series |> Array.map (fun (x,y) -> seq { x.Subtract(DateTime(1970,1,1)).TotalSeconds; y })),
+                    marker = Marker(enabled = Nullable<bool>(false))))
+        Chart.Plot scatters
+
+    static member Line(data:seq<(DateTime * float) list>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Line(
+                    data_mat = (series |> List.map (fun (x,y) -> seq { x.Subtract(DateTime(1970,1,1)).TotalSeconds; y })),
+                    marker = Marker(enabled = Nullable<bool>(false))))
         Chart.Plot scatters
 
     static member Line(data:seq<#seq<#key * #value>>) =
         let scatters =
             data
             |> Seq.map (fun series ->
-                Line(data_mat = Chart.ToFloatArray2d series))
+                Line(
+                    data_mat = Chart.ToFloatArray2d series,
+                    marker = Marker(enabled = Nullable<bool>(false))))
         Chart.Plot scatters    
 
     static member Pyramid3d(data:seq<#value>) =
@@ -190,22 +243,67 @@ type Chart() =
         let scatter = Scatter(data_mat = data)
         Chart.Plot [scatter :> Trace]
 
-    static member Scatter(data:seq<#key * #value>) =
+    static member Scatter(data:seq<float * float>) =
         let scatter = Scatter(data_mat = Chart.ToFloatArray2d data)
         Chart.Plot [scatter :> Trace]
 
-    static member Scatter(data:seq<(float * float) []>) =
-        let scatters =
-            data
-            |> Seq.map (fun series ->
-                Scatter(data_mat = (series |> Seq.map (fun (x,y) -> seq { x; y }))))
-        Chart.Plot scatters
+    static member Scatter(data:seq<DateTime * float>) =
+        let scatter = Scatter(data_mat = Chart.ToTimeFloatArray data)
+        Chart.Plot [scatter :> Trace]
 
     static member Scatter(data:seq<#seq<#key * #value>>) =
         let scatters =
             data
             |> Seq.map (fun series ->
                 Scatter(data_mat = Chart.ToFloatArray2d series))
+        Chart.Plot scatters
+
+    static member Scatter(data:seq<seq<float * float>>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Scatter(data_mat = (series |> Seq.map (fun (x,y) -> seq { x; y }))))
+        Chart.Plot scatters
+
+    static member Scatter(data:seq<(float * float) []>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Scatter(data_mat = (series |> Array.map (fun (x,y) -> seq { x; y }))))
+        Chart.Plot scatters
+
+    static member Scatter(data:seq<(float * float) list>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Scatter(data_mat = (series |> List.map (fun (x,y) -> seq { x; y }))))
+        Chart.Plot scatters
+
+    static member Scatter(data:seq<seq<DateTime * float>>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Scatter(
+                    data_mat = (series |> Seq.map (fun (x,y) -> seq { x.Subtract(DateTime(1970,1,1)).TotalSeconds; y }))
+                ))
+        Chart.Plot scatters
+
+    static member Scatter(data:seq<(DateTime * float) []>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Scatter(
+                    data_mat = (series |> Array.map (fun (x,y) -> seq { x.Subtract(DateTime(1970,1,1)).TotalSeconds; y }))
+                ))
+        Chart.Plot scatters
+
+    static member Scatter(data:seq<(DateTime * float) list>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Scatter(
+                    data_mat = (series |> List.map (fun (x,y) -> seq { x.Subtract(DateTime(1970,1,1)).TotalSeconds; y }))
+                ))
         Chart.Plot scatters
         
     // static member Area

@@ -160,6 +160,20 @@ namespace IPlot.HighCharts
             Html.showInBrowser(html, this.id);
         }
 
+        /// Combine charts together and display as a single page in default browser
+        public void ShowAll(IEnumerable<HighChartsChart> charts)
+        {
+            var html = string.Join("",charts.Select(c => c.GetInlineHtml()));
+
+            var pageHtml =
+                Html.pageTemplate
+                .Replace("[CHART]", html)
+                .Replace("[MODULESRC]", GetModuleScripts())
+                .Replace("[HIGHCHARTSSRC]", highchartsSrc);
+
+            var combinedChartId = Guid.NewGuid().ToString();            
+            Html.showInBrowser(pageHtml, combinedChartId);
+        }
 
         /// Sets the chart's title
         public HighChartsChart WithTitle(string title)
@@ -168,6 +182,41 @@ namespace IPlot.HighCharts
             return this;
         }
 
+        /// Sets the chart's X-axis title
+        public HighChartsChart WithXTitle(string xTitle)
+        {
+            if (this.chart.xAxis == null)
+                this.chart.xAxis = new XAxis[] { new XAxis() { title = new Title() { text = xTitle } } };
+            else if (!this.chart.xAxis.Any())
+                this.chart.xAxis = new XAxis[] { new XAxis() { title = new Title() { text = xTitle } } };
+            else
+            {
+                if (this.chart.xAxis.First().title == null)
+                    this.chart.xAxis.First().title = new Title() { text = xTitle };
+                else
+                    this.chart.xAxis.First().title.text = xTitle;
+            }
+
+            return this;
+        }
+
+        /// Sets the chart's Y-axis title
+        public HighChartsChart WithYTitle(string yTitle)
+        {
+            if (this.chart.yAxis == null)
+                this.chart.yAxis = new YAxis[] { new YAxis() { title = new Title() { text = yTitle } } };
+            else if (!this.chart.yAxis.Any())
+                this.chart.yAxis = new YAxis[] { new YAxis() { title = new Title() { text = yTitle } } };
+            else
+            {
+                if (this.chart.yAxis.First().title == null)
+                    this.chart.yAxis.First().title = new Title() { text = yTitle };
+                else
+                    this.chart.yAxis.First().title.text = yTitle;
+            }
+
+            return this;
+        }
 
         /// Sets the chart's width
         public HighChartsChart WithWidth(int width)
@@ -175,7 +224,6 @@ namespace IPlot.HighCharts
             this.chart.chart_iplot.width = width;
             return this;
         }
-
 
         /// Sets the chart's height
         public HighChartsChart WithHeight(int height)

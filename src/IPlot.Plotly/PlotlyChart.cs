@@ -188,6 +188,20 @@ namespace IPlot.Plotly
             Html.showInBrowser(html, this.id);
         }
 
+        /// Combine charts together and display as a single page in default browser
+        public void ShowAll(IEnumerable<PlotlyChart> charts)
+        {
+            var html = string.Join("",charts.Select(c => c.GetInlineHtml()));
+            var plotlysrc = charts.Any() ? charts.First().plotlySrc : Html.DefaultPlotlySrc;
+
+            var pageHtml =
+                Html.pageTemplate
+                .Replace("[PLOTLYSRC]", plotlysrc)
+                .Replace("[CHART]", html);
+            var combinedChartId = Guid.NewGuid().ToString();
+            Html.showInBrowser(pageHtml, combinedChartId);
+        }
+
         /// Sets the chart's plotly.js src
         public PlotlyChart WithPlotlySrc(string src)
         {
