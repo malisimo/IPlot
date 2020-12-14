@@ -4,6 +4,22 @@ open Xunit
 open IPlot.Plotly
 open System
 
+module TestUtils =
+    let makeTimeSeries n a =
+        let r = Random(91)
+        let startDate = DateTime(2012,1,1,0,0,0)
+        let t =
+            (startDate,0)
+            |> Seq.unfold (fun (t,i) ->
+                if i > n then None
+                else Some(t,(t.AddDays(1.),i+1)))
+                
+        let x =
+            t
+            |> Seq.map (fun tt -> r.NextDouble() + exp (a * (tt-startDate).TotalDays))
+
+        t,x
+
 module ``Layout properties`` =
 
     [<Fact>]
@@ -88,7 +104,247 @@ module ``Scatter properties`` =
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.WithTitle "Line and Scatter Plot"
-        |> Chart.Show
+        |> Chart.Show        
+
+    [<Fact>]
+    let ``Line Plots``() =    
+        let y1 = seq { 0.2; 0.8; 0.5; 1.1 }
+        let y2 = seq { 0.6; 0.1; 0.3; 0.7 }
+
+        let s1 = 
+            y1
+            |> Chart.Line
+            |> Chart.WithTitle "Line Plots 1"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#fa0")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s2 = 
+            y1 |> Seq.toArray
+            |> Chart.Line
+            |> Chart.WithTitle "Line Plots 2"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#af0")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s3 = 
+            y1 |> Seq.toList
+            |> Chart.Line
+            |> Chart.WithTitle "Line Plots 3"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#0af")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s4 = 
+            seq { y1; y2 }
+            |> Chart.Line
+            |> Chart.WithTitle "Line Plots 4"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s5 = 
+            seq { y1 |> Seq.toArray; y2 |> Seq.toArray }
+            |> Chart.Line
+            |> Chart.WithTitle "Line Plots 5"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 8.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s6 = 
+            seq { y1 |> Seq.toList; y2 |> Seq.toList }
+            |> Chart.Line
+            |> Chart.WithTitle "Line Plots 6"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 10.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        [s1;s2;s3;s4;s5;s6]
+        |> Chart.ShowAll
+
+    [<Fact>]
+    let ``X/Y Line Plots``() =
+        let x = seq { 1.; 2.; 3.; 4. }
+        let y1 = seq { 0.2; 0.8; 0.5; 1.1 }
+        let y2 = seq { 0.6; 0.1; 0.3; 0.7 }
+
+        let s1 =
+            Seq.zip x y1
+            |> Chart.Line
+            |> Chart.WithTitle "XY Line Plot 1"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#fa0")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s2 =
+            Seq.zip x y1 |> Seq.toArray
+            |> Chart.Line
+            |> Chart.WithTitle "XY Line Plot 2"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#af0")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s3 =
+            Seq.zip x y1 |> Seq.toList
+            |> Chart.Line
+            |> Chart.WithTitle "XY Line Plot 3"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#0af")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s4 =
+            seq { Seq.zip x y1; Seq.zip x y2 }
+            |> Chart.Line
+            |> Chart.WithTitle "XY Line Plots 4"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s5 =
+            seq { Seq.zip x y1 |> Seq.toArray; Seq.zip x y2 |> Seq.toArray }
+            |> Chart.Line
+            |> Chart.WithTitle "XY Line Plots 5"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 8.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s6 = 
+            seq { Seq.zip x y1 |> Seq.toList; Seq.zip x y2 |> Seq.toList }
+            |> Chart.Line
+            |> Chart.WithTitle "XY Line Plots 6"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 10.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        [s1;s2;s3;s4;s5;s6]
+        |> Chart.ShowAll
+
+    [<Fact>]
+    let ``Time Line Plots (DateTime)``() =
+        let t,x1 = TestUtils.makeTimeSeries 45 0.05
+        let _,x2 = TestUtils.makeTimeSeries 45 0.07
+
+        let s1 = 
+            Seq.zip t x1
+            |> Chart.Line
+            |> Chart.WithTitle "Time Line (DateTime) Plot 1"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#fa0")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s2 = 
+            Seq.zip t x1 |> Seq.toArray
+            |> Chart.Line
+            |> Chart.WithTitle "Time Line (DateTime) Plot 2"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#af0")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s3 = 
+            Seq.zip t x1 |> Seq.toList
+            |> Chart.Line
+            |> Chart.WithTitle "Time Line (DateTime) Plot 3"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#0af")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s4 = 
+            seq { Seq.zip t x1; Seq.zip t x2 }
+            |> Chart.Line
+            |> Chart.WithTitle "Time Line (DateTime) Plots 4"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s5 = 
+            seq { Seq.zip t x1 |> Seq.toArray; Seq.zip t x2 |> Seq.toArray }
+            |> Chart.Line
+            |> Chart.WithTitle "Time Line (DateTime) Plots 5"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 8.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s6 = 
+            seq { Seq.zip t x1 |> Seq.toList; Seq.zip t x2 |> Seq.toList }
+            |> Chart.Scatter
+            |> Chart.WithTitle "Time Line (DateTime) Plots 6"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 10.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        [s1;s2;s3;s4;s5;s6]
+        |> Chart.ShowAll
+
+    [<Fact>]
+    let ``Time Line Plots (String)``() =
+        let t,x1 = TestUtils.makeTimeSeries 45 0.05
+        let _,x2 = TestUtils.makeTimeSeries 45 0.07
+        let ts =
+            t
+            |> Seq.map (fun dt -> dt.ToString("o"))
+
+        let s1 = 
+            Seq.zip ts x1
+            |> Chart.Line
+            |> Chart.WithTitle "Time Line (String) Plot 1"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#fa0")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s2 = 
+            Seq.zip ts x1 |> Seq.toArray
+            |> Chart.Line
+            |> Chart.WithTitle "Time Line (String) Plot 2"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#af0")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s3 = 
+            Seq.zip ts x1 |> Seq.toList
+            |> Chart.Line
+            |> Chart.WithTitle "Time Line (String) Plot 3"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#0af")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s4 = 
+            seq { Seq.zip ts x1; Seq.zip ts x2 }
+            |> Chart.Line
+            |> Chart.WithTitle "Time Line (String) Plots 4"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s5 = 
+            seq { Seq.zip ts x1 |> Seq.toArray; Seq.zip ts x2 |> Seq.toArray }
+            |> Chart.Line
+            |> Chart.WithTitle "Time Line (String) Plots 5"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 8.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s6 = 
+            seq { Seq.zip ts x1 |> Seq.toList; Seq.zip ts x2 |> Seq.toList }
+            |> Chart.Line
+            |> Chart.WithTitle "Time Line (String) Plots 6"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 10.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        [s1;s2;s3;s4;s5;s6]
+        |> Chart.ShowAll
 
     [<Fact>]
     let ``Time Series Plot (strings)``() =
@@ -104,38 +360,10 @@ module ``Scatter properties`` =
         |> Chart.Show
 
     [<Fact>]
-    let ``Time Series Line Plot (DateTimes)``() =
-        let n = 45
-        let r = Random(91)
-        let startDate = DateTime(2012,1,1,0,0,0)
-        let t =
-            (startDate,0)
-            |> Seq.unfold (fun (t,i) ->
-                if i > n then None
-                else Some(t,(t.AddDays(1.),i+1)))
-        
-        t
-        |> Seq.map (fun tt -> (tt, r.NextDouble() + exp (0.05 * (tt-startDate).TotalDays)))
-        |> Chart.Line
-        |> Chart.WithWidth 700
-        |> Chart.WithHeight 500
-        |> Chart.WithTitle "Time Series Plot (DateTimes)"
-        |> Chart.With (Chart.Props.traces.[0].asScatter.mode "lines+markers")
-        |> Chart.Show
-
-    [<Fact>]
     let ``Time Series Line Plot (DateTimes property)``() =
-        let n = 45
-        let r = Random(91)
-        let startDate = DateTime(2012,1,1,0,0,0)
-        let t =
-            (startDate,0)
-            |> Seq.unfold (fun (t,i) ->
-                if i > n then None
-                else Some(t,(t.AddDays(1.),i+1)))
+        let t,x = TestUtils.makeTimeSeries 45 0.05
         
-        t
-        |> Seq.map (fun tt -> r.NextDouble() + exp (0.05 * (tt-startDate).TotalDays))
+        x
         |> Chart.Line
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
@@ -147,18 +375,17 @@ module ``Scatter properties`` =
     [<Fact>]
     let ``Multiple Time Series Line Plot (DateTimes)``() =
         let n = 45
-        let r = Random(91)
-        let startDate = DateTime(2012,1,1,0,0,0)
-        let t =
-            (startDate,0)
-            |> Seq.unfold (fun (t,i) ->
-                if i > n then None
-                else Some(t,(t.AddDays(1.),i+1)))
-        [
-            t |> Seq.map (fun tt -> (tt, r.NextDouble() + exp (0.05 * (tt-startDate).TotalDays)))
-            t |> Seq.map (fun tt -> (tt, r.NextDouble() + exp (0.08 * (tt-startDate).TotalDays)))
-            t |> Seq.map (fun tt -> (tt, r.NextDouble() + exp (0.14 * (tt-startDate).TotalDays)))
-        ]
+        let t1 =
+            let t,x = TestUtils.makeTimeSeries n 0.05
+            Seq.zip t x
+        let t2 =
+            let t,x = TestUtils.makeTimeSeries n 0.08
+            Seq.zip t x
+        let t3 =
+            let t,x = TestUtils.makeTimeSeries n 0.14
+            Seq.zip t x
+        
+        [t1;t2;t3]
         |> Chart.Line
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500

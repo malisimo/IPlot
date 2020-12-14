@@ -7,6 +7,9 @@ type value = IConvertible
 
 type Chart() =
     static member val Props = HighChart_IProp() with get
+
+    static member internal DateTimeToHighCharts (dt:DateTime) =
+        dt.Subtract(DateTime(1970,1,1,0,0,0,DateTimeKind.Utc)).TotalMilliseconds
     
     static member With (propFun: Func<HighChartsChart, HighChartsChart>) (chart: HighChartsChart) =
         propFun.Invoke (chart.DeepClone() :?> HighChartsChart)
@@ -98,7 +101,7 @@ type Chart() =
 
     static member internal ToTimeFloatArray s =
         s
-        |> Seq.map (fun (x:DateTime,y:float) -> seq { x.Subtract(DateTime(1970, 1, 1)).TotalSeconds; y })
+        |> Seq.map (fun (x:DateTime,y:float) -> seq { Chart.DateTimeToHighCharts x; y })
         |> Seq.toArray
 
     static member internal ToStringArray s =
@@ -160,6 +163,7 @@ type Chart() =
                 data_mat = Chart.ToTimeFloatArray data,
                 marker = Marker(enabled = Nullable<bool>(false)))
         Chart.Plot [scatter]
+        |> Chart.With (Chart.Props.xAxis.[0].type_iplot "datetime")
 
     static member Line(data:seq<seq<#value>>) =
         let scatters =
@@ -242,27 +246,30 @@ type Chart() =
             data
             |> Seq.map (fun series ->
                 Line(
-                    data_mat = (series |> Seq.map (fun (x,y) -> seq { x.Subtract(DateTime(1970,1,1)).TotalSeconds; y })),
+                    data_mat = (series |> Seq.map (fun (x,y) -> seq { Chart.DateTimeToHighCharts x; y })),
                     marker = Marker(enabled = Nullable<bool>(false))))
         Chart.Plot scatters
+        |> Chart.With (Chart.Props.xAxis.[0].type_iplot "datetime")
 
     static member Line(data:seq<(DateTime * float) []>) =
         let scatters =
             data
             |> Seq.map (fun series ->
                 Line(
-                    data_mat = (series |> Array.map (fun (x,y) -> seq { x.Subtract(DateTime(1970,1,1)).TotalSeconds; y })),
+                    data_mat = (series |> Array.map (fun (x,y) -> seq { Chart.DateTimeToHighCharts x; y })),
                     marker = Marker(enabled = Nullable<bool>(false))))
         Chart.Plot scatters
+        |> Chart.With (Chart.Props.xAxis.[0].type_iplot "datetime")
 
     static member Line(data:seq<(DateTime * float) list>) =
         let scatters =
             data
             |> Seq.map (fun series ->
                 Line(
-                    data_mat = (series |> List.map (fun (x,y) -> seq { x.Subtract(DateTime(1970,1,1)).TotalSeconds; y })),
+                    data_mat = (series |> List.map (fun (x,y) -> seq { Chart.DateTimeToHighCharts x; y })),
                     marker = Marker(enabled = Nullable<bool>(false))))
         Chart.Plot scatters
+        |> Chart.With (Chart.Props.xAxis.[0].type_iplot "datetime")
 
     static member Pyramid3d(data:seq<#value>) =
         let pyramid = Pyramid3d(data = (data |> Chart.ToFloatArray))
@@ -289,6 +296,7 @@ type Chart() =
     static member Scatter(data:seq<DateTime * float>) =
         let scatter = Scatter(data_mat = Chart.ToTimeFloatArray data)
         Chart.Plot [scatter]
+        |> Chart.With (Chart.Props.xAxis.[0].type_iplot "datetime")
 
     static member Scatter(data:seq<seq<#value>>) =
         let scatters =
@@ -342,27 +350,30 @@ type Chart() =
             data
             |> Seq.map (fun series ->
                 Scatter(
-                    data_mat = (series |> Seq.map (fun (x,y) -> seq { x.Subtract(DateTime(1970,1,1)).TotalSeconds; y }))
+                    data_mat = (series |> Seq.map (fun (x,y) -> seq { Chart.DateTimeToHighCharts x; y }))
                 ))
         Chart.Plot scatters
+        |> Chart.With (Chart.Props.xAxis.[0].type_iplot "datetime")
 
     static member Scatter(data:seq<(DateTime * float) []>) =
         let scatters =
             data
             |> Seq.map (fun series ->
                 Scatter(
-                    data_mat = (series |> Array.map (fun (x,y) -> seq { x.Subtract(DateTime(1970,1,1)).TotalSeconds; y }))
+                    data_mat = (series |> Array.map (fun (x,y) -> seq { Chart.DateTimeToHighCharts x; y }))
                 ))
         Chart.Plot scatters
+        |> Chart.With (Chart.Props.xAxis.[0].type_iplot "datetime")
 
     static member Scatter(data:seq<(DateTime * float) list>) =
         let scatters =
             data
             |> Seq.map (fun series ->
                 Scatter(
-                    data_mat = (series |> List.map (fun (x,y) -> seq { x.Subtract(DateTime(1970,1,1)).TotalSeconds; y }))
+                    data_mat = (series |> List.map (fun (x,y) -> seq { Chart.DateTimeToHighCharts x; y }))
                 ))
         Chart.Plot scatters
+        |> Chart.With (Chart.Props.xAxis.[0].type_iplot "datetime")
         
     // static member Area
     // static member Arearange

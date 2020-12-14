@@ -5,6 +5,22 @@ open System.Linq
 open Xunit
 open IPlot.HighCharts
 
+module TestUtils =
+    let makeTimeSeries n a =
+        let r = Random(91)
+        let startDate = DateTime(2012,1,1,0,0,0)
+        let t =
+            (startDate,0)
+            |> Seq.unfold (fun (t,i) ->
+                if i > n then None
+                else Some(t,(t.AddDays(1.),i+1)))
+                
+        let x =
+            t
+            |> Seq.map (fun tt -> r.NextDouble() + exp (a * (tt-startDate).TotalDays))
+
+        t,x
+
 module ``Line properties`` =
 
     [<Fact>]
@@ -14,21 +30,6 @@ module ``Line properties`` =
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
         |> Chart.WithTitle "Basic line plot"
-        |> Chart.Show
-
-    [<Fact>]
-    let ``Time Line Plot``() =
-        [
-            (DateTime(2020,3,1,0,0,0),-1.)
-            (DateTime(2020,3,2,0,0,0),1.5)
-            (DateTime(2020,3,3,0,0,0),-0.5)
-            (DateTime(2020,3,4,0,0,0),4.8)
-        ]
-        |> Chart.Line
-        |> Chart.With (Chart.Props.series.[0].name "Time Line Plot")
-        |> Chart.With (Chart.Props.series.[0].asLine.lineWidth 6.)
-        |> Chart.WithWidth 700
-        |> Chart.WithHeight 500
         |> Chart.Show
 
     [<Fact>]
@@ -44,26 +45,182 @@ module ``Line properties`` =
         |> Chart.Show
 
     [<Fact>]
-    let ``Two Time Lines``() =
-        [
-            [
-                (DateTime(2020,3,1,0,0,0),-1.)
-                (DateTime(2020,3,2,0,0,0),1.5)
-                (DateTime(2020,3,3,0,0,0),-0.5)
-                (DateTime(2020,3,4,0,0,0),4.8)
-            ]
-            [
-                (DateTime(2020,3,1,0,0,0),1.)
-                (DateTime(2020,3,2,0,0,0),1.2)
-                (DateTime(2020,3,3,0,0,0),-1.5)
-                (DateTime(2020,3,4,0,0,0),2.8)
-            ]
-        ]
-        |> Chart.Line
-        |> Chart.WithWidth 700
-        |> Chart.WithHeight 500
-        |> Chart.WithTitle "Two time lines"
-        |> Chart.Show
+    let ``Line Plots``() =    
+        let y1 = seq { 0.2; 0.8; 0.5; 1.1 }
+        let y2 = seq { 0.6; 0.1; 0.3; 0.7 }
+
+        let s1 = 
+            y1
+            |> Chart.Line
+            |> Chart.WithTitle "Line Plots 1"
+            |> Chart.With (Chart.Props.series.[0].asLine.color "#fa0")
+            |> Chart.With (Chart.Props.plotOptions.line.lineWidth 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s2 = 
+            y1 |> Seq.toArray
+            |> Chart.Line
+            |> Chart.WithTitle "Line Plots 2"
+            |> Chart.With (Chart.Props.series.[0].asLine.color "#af0")
+            |> Chart.With (Chart.Props.plotOptions.line.lineWidth 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s3 = 
+            y1 |> Seq.toList
+            |> Chart.Line
+            |> Chart.WithTitle "Line Plots 3"
+            |> Chart.With (Chart.Props.series.[0].asLine.color "#0af")
+            |> Chart.With (Chart.Props.plotOptions.line.lineWidth 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s4 = 
+            seq { y1; y2 }
+            |> Chart.Line
+            |> Chart.WithTitle "Line Plots 4"
+            |> Chart.With (Chart.Props.plotOptions.line.lineWidth 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s5 = 
+            seq { y1 |> Seq.toArray; y2 |> Seq.toArray }
+            |> Chart.Line
+            |> Chart.WithTitle "Line Plots 5"
+            |> Chart.With (Chart.Props.plotOptions.line.lineWidth 8.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s6 = 
+            seq { y1 |> Seq.toList; y2 |> Seq.toList }
+            |> Chart.Line
+            |> Chart.WithTitle "Line Plots 6"
+            |> Chart.With (Chart.Props.plotOptions.line.lineWidth 10.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        [s1;s2;s3;s4;s5;s6]
+        |> Chart.ShowAll
+
+    [<Fact>]
+    let ``X/Y Line Plots``() =
+        let x = seq { 1.; 2.; 3.; 4. }
+        let y1 = seq { 0.2; 0.8; 0.5; 1.1 }
+        let y2 = seq { 0.6; 0.1; 0.3; 0.7 }
+
+        let s1 = 
+            Seq.zip x y1
+            |> Chart.Line
+            |> Chart.WithTitle "XY Line Plots 1"
+            |> Chart.With (Chart.Props.series.[0].asLine.color "#fa0")
+            |> Chart.With (Chart.Props.plotOptions.line.lineWidth 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s2 = 
+            Seq.zip x y1 |> Seq.toArray
+            |> Chart.Line
+            |> Chart.WithTitle "XY Line Plots 2"
+            |> Chart.With (Chart.Props.series.[0].asLine.color "#af0")
+            |> Chart.With (Chart.Props.plotOptions.line.lineWidth 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s3 = 
+            Seq.zip x y1 |> Seq.toList
+            |> Chart.Line
+            |> Chart.WithTitle "XY Line Plots 3"
+            |> Chart.With (Chart.Props.series.[0].asLine.color "#0af")
+            |> Chart.With (Chart.Props.plotOptions.line.lineWidth 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s4 = 
+            seq { Seq.zip x y1; Seq.zip x y2 }
+            |> Chart.Line
+            |> Chart.WithTitle "XY Line Plots 4"
+            |> Chart.With (Chart.Props.plotOptions.line.lineWidth 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s5 = 
+            seq { Seq.zip x y1 |> Seq.toArray; Seq.zip x y2 |> Seq.toArray }
+            |> Chart.Line
+            |> Chart.WithTitle "XY Line Plots 5"
+            |> Chart.With (Chart.Props.plotOptions.line.lineWidth 8.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s6 =
+            seq { Seq.zip x y1 |> Seq.toList; Seq.zip x y2 |> Seq.toList }
+            |> Chart.Line
+            |> Chart.WithTitle "XY Line Plots 6"
+            |> Chart.With (Chart.Props.plotOptions.line.lineWidth 10.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        [s1;s2;s3;s4;s5;s6]
+        |> Chart.ShowAll
+
+    [<Fact>]
+    let ``Time Line Plots``() =    
+        let t,x1 = TestUtils.makeTimeSeries 45 0.05
+        let _,x2 = TestUtils.makeTimeSeries 45 0.07
+
+        let s1 = 
+            Seq.zip t x1
+            |> Chart.Line
+            |> Chart.WithTitle "Time Line Plot 1"
+            |> Chart.With (Chart.Props.series.[0].asLine.color "#fa0")
+            |> Chart.With (Chart.Props.plotOptions.line.lineWidth 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s2 = 
+            Seq.zip t x1 |> Seq.toArray
+            |> Chart.Line
+            |> Chart.WithTitle "Time Line Plot 2"
+            |> Chart.With (Chart.Props.series.[0].asLine.color "#af0")
+            |> Chart.With (Chart.Props.plotOptions.line.lineWidth 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s3 = 
+            Seq.zip t x1 |> Seq.toList
+            |> Chart.Line
+            |> Chart.WithTitle "Time Line Plot 3"
+            |> Chart.With (Chart.Props.series.[0].asLine.color "#0af")
+            |> Chart.With (Chart.Props.plotOptions.line.lineWidth 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s4 = 
+            seq { Seq.zip t x1; Seq.zip t x2 }
+            |> Chart.Line
+            |> Chart.WithTitle "Time Line Plots 4"
+            |> Chart.With (Chart.Props.plotOptions.line.lineWidth 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s5 = 
+            seq { Seq.zip t x1 |> Seq.toArray; Seq.zip t x2 |> Seq.toArray }
+            |> Chart.Line
+            |> Chart.WithTitle "Time Line Plots 5"
+            |> Chart.With (Chart.Props.plotOptions.line.lineWidth 8.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s6 = 
+            seq { Seq.zip t x1 |> Seq.toList; Seq.zip t x2 |> Seq.toList }
+            |> Chart.Scatter
+            |> Chart.WithTitle "Time Line Plots 6"
+            |> Chart.With (Chart.Props.plotOptions.line.lineWidth 10.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        [s1;s2;s3;s4;s5;s6]
+        |> Chart.ShowAll
 
 module ``Scatter properties`` =
     
@@ -100,54 +257,200 @@ module ``Scatter properties`` =
         Assert.Equal("#14b", (chart.chart.series.ElementAt(0) :?> Scatter).color)
 
     [<Fact>]
-    let ``X/Y Scatter Plot``() =
-        [[1.;-1.]; [2.;1.5]; [3.;-0.5]; [4.;4.8]]
-        |> Chart.Scatter
-        |> Chart.With (Chart.Props.series.[0].name "XY scatter plot")
-        |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "diamond")
-        |> Chart.WithWidth 700
-        |> Chart.WithHeight 500
-        |> Chart.Show
+    let ``Scatter Plots``() =
+        let y1 = seq { -1.; 1.5; -0.5; 4.8 }
+        let y2 = seq { 1.; 1.2; -1.5; 2.8 }
+
+        let s1 = 
+            y1
+            |> Chart.Scatter
+            |> Chart.WithTitle "Scatter Plot 1"
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "diamond")
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s2 = 
+            y1 |> Seq.toArray
+            |> Chart.Scatter
+            |> Chart.WithTitle "Scatter Plot 2"
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "square")
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s3 = 
+            y1 |> Seq.toList
+            |> Chart.Scatter
+            |> Chart.WithTitle "Scatter Plot 3"
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "circle")
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s4 = 
+            seq { y1; y2 }
+            |> Chart.Scatter
+            |> Chart.WithTitle "Scatter Plots 4"
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "diamond")
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.fillColor "#fa2")
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s5 = 
+            seq { y1 |> Seq.toArray; y2 |> Seq.toArray }
+            |> Chart.Scatter
+            |> Chart.WithTitle "Scatter Plots 5"
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "square")
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.fillColor "#fa2")
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s6 = 
+            seq { y1 |> Seq.toList; y2 |> Seq.toList }
+            |> Chart.Scatter
+            |> Chart.WithTitle "Scatter Plots 6"
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "circle")
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.fillColor "#fa2")
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        [s1;s2;s3;s4;s5;s6]
+        |> Chart.ShowAll
 
     [<Fact>]
-    let ``Time Scatter Plot``() =
-        [
-            (DateTime(2020,3,1,0,0,0),-1.)
-            (DateTime(2020,3,2,0,0,0),1.5)
-            (DateTime(2020,3,3,0,0,0),-0.5)
-            (DateTime(2020,3,4,0,0,0),4.8)
-        ]
-        |> Chart.Scatter
-        |> Chart.With (Chart.Props.series.[0].name "Time Scatter Plot")
-        |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "square")
-        |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
-        |> Chart.WithWidth 700
-        |> Chart.WithHeight 500
-        |> Chart.Show
+    let ``X/Y Scatter Plots``() =
+        let x = seq { 1.; 2.; 3.; 4. }
+        let y1 = seq { -1.; 1.5; -0.5; 4.8 }
+        let y2 = seq { 1.; 1.2; -1.5; 2.8 }
+
+        let s1 = 
+            Seq.zip x y1
+            |> Chart.Scatter
+            |> Chart.WithTitle "XY Scatter Plot 1"
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "diamond")
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s2 = 
+            Seq.zip x y1 |> Seq.toArray
+            |> Chart.Scatter
+            |> Chart.WithTitle "XY Scatter Plot 2"
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "square")
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s3 = 
+            Seq.zip x y1 |> Seq.toList
+            |> Chart.Scatter
+            |> Chart.WithTitle "XY Scatter Plot 3"
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "circle")
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s4 = 
+            seq { Seq.zip x y1; Seq.zip x y2 }
+            |> Chart.Scatter
+            |> Chart.WithTitle "XY Scatter Plots 4"
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "diamond")
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.fillColor "#fa2")
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s5 = 
+            seq { Seq.zip x y1 |> Seq.toArray; Seq.zip x y2 |> Seq.toArray }
+            |> Chart.Scatter
+            |> Chart.WithTitle "XY Scatter Plots 5"
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "square")
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.fillColor "#fa2")
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s6 = 
+            seq { Seq.zip x y1 |> Seq.toList; Seq.zip x y2 |> Seq.toList }
+            |> Chart.Scatter
+            |> Chart.WithTitle "XY Scatter Plots 6"
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "circle")
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.fillColor "#fa2")
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        [s1;s2;s3;s4;s5;s6]
+        |> Chart.ShowAll
 
     [<Fact>]
     let ``Time Scatter Plots``() =
-        [
-            [
-                (DateTime(2020,3,1,0,0,0),-1.)
-                (DateTime(2020,3,2,0,0,0),1.5)
-                (DateTime(2020,3,3,0,0,0),-0.5)
-                (DateTime(2020,3,4,0,0,0),4.8)
-            ]
-            [
-                (DateTime(2020,3,1,0,0,0),1.)
-                (DateTime(2020,3,2,0,0,0),1.2)
-                (DateTime(2020,3,3,0,0,0),-1.5)
-                (DateTime(2020,3,4,0,0,0),2.8)
-            ]
-        ]
-        |> Chart.Scatter
-        |> Chart.With (Chart.Props.series.[0].name "Time Scatter Plots")
-        |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "diamond")
-        |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
-        |> Chart.WithWidth 700
-        |> Chart.WithHeight 500
-        |> Chart.Show
+        let t,x1 = TestUtils.makeTimeSeries 45 0.05
+        let _,x2 = TestUtils.makeTimeSeries 45 0.07
+
+        let s1 = 
+            Seq.zip t x1
+            |> Chart.Scatter
+            |> Chart.WithTitle "Time Scatter Plot 1"
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "diamond")
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s2 = 
+            Seq.zip t x1 |> Seq.toArray
+            |> Chart.Scatter
+            |> Chart.WithTitle "Time Scatter Plot 2"
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "square")
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s3 = 
+            Seq.zip t x1 |> Seq.toList
+            |> Chart.Scatter
+            |> Chart.WithTitle "Time Scatter Plot 3"
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "circle")
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s4 = 
+            seq { Seq.zip t x1; Seq.zip t x2 }
+            |> Chart.Scatter
+            |> Chart.WithTitle "Time Scatter Plots 4"
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "diamond")
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.fillColor "#fa2")
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s5 = 
+            seq { Seq.zip t x1 |> Seq.toArray; Seq.zip t x2 |> Seq.toArray }
+            |> Chart.Scatter
+            |> Chart.WithTitle "Time Scatter Plots 5"
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "square")
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.fillColor "#fa2")
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s6 = 
+            seq { Seq.zip t x1 |> Seq.toList; Seq.zip t x2 |> Seq.toList }
+            |> Chart.Scatter
+            |> Chart.WithTitle "Time Scatter Plots 6"
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.symbol "circle")
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.width 12.)
+            |> Chart.With (Chart.Props.plotOptions.scatter.marker.fillColor "#fa2")
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        [s1;s2;s3;s4;s5;s6]
+        |> Chart.ShowAll
 
 module ``3D properties`` =
 

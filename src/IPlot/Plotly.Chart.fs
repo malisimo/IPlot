@@ -261,6 +261,12 @@ type Chart() =
         let scatter = Scatter(xt_ = x, y = y)
         Chart.Plot [scatter]
 
+    static member Line(data:seq<string * float>) =
+        let x = Seq.map fst data |> Seq.toArray
+        let y = Seq.map snd data |> Seq.toArray
+        let scatter = Scatter(xs_ = x, y = y)
+        Chart.Plot [scatter]
+
     static member Line(data:seq<seq<#value>>) =
         let scatters =
             data
@@ -352,6 +358,33 @@ type Chart() =
                 Scatter(xt_ = x, y = y))
         Chart.Plot scatters
 
+    static member Line(data:seq<seq<string * float>>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                let x = Seq.map fst series |> Seq.toArray
+                let y = Seq.map snd series |> Seq.toArray
+                Scatter(xs_ = x, y = y))
+        Chart.Plot scatters
+
+    static member Line(data:seq<(string * float) []>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                let x = Seq.map fst series |> Seq.toArray
+                let y = Seq.map snd series |> Seq.toArray
+                Scatter(xs_ = x, y = y))
+        Chart.Plot scatters
+
+    static member Line(data:seq<(string * float) list>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                let x = Seq.map fst series |> Seq.toArray
+                let y = Seq.map snd series |> Seq.toArray
+                Scatter(xs_ = x, y = y))
+        Chart.Plot scatters
+
     static member Pie(data:seq<#key * #value>) =
         let x = Seq.map fst data |> Chart.ToStringArray
         let y = Seq.map snd data |> Chart.ToFloatArray
@@ -384,6 +417,12 @@ type Chart() =
         let x = Seq.map fst data |> Seq.toArray
         let y = Seq.map snd data |> Chart.ToFloatArray
         let scatter = Scatter(xt_ = x, y = y, mode = "markers")
+        Chart.Plot [scatter]
+
+    static member Scatter(data:seq<string * float>) =
+        let x = Seq.map fst data |> Seq.toArray
+        let y = Seq.map snd data |> Chart.ToFloatArray
+        let scatter = Scatter(xs_ = x, y = y, mode = "markers")
         Chart.Plot [scatter]
 
     static member Scatter(data:seq<seq<#value>>) =
@@ -479,6 +518,33 @@ type Chart() =
                 Scatter(xt_ = x, y = y, mode = "markers"))
         Chart.Plot scatters
 
+    static member Scatter(data:seq<seq<string * float>>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                let x = Seq.map fst series |> Seq.toArray
+                let y = Seq.map snd series |> Seq.toArray
+                Scatter(xs_ = x, y = y, mode = "markers"))
+        Chart.Plot scatters
+
+    static member Scatter(data:seq<(string * float) []>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                let x = Seq.map fst series |> Seq.toArray
+                let y = Seq.map snd series |> Seq.toArray
+                Scatter(xs_ = x, y = y, mode = "markers"))
+        Chart.Plot scatters
+
+    static member Scatter(data:seq<(string * float) list>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                let x = Seq.map fst series |> Seq.toArray
+                let y = Seq.map snd series |> Seq.toArray
+                Scatter(xs_ = x, y = y, mode = "markers"))
+        Chart.Plot scatters
+
     static member ScatterGl(data:seq<#value>) =
         let scatter =
             Scattergl(y = (data |> Chart.ToFloatArray),
@@ -505,6 +571,12 @@ type Chart() =
         let x = Seq.map fst data |> Seq.toArray
         let y = Seq.map snd data |> Chart.ToFloatArray
         let scatter = Scattergl(xt_ = x, y = y, mode = "markers")
+        Chart.Plot [scatter]
+
+    static member ScatterGl(data:seq<string * float>) =
+        let x = Seq.map fst data |> Seq.toArray
+        let y = Seq.map snd data |> Chart.ToFloatArray
+        let scatter = Scattergl(xs_ = x, y = y, mode = "markers")
         Chart.Plot [scatter]
 
     static member ScatterGl(data:seq<seq<#value>>) =
@@ -598,6 +670,33 @@ type Chart() =
                 let x = Seq.map fst series |> Seq.toArray
                 let y = Seq.map snd series |> Seq.toArray
                 Scattergl(xt_ = x, y = y, mode = "markers"))
+        Chart.Plot scatters
+
+    static member ScatterGl(data:seq<seq<string * float>>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                let x = Seq.map fst series |> Seq.toArray
+                let y = Seq.map snd series |> Seq.toArray
+                Scattergl(xs_ = x, y = y, mode = "markers"))
+        Chart.Plot scatters
+
+    static member ScatterGl(data:seq<(string * float) []>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                let x = Seq.map fst series |> Seq.toArray
+                let y = Seq.map snd series |> Seq.toArray
+                Scattergl(xs_ = x, y = y, mode = "markers"))
+        Chart.Plot scatters
+
+    static member ScatterGl(data:seq<(string * float) list>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                let x = Seq.map fst series |> Seq.toArray
+                let y = Seq.map snd series |> Seq.toArray
+                Scattergl(xs_ = x, y = y, mode = "markers"))
         Chart.Plot scatters
 
     static member Surface(data:seq<seq<#value>>) =
