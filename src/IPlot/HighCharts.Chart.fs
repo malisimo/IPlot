@@ -91,6 +91,11 @@ type Chart() =
         |> Seq.map (fun (x,y) -> seq {(x :> IConvertible).ToDouble(null);(y :> IConvertible).ToDouble(null)})
         |> Seq.toArray
 
+    static member internal ToFloatArray2d (s:(float*float) seq) =
+        s
+        |> Seq.map (fun (x,y) -> seq { x; y })
+        |> Seq.toArray
+
     static member internal ToTimeFloatArray s =
         s
         |> Seq.map (fun (x:DateTime,y:float) -> seq { x.Subtract(DateTime(1970, 1, 1)).TotalSeconds; y })
@@ -103,7 +108,7 @@ type Chart() =
 
     static member Cylinder(data:seq<#value>) =
         let cylinder = Cylinder(data = (data |> Chart.ToFloatArray))
-        Chart.Plot [cylinder :> Trace]
+        Chart.Plot [cylinder]
         |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
         |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 15.)
         |> Chart.With (Chart.Props.chart_iplot.options3d.beta 15.)
@@ -112,11 +117,11 @@ type Chart() =
 
     static member Funnel(data:seq<#value>) =
         let funnel = Funnel(data = (data |> Chart.ToFloatArray))
-        Chart.Plot [funnel :> Trace]
+        Chart.Plot [funnel]
 
     static member Funnel3d(data:seq<#value>) =
         let funnel = Funnel3d(data = (data |> Chart.ToFloatArray))
-        Chart.Plot [funnel :> Trace]
+        Chart.Plot [funnel]
         |> Chart.With (Chart.Props.chart_iplot.options3d.enabled true)
         |> Chart.With (Chart.Props.chart_iplot.options3d.alpha 10.)
         |> Chart.With (Chart.Props.chart_iplot.options3d.beta 100.)
@@ -127,40 +132,92 @@ type Chart() =
         let scatter =
             Line(data = (data |> Chart.ToFloatArray),
                 marker = Marker(enabled = Nullable<bool>(false)))
-        Chart.Plot [scatter :> Trace]
+        Chart.Plot [scatter]
 
-    static member Line(data:seq<float []>) =
+    static member Line(data:seq<float>) =
         let scatter =
-            Line(
-                data_mat = (data |> Seq.map (Seq.ofArray)),
+            Line(data = data,
                 marker = Marker(enabled = Nullable<bool>(false)))
-        Chart.Plot [scatter :> Trace]
+        Chart.Plot [scatter]
 
-    static member Line(data:seq<float list>) =
-        let scatter =
+    static member Line(data:seq<#key * #value>) =
+        let scatter = 
             Line(
-                data_mat = (data |> Seq.map (Seq.ofList)),
+                data_mat = Chart.ToFloatArray2d data,
                 marker = Marker(enabled = Nullable<bool>(false)))
-        Chart.Plot [scatter :> Trace]
-
-    static member Line(data:seq<seq<float>>) =
-        let scatter =
-            Line(data_mat = data)
-        Chart.Plot [scatter :> Trace]
+        Chart.Plot [scatter]
 
     static member Line(data:seq<float * float>) =
         let scatter =
             Line(
                 data_mat = Chart.ToFloatArray2d data,
                 marker = Marker(enabled = Nullable<bool>(false)))
-        Chart.Plot [scatter :> Trace]
+        Chart.Plot [scatter]
 
     static member Line(data:seq<DateTime * float>) =
         let scatter =
             Line(
                 data_mat = Chart.ToTimeFloatArray data,
                 marker = Marker(enabled = Nullable<bool>(false)))
-        Chart.Plot [scatter :> Trace]
+        Chart.Plot [scatter]
+
+    static member Line(data:seq<seq<#value>>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Line(
+                    data = (series |> Chart.ToFloatArray),
+                    marker = Marker(enabled = Nullable<bool>(false))
+                ))
+        Chart.Plot scatters
+
+    static member Line(data:seq<seq<float>>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Line(
+                    data = series,
+                    marker = Marker(enabled = Nullable<bool>(false))
+                ))
+        Chart.Plot scatters
+
+    static member Line(data:seq<float []>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Line(
+                    data = series,
+                    marker = Marker(enabled = Nullable<bool>(false))
+                ))
+        Chart.Plot scatters
+
+    static member Line(data:seq<float list>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Line(
+                    data = series,
+                    marker = Marker(enabled = Nullable<bool>(false))
+                ))
+        Chart.Plot scatters
+
+    static member Line(data:seq<#seq<#key * #value>>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Line(
+                    data_mat = Chart.ToFloatArray2d series,
+                    marker = Marker(enabled = Nullable<bool>(false))))
+        Chart.Plot scatters
+
+    static member Line(data:seq<seq<float * float>>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Line(
+                    data_mat = (series |> Seq.map (fun (x,y) -> seq { x; y })),
+                    marker = Marker(enabled = Nullable<bool>(false))))
+        Chart.Plot scatters
 
     static member Line(data:seq<(float * float) []>) =
         let scatters =
@@ -207,15 +264,6 @@ type Chart() =
                     marker = Marker(enabled = Nullable<bool>(false))))
         Chart.Plot scatters
 
-    static member Line(data:seq<#seq<#key * #value>>) =
-        let scatters =
-            data
-            |> Seq.map (fun series ->
-                Line(
-                    data_mat = Chart.ToFloatArray2d series,
-                    marker = Marker(enabled = Nullable<bool>(false))))
-        Chart.Plot scatters    
-
     static member Pyramid3d(data:seq<#value>) =
         let pyramid = Pyramid3d(data = (data |> Chart.ToFloatArray))
         Chart.Plot [pyramid :> Trace]
@@ -227,29 +275,39 @@ type Chart() =
 
     static member Scatter(data:seq<#value>) =
         let scatter =
-            Scatter(data = (data |> Chart.ToFloatArray),
-                name = "Trace 0")
-        Chart.Plot [scatter :> Trace]
+            Scatter(data = (data |> Chart.ToFloatArray))
+        Chart.Plot [scatter]
 
-    static member Scatter(data:seq<float []>) =
-        let scatter = Scatter(data_mat = (data |> Seq.map (Seq.ofArray)))
-        Chart.Plot [scatter :> Trace]
-
-    static member Scatter(data:seq<float list>) =
-        let scatter = Scatter(data_mat = (data |> Seq.map (Seq.ofList)))
-        Chart.Plot [scatter :> Trace]
-
-    static member Scatter(data:seq<seq<float>>) =
-        let scatter = Scatter(data_mat = data)
-        Chart.Plot [scatter :> Trace]
+    static member Scatter(data:seq<float>) =
+        let scatter = Scatter(data = data)
+        Chart.Plot [scatter]
 
     static member Scatter(data:seq<float * float>) =
         let scatter = Scatter(data_mat = Chart.ToFloatArray2d data)
-        Chart.Plot [scatter :> Trace]
+        Chart.Plot [scatter]
 
     static member Scatter(data:seq<DateTime * float>) =
         let scatter = Scatter(data_mat = Chart.ToTimeFloatArray data)
-        Chart.Plot [scatter :> Trace]
+        Chart.Plot [scatter]
+
+    static member Scatter(data:seq<seq<#value>>) =
+        let scatters =
+            data
+            |> Seq.map (fun series ->
+                Scatter(data = (series |> Chart.ToFloatArray)))
+        Chart.Plot scatters
+
+    static member Scatter(data:seq<seq<float>>) =
+        let scatter = Scatter(data_mat = data)
+        Chart.Plot [scatter]
+
+    static member Scatter(data:seq<float []>) =
+        let scatter = Scatter(data_mat = (data |> Seq.map (Seq.ofArray)))
+        Chart.Plot [scatter]
+
+    static member Scatter(data:seq<float list>) =
+        let scatter = Scatter(data_mat = (data |> Seq.map (Seq.ofList)))
+        Chart.Plot [scatter]
 
     static member Scatter(data:seq<#seq<#key * #value>>) =
         let scatters =
