@@ -48,6 +48,8 @@ Chart.Line(data)
     .Show();
 ```
 
+...and in F#:
+
 ```fsharp
 open IPlot.Plotly
 
@@ -122,7 +124,7 @@ Chart.Cylinder [1.; 2.; 3.; 4.; 3.; 2.; 1.]
 
 # Building From Source
 
-The library can be built from source by running the following CMD files in a console, in order:
+The library can be built from source on the command line (in order):
 
 ```
 .\gensrc.cmd
