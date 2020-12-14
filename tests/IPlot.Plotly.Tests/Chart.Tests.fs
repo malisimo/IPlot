@@ -393,6 +393,248 @@ module ``Scatter properties`` =
         |> Chart.With (Chart.Props.traces.[0].asScatter.mode "lines+markers")
         |> Chart.Show
 
+module ``Area properties`` =
+
+    [<Fact>]
+    let ``Area Plots``() =    
+        let y1 = seq { 0.2; 0.8; 0.5; 1.1 }
+        let y2 = seq { 0.6; 0.1; 0.3; 0.7 }
+
+        let s1 = 
+            y1
+            |> Chart.Area
+            |> Chart.WithTitle "Area Plots 1"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#fa0")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s2 = 
+            y1 |> Seq.toArray
+            |> Chart.Area
+            |> Chart.WithTitle "Area Plots 2"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#af0")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s3 = 
+            y1 |> Seq.toList
+            |> Chart.Area
+            |> Chart.WithTitle "Area Plots 3"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#0af")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s4 = 
+            seq { y1; y2 }
+            |> Chart.Area
+            |> Chart.WithTitle "Area Plots 4"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s5 = 
+            seq { y1 |> Seq.toArray; y2 |> Seq.toArray }
+            |> Chart.Area
+            |> Chart.WithTitle "Area Plots 5"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 8.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s6 = 
+            seq { y1 |> Seq.toList; y2 |> Seq.toList }
+            |> Chart.Area
+            |> Chart.WithTitle "Area Plots 6"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 10.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        [s1;s2;s3;s4;s5;s6]
+        |> Chart.ShowAll
+
+    [<Fact>]
+    let ``X/Y Area Plots``() =
+        let x = seq { 1.; 2.; 3.; 4. }
+        let y1 = seq { 0.2; 0.8; 0.5; 1.1 }
+        let y2 = seq { 0.6; 0.1; 0.3; 0.7 }
+
+        let s1 =
+            Seq.zip x y1
+            |> Chart.Area
+            |> Chart.WithTitle "XY Area Plot 1"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#fa0")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s2 =
+            Seq.zip x y1 |> Seq.toArray
+            |> Chart.Area
+            |> Chart.WithTitle "XY Area Plot 2"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#af0")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s3 =
+            Seq.zip x y1 |> Seq.toList
+            |> Chart.Area
+            |> Chart.WithTitle "XY Area Plot 3"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#0af")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s4 =
+            seq { Seq.zip x y1; Seq.zip x y2 }
+            |> Chart.Area
+            |> Chart.WithTitle "XY Area Plots 4"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s5 =
+            seq { Seq.zip x y1 |> Seq.toArray; Seq.zip x y2 |> Seq.toArray }
+            |> Chart.Area
+            |> Chart.WithTitle "XY Area Plots 5"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 8.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s6 = 
+            seq { Seq.zip x y1 |> Seq.toList; Seq.zip x y2 |> Seq.toList }
+            |> Chart.Area
+            |> Chart.WithTitle "XY Area Plots 6"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 10.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        [s1;s2;s3;s4;s5;s6]
+        |> Chart.ShowAll
+
+    [<Fact>]
+    let ``Time Area Plots (DateTime)``() =
+        let t,x1 = TestUtils.makeTimeSeries 45 0.05
+        let _,x2 = TestUtils.makeTimeSeries 45 0.07
+
+        let s1 = 
+            Seq.zip t x1
+            |> Chart.Area
+            |> Chart.WithTitle "Time Area (DateTime) Plot 1"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#fa0")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s2 = 
+            Seq.zip t x1 |> Seq.toArray
+            |> Chart.Area
+            |> Chart.WithTitle "Time Area (DateTime) Plot 2"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#af0")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s3 = 
+            Seq.zip t x1 |> Seq.toList
+            |> Chart.Area
+            |> Chart.WithTitle "Time Area (DateTime) Plot 3"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#0af")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s4 = 
+            seq { Seq.zip t x1; Seq.zip t x2 }
+            |> Chart.Area
+            |> Chart.WithTitle "Time Area (DateTime) Plots 4"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s5 = 
+            seq { Seq.zip t x1 |> Seq.toArray; Seq.zip t x2 |> Seq.toArray }
+            |> Chart.Area
+            |> Chart.WithTitle "Time Area (DateTime) Plots 5"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 8.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s6 = 
+            seq { Seq.zip t x1 |> Seq.toList; Seq.zip t x2 |> Seq.toList }
+            |> Chart.Scatter
+            |> Chart.WithTitle "Time Area (DateTime) Plots 6"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 10.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        [s1;s2;s3;s4;s5;s6]
+        |> Chart.ShowAll
+
+    [<Fact>]
+    let ``Time Area Plots (String)``() =
+        let t,x1 = TestUtils.makeTimeSeries 45 0.05
+        let _,x2 = TestUtils.makeTimeSeries 45 0.07
+        let ts =
+            t
+            |> Seq.map (fun dt -> dt.ToString("o"))
+
+        let s1 = 
+            Seq.zip ts x1
+            |> Chart.Area
+            |> Chart.WithTitle "Time Area (String) Plot 1"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#fa0")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s2 = 
+            Seq.zip ts x1 |> Seq.toArray
+            |> Chart.Area
+            |> Chart.WithTitle "Time Area (String) Plot 2"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#af0")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s3 = 
+            Seq.zip ts x1 |> Seq.toList
+            |> Chart.Area
+            |> Chart.WithTitle "Time Area (String) Plot 3"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.color "#0af")
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s4 = 
+            seq { Seq.zip ts x1; Seq.zip ts x2 }
+            |> Chart.Area
+            |> Chart.WithTitle "Time Area (String) Plots 4"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 6.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s5 = 
+            seq { Seq.zip ts x1 |> Seq.toArray; Seq.zip ts x2 |> Seq.toArray }
+            |> Chart.Area
+            |> Chart.WithTitle "Time Area (String) Plots 5"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 8.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        let s6 = 
+            seq { Seq.zip ts x1 |> Seq.toList; Seq.zip ts x2 |> Seq.toList }
+            |> Chart.Area
+            |> Chart.WithTitle "Time Area (String) Plots 6"
+            |> Chart.With (Chart.Props.traces.[0].asScatter.line.width 10.)
+            |> Chart.WithWidth 700
+            |> Chart.WithHeight 500
+
+        [s1;s2;s3;s4;s5;s6]
+        |> Chart.ShowAll
+
 
 module ``Heatmap properties`` =
 
