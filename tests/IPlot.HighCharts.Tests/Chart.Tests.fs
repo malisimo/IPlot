@@ -21,6 +21,17 @@ module TestUtils =
 
         t,x
 
+module ``Saving images`` =
+    [<Fact>]
+    let ``Save Basic Line Plot``() =
+        [0.2; 0.8; 0.5; 1.1]
+        |> Chart.Line
+        |> Chart.WithWidth 700
+        |> Chart.WithHeight 500
+        |> Chart.WithTitle "Basic line plot"
+        |> Chart.Save "test.png"
+    
+
 module ``Line properties`` =
 
     [<Fact>]

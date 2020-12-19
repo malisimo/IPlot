@@ -1,6 +1,10 @@
 ﻿namespace IPlot.HighCharts
 
 open System
+open System.Net.Http
+open System.Text
+open System.Net
+open System.IO
 
 type key = IConvertible
 type value = IConvertible
@@ -26,6 +30,60 @@ type Chart() =
     
     /// Displays a chart in the default browser
     static member Show (chart: HighChartsChart) = chart.Show()
+
+    static member Save (filename:string) (chart: HighChartsChart) =
+        let json = chart.SerializeChart()
+
+        try
+            use clientHandler = new HttpClientHandler()
+            clientHandler.ServerCertificateCustomValidationCallback <- (fun sender cert chain sslPolicyErrors -> true)
+
+            use client = new HttpClient(clientHandler)
+            client.Timeout <- TimeSpan.FromSeconds(3.)
+
+            let jsonTemplate = "{
+                \"infile\":##JSON##,
+                \"scale\":false,
+                \"constr\":\"Chart\",
+                \"callback\":\"\",
+                \"styledMode\":false,
+                \"type\":\"image/png\",
+                \"asyncRendering\":false,
+                \"async\":false,
+                \"resources\":\"\"
+            }"
+
+            let contentStr = jsonTemplate.Replace("##JSON##", json)
+            use content = new StringContent(contentStr, Encoding.UTF8, "application/json")
+
+            let resp =
+                client.PostAsync("http://export.highcharts.com/", content)
+                |> Async.AwaitTask
+                |> Async.RunSynchronously
+            
+            printfn "Response code %s sending to server" (string resp.StatusCode)
+            
+            match resp.StatusCode with
+            | HttpStatusCode.OK ->
+                printfn "Request to server OK"
+                let content =
+                    resp.Content.ReadAsStreamAsync()
+                    |> Async.AwaitTask
+                    |> Async.RunSynchronously
+                
+                let p = Path.GetDirectoryName filename
+                if String.IsNullOrEmpty p |> not && Directory.Exists p |> not then
+                    Directory.CreateDirectory p
+                    |> ignore
+                                
+                use fs = File.Create(filename)
+                content.Seek(0L, SeekOrigin.Begin) |> ignore
+                content.CopyTo(fs)
+                printfn "Written %i bytes to %s" content.Length filename
+            | _ ->
+                printfn "Failed to save chart: %s" (string resp.StatusCode)
+        with ex ->
+            printfn "Exception saving chart: %s" (string ex)
     
     /// Combine charts together and display as a single page in default browser
     static member ShowAll(charts: seq<HighChartsChart>) =

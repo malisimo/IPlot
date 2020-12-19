@@ -2,5 +2,5 @@ module Program
 
 [<EntryPoint>]
 let main _ =
-    IPlot.HighCharts.Tests.``Spline properties``.``Basic Spline Chart``()
+    IPlot.HighCharts.Tests.``Saving images``.``Save Basic Line Plot``()
     0

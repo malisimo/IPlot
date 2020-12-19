@@ -70,9 +70,9 @@ namespace IPlot.HighCharts
         }
 
         /// Serialise chart object to JSON
-        public string serializeChart(HighChart chart)
+        public string SerializeChart()
         {
-            return JsonConvert.SerializeObject(chart, Formatting.None, new JsonSerializerSettings
+            return JsonConvert.SerializeObject(this.chart, Formatting.None, new JsonSerializerSettings
                 {
                     NullValueHandling = NullValueHandling.Ignore
                 })
@@ -138,7 +138,7 @@ namespace IPlot.HighCharts
         /// The chart's plotting JavaScript code.
         public string GetPlottingJS()
         {
-            var chartJson = serializeChart(this.chart);
+            var chartJson = SerializeChart();
 
             return
                 Html.jsFunctionTemplate

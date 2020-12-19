@@ -14,6 +14,7 @@ Charting library for .NET, rendered using Plotly or HighCharts in the browser.
 - [Basic Usage](#basic-usage)
 - [Plotly API](https://github.com/malisimo/iplot/blob/master/src/IPlot.Plotly/ReadMe.md)
 - [HighCharts API](https://github.com/malisimo/iplot/blob/master/src/IPlot.HighCharts/ReadMe.md)
+- [Saving Images](#saving-images)
 - [Building From Source](#building-from-source)
 
 # About
@@ -29,7 +30,7 @@ You can choose to render charts using Plotly or HighCharts. Either import ```IPl
 Install as a nuget package using the dotnet CLI.  Whilst in the directory containing your csproj or fsproj file, enter:
 
 ```
-dotnet add package IPlot --version=0.0.1-pre8
+dotnet add package IPlot --version=0.0.1-pre9
 ```
 
 # Basic Usage
@@ -120,6 +121,20 @@ Chart.Cylinder [1.; 2.; 3.; 4.; 3.; 2.; 1.]
 |> Chart.WithWidth 700
 |> Chart.WithHeight 500
 |> Chart.Show
+```
+
+# Saving Images
+
+The highCharts API has a function that allows storing the chart as a PNG file locally:
+
+```fsharp
+open IPlot.HighCharts
+
+Chart.Line [1.; 3.; 2.; 6.]
+|> Chart.WithWidth 700
+|> Chart.WithHeight 500
+|> Cchart.WithTitle "Image file of line chart"
+|> Chart.Save "MyChart.png"
 ```
 
 # Building From Source
