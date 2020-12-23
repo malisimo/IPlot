@@ -114,6 +114,10 @@ type Chart() =
     static member WithYTitle yTitle (chart:PlotlyChart) =
         chart.WithYTitle yTitle
 
+    /// Sets the chart's Z-axis title.
+    static member WithZTitle zTitle (chart:PlotlyChart) =
+        chart.WithZTitle zTitle
+
     static member Area(data:seq<#value>) =
         let area = Scatter(y = (data |> Chart.ToFloatArray), fill = "tozeroy")
         Chart.Plot [area]

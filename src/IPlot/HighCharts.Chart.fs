@@ -61,11 +61,8 @@ type Chart() =
                 |> Async.AwaitTask
                 |> Async.RunSynchronously
             
-            printfn "Response code %s sending to server" (string resp.StatusCode)
-            
             match resp.StatusCode with
             | HttpStatusCode.OK ->
-                printfn "Request to server OK"
                 let content =
                     resp.Content.ReadAsStreamAsync()
                     |> Async.AwaitTask

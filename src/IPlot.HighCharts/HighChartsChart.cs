@@ -69,6 +69,18 @@ namespace IPlot.HighCharts
             return highchartsChart;
         }
 
+        /// Inline markup that can be embedded in a HTML document.
+        public string GetInlineHtml()
+        {
+            var plotting = GetPlottingJS();
+            return
+                Html.inlineTemplate
+                    .Replace("[ID]", this.id)
+                    .Replace("[WIDTH]", this.chart.chart_iplot.width.ToString())
+                    .Replace("[HEIGHT]", this.chart.chart_iplot.height.ToString())
+                    .Replace("[PLOTTING]", plotting);
+        }
+
         /// Serialise chart object to JSON
         public string SerializeChart()
         {
@@ -82,7 +94,7 @@ namespace IPlot.HighCharts
         }
 
         /// Returns the JS to load relevant module scripts
-        public string GetModuleScripts()
+        private string GetModuleScripts()
         {
             var seriesTypes = chart.series.Select(s => s.type_iplot);
             var modules =
@@ -101,7 +113,7 @@ namespace IPlot.HighCharts
         }
 
         /// Returns the chart's full HTML source.
-        public string GetHtml()
+        private string GetHtml()
         {
             var chartMarkup = GetInlineHtml();
 
@@ -112,31 +124,8 @@ namespace IPlot.HighCharts
                     .Replace("[HIGHCHARTSSRC]", highchartsSrc);
         }
 
-        /// Inline markup that can be embedded in a HTML document.
-        public string GetInlineHtml()
-        {
-            var plotting = GetPlottingJS();
-            return
-                Html.inlineTemplate
-                    .Replace("[ID]", this.id)
-                    .Replace("[WIDTH]", this.chart.chart_iplot.width.ToString())
-                    .Replace("[HEIGHT]", this.chart.chart_iplot.height.ToString())
-                    .Replace("[PLOTTING]", plotting);
-        }
-
-        /// The chart's inline JavaScript code.
-        public string GetInlineJS()
-        {
-            var plotting = GetPlottingJS();
-            return
-                Html.jsTemplate
-                    .Replace("[THEME]", Html.themeString)
-                    .Replace("[ID]", id)
-                    .Replace("[PLOTTING]", plotting);
-        }
-
         /// The chart's plotting JavaScript code.
-        public string GetPlottingJS()
+        private string GetPlottingJS()
         {
             var chartJson = SerializeChart();
 

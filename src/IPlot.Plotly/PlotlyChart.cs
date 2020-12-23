@@ -36,7 +36,7 @@ namespace IPlot.Plotly
             get
             {
                 Func<Func<PlotlyChart, PlotlyChart>, PlotlyChart, PlotlyChart> lam = (propFun, PlotlyChart) => propFun((PlotlyChart)PlotlyChart.DeepClone());
-                var f = FuncConvert.FromFunc<Func<PlotlyChart, PlotlyChart>, PlotlyChart, PlotlyChart>(lam);
+                var f = FuncConvert.FromFunc(lam);
 
                 return f;
             }
@@ -88,49 +88,6 @@ namespace IPlot.Plotly
             return plotlyChart;
         }
 
-        /// Serialise all traces to JSON
-        public string serializeTraces(IEnumerable<string> names, IEnumerable<Trace> traces)
-        {
-            Func<IEnumerable<Trace>,string> serialiseFunc = (traceArr =>
-                {
-                    return JsonConvert.SerializeObject(traces, Formatting.None, new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore
-                    })
-                    .Replace("_iplot", string.Empty)
-                    .Replace("xt_", "x")
-                    .Replace("xs_", "x")
-                    .Replace("yt_", "y")
-                    .Replace("ys_", "y")
-                    .Replace("zs_", "z");
-                });
-
-            if ((names == null) || !names.Any())
-                return serialiseFunc(traces);
-
-            var namedTraces =
-                names
-                .Zip(traces, (n,t) => (n,t))
-                .Select((nt,i) =>
-                {
-                    nt.Item2.name = nt.Item1;
-                    return nt.Item2;
-                }).ToArray();
-
-            return serialiseFunc(namedTraces);
-        }
-
-
-        /// Returns the chart's full HTML source
-        public string GetHtml()
-        {
-            var chartMarkup = GetInlineHtml();
-            return
-                Html.pageTemplate
-                    .Replace("[PLOTLYSRC]", this.plotlySrc)
-                    .Replace("[CHART]", chartMarkup);
-        }
-
         /// Inline markup that can be embedded in a HTML document
         public string GetInlineHtml()
         {
@@ -143,20 +100,53 @@ namespace IPlot.Plotly
                     .Replace("[PLOTTING]", plotting);
         }
 
-        /// The chart's inline JavaScript code
-        public string GetInlineJS()
+        /// Serialise all traces to JSON
+        private string SerializeTraces()
         {
-            var plotting = GetPlottingJS();
+            Func<IEnumerable<Trace>,string> serialiseFunc = traceArr =>
+                {
+                    return JsonConvert.SerializeObject(this.traces, Formatting.None, new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    })
+                    .Replace("_iplot", string.Empty)
+                    .Replace("xt_", "x")
+                    .Replace("xs_", "x")
+                    .Replace("yt_", "y")
+                    .Replace("ys_", "y")
+                    .Replace("zs_", "z");
+                };
+
+            if ((this._labels == null) || !this._labels.Any())
+                return serialiseFunc(traces);
+
+            var namedTraces =
+                this._labels
+                .Zip(traces, (n,t) => (n,t))
+                .Select((nt,i) =>
+                {
+                    nt.Item2.name = nt.Item1;
+                    return nt.Item2;
+                }).ToArray();
+
+            return serialiseFunc(namedTraces);
+        }
+
+
+        /// Returns the chart's full HTML source
+        private string GetHtml()
+        {
+            var chartMarkup = GetInlineHtml();
             return
-                Html.jsTemplate
-                    .Replace("[ID]", id)
-                    .Replace("[PLOTTING]", plotting);
+                Html.pageTemplate
+                    .Replace("[PLOTLYSRC]", this.plotlySrc)
+                    .Replace("[CHART]", chartMarkup);
         }
 
         /// The chart's plotting JavaScript code
-        public string GetPlottingJS()
+        private string GetPlottingJS()
         {
-            var tracesJson = serializeTraces(_labels, this.traces);
+            var tracesJson = SerializeTraces();
             var layout = this.layout == null ? new Layout() : (Layout)this.layout.DeepClone();
             layout.width = this.width;
             layout.height = this.height;
@@ -292,13 +282,17 @@ namespace IPlot.Plotly
             {
                 if (this.layout.xaxis == null)
                     this.layout.xaxis = new Xaxis() { title = new Title() { text = xTitle } };
+                else if (this.layout.xaxis.title == null)
+                    this.layout.xaxis.title = new Title() { text = xTitle };
                 else
-                {
-                    if (this.layout.xaxis.title == null)
-                        this.layout.xaxis.title = new Title() { text = xTitle };
-                    else
-                        this.layout.xaxis.title.text = xTitle;
-                }
+                    this.layout.xaxis.title.text = xTitle;
+
+                if (this.layout.scene == null)
+                    this.layout.scene = new Scene() { xaxis = new Xaxis() { title = new Title() { text = xTitle } } };
+                else if (this.layout.scene.xaxis == null)
+                    this.layout.scene.xaxis = new Xaxis() { title = new Title() { text = xTitle } };
+                else if (this.layout.scene.xaxis.title == null)
+                    this.layout.scene.xaxis.title = new Title() { text = xTitle };
             }
 
             return this;
@@ -313,14 +307,35 @@ namespace IPlot.Plotly
             {
                 if (this.layout.yaxis == null)
                     this.layout.yaxis = new Yaxis() { title = new Title() { text = yTitle } };
+                else if (this.layout.yaxis.title == null)
+                    this.layout.yaxis.title = new Title() { text = yTitle };
                 else
-                {
-                    if (this.layout.yaxis.title == null)
-                        this.layout.yaxis.title = new Title() { text = yTitle };
-                    else
-                        this.layout.yaxis.title.text = yTitle;
-                }
+                    this.layout.yaxis.title.text = yTitle;
+
+                if (this.layout.scene == null)
+                    this.layout.scene = new Scene() { yaxis = new Yaxis() { title = new Title() { text = yTitle } } };
+                else if (this.layout.scene.yaxis == null)
+                    this.layout.scene.yaxis = new Yaxis() { title = new Title() { text = yTitle } };
+                else if (this.layout.scene.yaxis.title == null)
+                    this.layout.scene.yaxis.title = new Title() { text = yTitle };
             }
+            
+            return this;
+        }
+
+        /// Sets the chart's Z-axis title
+        public PlotlyChart WithZTitle(string zTitle)
+        {
+            if (this.layout == null)
+                this.layout = new Layout() { scene = new Scene() { zaxis = new Zaxis() { title = new Title() { text = zTitle } } } };
+            else if (this.layout.scene == null)
+                this.layout.scene = new Scene() { zaxis = new Zaxis() { title = new Title() { text = zTitle } } };
+            else if (this.layout.scene.zaxis == null)
+                this.layout.scene.zaxis = new Zaxis() { title = new Title() { text = zTitle } };
+            else if (this.layout.scene.zaxis.title == null)
+                this.layout.scene.zaxis.title = new Title() { text = zTitle };
+            else
+                this.layout.scene.zaxis.title.text = zTitle;
             
             return this;
         }

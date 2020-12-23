@@ -73,6 +73,8 @@ module ``Scatter properties`` =
         |> Chart.Line
         |> Chart.WithWidth 700
         |> Chart.WithHeight 500
+        |> Chart.WithXTitle "Value of x"
+        |> Chart.WithYTitle "Value of y"
         |> Chart.WithTitle "Two lines"
         |> Chart.Show
 
@@ -697,6 +699,9 @@ module ``Surface properties`` =
         |> Chart.WithWidth 900
         |> Chart.WithHeight 700
         |> Chart.WithTitle "Basic surface"
+        |> Chart.WithXTitle "Axis X"
+        |> Chart.WithYTitle "Axis Y"
+        |> Chart.WithZTitle "Axis Z"
         |> Chart.Show
 
     [<Fact>]
