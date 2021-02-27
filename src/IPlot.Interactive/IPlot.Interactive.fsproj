@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <NoWarn>$(NoWarn);NU5100</NoWarn>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <Id>IPlot.Interactive</Id>
+    <Version>0.0.1-pre9</Version>
+    <Authors>Matt Jones</Authors>
+    <Title>IPlot.Interactive</Title>
+    <Description>A .NET Interactive Kernel Extension for generating charts with HighCharts or Plotly</Description>
+    <Summary>A .NET Interactive Kernel Extension for generating charts with HighCharts or Plotly</Summary>
+    <PackageDescription>Charting library for generating charts with HighCharts or Plotly</PackageDescription>    
+    <RequireLicenseAcceptance>false</RequireLicenseAcceptance>
+    <PackageProjectUrl>https://github.com/malisimo/IPlot</PackageProjectUrl>
+    <Icon>Icon.png</Icon>
+    <PackageProjectUrl>https://github.com/malisimo/IPlot/</PackageProjectUrl>
+    <PackageIcon>Icon.png</PackageIcon>
+    <PackageTags>iplot;plot;chart;interactive;highcharts;plotly</PackageTags>
+    <RepositoryUrl>https://github.com/malisimo/IPlot.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryBranch>master</RepositoryBranch>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../Icon.png" Pack="true" PackagePath="\" />
+    <None Include="../../bin/IPlot.Interactive/net5.0/IPlot.Interactive.dll" Pack="true" PackagePath="interactive-extensions/dotnet" />
+    <Compile Include="Extension.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="bin\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <None Remove="bin\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../IPlot/IPlot.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.20574.7" />
+    <PackageReference Include="FSharp.Compiler.Service" Version="39.0.0" />
+    <PackageReference Include="FSharp.Core" Version="5.0.2" />
+    <PackageReference Include="Microsoft.DotNet.Interactive" Version="1.0.0-beta.21108.3" />
+    <PackageReference Include="Microsoft.DotNet.Interactive.Formatting" Version="1.0.0-beta.21108.3" />
+    <PackageReference Include="Microsoft.DotNet.Interactive.FSharp" Version="1.0.0-beta.21108.3" />
+  </ItemGroup>
+  
+  <PropertyGroup>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+</Project>
