@@ -15,6 +15,7 @@
     <PackageDescription>Charting library for generating charts with HighCharts or Plotly</PackageDescription>    
     <RequireLicenseAcceptance>false</RequireLicenseAcceptance>
     <PackageProjectUrl>https://github.com/malisimo/IPlot</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Icon>Icon.png</Icon>
     <PackageProjectUrl>https://github.com/malisimo/IPlot/</PackageProjectUrl>
     <PackageIcon>Icon.png</PackageIcon>
@@ -27,7 +28,6 @@
 
   <ItemGroup>
     <None Include="../../Icon.png" Pack="true" PackagePath="\" />
-    <None Include="../../bin/IPlot.Interactive/net5.0/IPlot.Interactive.dll" Pack="true" PackagePath="interactive-extensions/dotnet" />
     <Compile Include="Extension.fs" />
   </ItemGroup>
 
@@ -49,9 +49,14 @@
     <PackageReference Include="Microsoft.DotNet.Interactive.Formatting" Version="1.0.0-beta.21108.3" />
     <PackageReference Include="Microsoft.DotNet.Interactive.FSharp" Version="1.0.0-beta.21108.3" />
   </ItemGroup>
-  
-  <PropertyGroup>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="../../lib\**" Link="lib\%(RecursiveDir)%(FileName)%(Extension)" PackagePath="contentFiles/any/any/Modules" PackageCopyToOutput="true" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../lib\**" Link="lib\%(RecursiveDir)%(FileName)%(Extension)" PackagePath="interactive-extensions/dotnet/Modules" PackageCopyToOutput="true" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(OutputPath)/IPlot.Interactive.dll" Pack="true" PackagePath="interactive-extensions/dotnet" />
+  </ItemGroup>
 
 </Project>
