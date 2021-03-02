@@ -100,6 +100,15 @@ namespace IPlot.Plotly
                     .Replace("[PLOTTING]", plotting);
         }
 
+        /// Inline javascript that can be embedded in a HTML document
+        public string GetInlineJS()
+        {
+            var plotting = GetPlottingJS();
+            return
+                Html.jsTemplate
+                    .Replace("[PLOTTING]", plotting);
+        }
+
         /// Serialise all traces to JSON
         private string SerializeTraces()
         {
@@ -131,7 +140,6 @@ namespace IPlot.Plotly
 
             return serialiseFunc(namedTraces);
         }
-
 
         /// Returns the chart's full HTML source
         private string GetHtml()

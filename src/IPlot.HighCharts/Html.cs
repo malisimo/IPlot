@@ -261,7 +261,6 @@ namespace IPlot.HighCharts
         /// Javascript plotting code only
         public const string jsTemplate =
         @"<script>
-            [THEME]
             [PLOTTING]
         </script>";
 
