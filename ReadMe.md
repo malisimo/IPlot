@@ -157,3 +157,22 @@ The nuget package can be created by running:
 ```
 .\pack.cmd
 ```
+
+## .NET Interactive
+
+IPlot can be used within .NET interactive notebooks by importing IPlot.Interactive.
+To get the chart to render in the cell output simply skip the Chart.Show() call at the end:
+
+```
+#r "nuget: IPlot, 0.0.1-pre9"
+#r "nuget: IPlot.Interactive, 0.0.1-pre9"
+
+open IPlot.Plotly
+
+let xs = [ -20f..20f ]
+let ys = [ for x in xs do x ** 2f ]
+
+(xs, ys)
+||> List.zip
+|> Chart.Scatter
+```
