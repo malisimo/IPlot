@@ -69,7 +69,7 @@ namespace IPlot.HighCharts
             return highchartsChart;
         }
 
-        /// Inline markup that can be embedded in a HTML document.
+        /// Inline markup that can be embedded in a HTML document
         public string GetInlineHtml()
         {
             var plotting = GetPlottingJS();
@@ -78,6 +78,15 @@ namespace IPlot.HighCharts
                     .Replace("[ID]", this.id)
                     .Replace("[WIDTH]", this.chart.chart_iplot.width.ToString())
                     .Replace("[HEIGHT]", this.chart.chart_iplot.height.ToString())
+                    .Replace("[PLOTTING]", plotting);
+        }
+
+        /// Inline javascript that can be embedded in a HTML document
+        public string GetInlineJS()
+        {
+            var plotting = GetPlottingJS();
+            return
+                Html.jsTemplate
                     .Replace("[PLOTTING]", plotting);
         }
 
