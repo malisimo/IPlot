@@ -4,12 +4,6 @@ namespace IPlot.Plotly
     /// <summary>Base class for all Series types</summary>
     public class Trace_IProp : ChartProp
     {
-        /// <summary>Cast trace to Area type for setting specific parameters</summary>
-        public Area_IProp asArea
-        {
-            get { return new Area_IProp() { _parent = _parent }; }
-        }
-
         /// <summary>Cast trace to Bar type for setting specific parameters</summary>
         public Bar_IProp asBar
         {

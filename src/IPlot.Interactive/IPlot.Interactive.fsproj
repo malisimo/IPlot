@@ -7,7 +7,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <Id>IPlot.Interactive</Id>
-    <Version>0.0.1-pre9</Version>
+    <Version>0.0.1-pre10</Version>
     <Authors>Matt Jones</Authors>
     <Title>IPlot.Interactive</Title>
     <Description>A .NET Interactive Kernel Extension for generating charts with HighCharts or Plotly</Description>

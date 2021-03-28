@@ -40,6 +40,27 @@ let addTraceProperties curType (propertyDict:IDictionary<string,obj>) =
         ["xs_";"ys_"]
         |> List.map (fun name -> propertyDict.Add(name,makeDataArrayDict name StringArray))
         |> ignore
+    | "bar" ->
+        ["xt_";"yt_"]
+        |> List.map (fun name -> propertyDict.Add(name,makeDataArrayDict name DateTimeArray))
+        |> ignore
+        ["xs_";"ys_"]
+        |> List.map (fun name -> propertyDict.Add(name,makeDataArrayDict name StringArray))
+        |> ignore
+    | "box" ->
+        ["xt_";"yt_"]
+        |> List.map (fun name -> propertyDict.Add(name,makeDataArrayDict name DateTimeArray))
+        |> ignore
+        ["xs_";"ys_"]
+        |> List.map (fun name -> propertyDict.Add(name,makeDataArrayDict name StringArray))
+        |> ignore
+    | "candlestick" ->
+        ["xt_";"yt_"]
+        |> List.map (fun name -> propertyDict.Add(name,makeDataArrayDict name DateTimeArray))
+        |> ignore
+        ["xs_";"ys_"]
+        |> List.map (fun name -> propertyDict.Add(name,makeDataArrayDict name StringArray))
+        |> ignore
     | "heatmap" ->
         ["xt_";"yt_"]
         |> List.map (fun name -> propertyDict.Add(name,makeDataArrayDict name DateTimeArray))
@@ -61,6 +82,16 @@ let addTraceProperties curType (propertyDict:IDictionary<string,obj>) =
         |> List.map (fun name -> propertyDict.Add(name,makeDataArrayDict name StringMatrix))
         |> ignore
     | "surface" ->
+        ["xt_";"yt_"]
+        |> List.map (fun name -> propertyDict.Add(name,makeDataArrayDict name DateTimeArray))
+        |> ignore
+        ["xs_";"ys_"]
+        |> List.map (fun name -> propertyDict.Add(name,makeDataArrayDict name StringArray))
+        |> ignore
+        ["zs_"]
+        |> List.map (fun name -> propertyDict.Add(name,makeDataArrayDict name StringMatrix))
+        |> ignore
+    | "waterfall" ->
         ["xt_";"yt_"]
         |> List.map (fun name -> propertyDict.Add(name,makeDataArrayDict name DateTimeArray))
         |> ignore

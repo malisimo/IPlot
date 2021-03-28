@@ -4,7 +4,7 @@
     <Id>IPlot.Plotly</Id>
     <Authors>Matt Jones</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.1.0-pre9</Version>
+    <Version>1.1.0-pre10</Version>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Title>IPlot.Plotly</Title>
     <Description>Component used in IPlot to render Plotly charts</Description>

@@ -30,7 +30,7 @@ You can choose to render charts using Plotly or HighCharts. Either import ```IPl
 Install as a nuget package using the dotnet CLI.  Whilst in the directory containing your csproj or fsproj file, enter:
 
 ```
-dotnet add package IPlot --version=0.0.1-pre9
+dotnet add package IPlot --version=0.0.1-pre10
 ```
 
 # Basic Usage
@@ -164,8 +164,8 @@ IPlot can be used within .NET interactive notebooks by importing IPlot.Interacti
 To get the chart to render in the cell output simply skip the Chart.Show() call at the end:
 
 ```
-#r "nuget: IPlot, 0.0.1-pre9"
-#r "nuget: IPlot.Interactive, 0.0.1-pre9"
+#r "nuget: IPlot, 0.0.1-10"
+#r "nuget: IPlot.Interactive, 0.0.1-pre10"
 
 open IPlot.Plotly
 
