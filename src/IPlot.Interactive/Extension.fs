@@ -30,8 +30,8 @@ var renderPlotly = function() {
         newScript.AppendLine("""<script type="text/javascript">""") |> ignore
         newScript.AppendLine("""
 var renderHighCharts = function() {
-    var iplotRequire = require.config({context:'iplot-0.0.1-pre9',paths:{highcharts:'https://code.highcharts.com/highcharts'}}) || require;
-    iplotRequire(['highcharts'], function(HighCharts) { """) |> ignore
+    var iplotRequire = require.config({context:'iplot-0.0.1-pre9',packages:[{name:'highcharts',main:'highcharts'}],paths:{highcharts:'https://code.highcharts.com'}}) || require;
+    iplotRequire(['highcharts','highcharts/modules/exporting','highcharts/modules/accessibility'], function(Highcharts) { """) |> ignore
         newScript.AppendLine(script) |> ignore
         newScript.AppendLine(@"});
 };"
@@ -46,10 +46,10 @@ var renderHighCharts = function() {
         divElem + getPlotlyScriptElementWithRequire js
 
     let getHighChartsHtml (chart: HighChartsChart) =
-        let styleStr = $"width: {chart.chart.chart_iplot.width}px; height: {chart.chart.chart_iplot.height}px;"
+        let styleStr = $"width: {chart.chart.chart_iplot.width}px; height: {chart.chart.chart_iplot.height}px; background-color: #111;"
         let divElem = $"<div id=\"{chart.id}\" style=\"{styleStr}\"></div>"
         let js = chart.GetInlineJS().Replace("<script>", String.Empty).Replace("</script>", String.Empty)
-        divElem + getPlotlyScriptElementWithRequire js
+        divElem + getHighChartsScriptElementWithRequire js
 
     let registerPlotlyFormatter () =
         Formatter.Register<PlotlyChart>
@@ -74,7 +74,7 @@ var renderHighCharts = function() {
 
             if isNull KernelInvocationContext.Current |> not then
                 let message =
-                    "Added Kernel Extension including formatters for PlotlyChart and HighCharts"
+                    "Added Kernel Extension including formatters for Plotly and HighCharts"
 
                 KernelInvocationContext.Current.Display(message, "text/markdown")
                 |> ignore
