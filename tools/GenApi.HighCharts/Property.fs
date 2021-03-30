@@ -37,10 +37,19 @@ type Property =
                 | _ ->
                     firstCharToUpper elType
             else
-                types
-                |> Seq.choose (tryMatchType isNullable)
-                |> Seq.tryHead
-                |> Option.defaultValue "string"//(firstCharToUpper elType)
+                match Property.ArrayNestCount types with
+                | Some(c,t) when c > 0 ->
+                    match tryMatchType false t with
+                    | Some(baseType) ->
+                        surrStr "IEnumerable<" ">" c baseType
+                    | None ->
+                        surrStr "IEnumerable<" ">" c "string"
+                | _ ->
+                    types
+                    |> Seq.choose (tryMatchType isNullable)
+                    |> Seq.tryHead
+                    |> Option.defaultValue "string"//(firstCharToUpper elType)
+                    
 
         static member ArrayNestCount t =
             let tryParseArray (t:string) =
