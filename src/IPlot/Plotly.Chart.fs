@@ -47,23 +47,13 @@ type Chart() =
     static member Show (chart: PlotlyChart) = chart.Show()
     
     /// Combine charts together and display as a single page in default browser
-    static member ShowAll(charts: seq<PlotlyChart>) =
-        let html =
-            charts
-            |> Seq.map (fun c->c.GetInlineHtml()) |> Seq.reduce (+)
-
-        let plotlysrc charts =
-            match charts |> Seq.tryHead<PlotlyChart> with
-            | Some s -> s.plotlySrc
-            | None -> Html.DefaultPlotlySrc
-
-        let pageHtml =
-            Html.pageTemplate
-                .Replace("[PLOTLYSRC]", plotlysrc charts)
-                .Replace("[CHART]", html)
-                
-        let combinedChartId = Guid.NewGuid().ToString()
-        Html.showInBrowser(pageHtml, combinedChartId)
+    static member ShowAll (charts: seq<PlotlyChart>) = PlotlyChart.ShowAll charts
+    
+    /// Displays a chart in the default browser
+    static member SaveHtml (path: string) (chart: PlotlyChart) = chart.SaveHtml path
+    
+    /// Combine charts together and display as a single page in default browser
+    static member SaveHtmlAll (path: string) (charts: seq<PlotlyChart>) = PlotlyChart.SaveHtmlAll(path, charts)
 
     /// Sets the chart's plotly.js src. Default is https://cdn.plot.ly/plotly-latest.min.js
     static member WithPlotlySrc src (chart:PlotlyChart) =

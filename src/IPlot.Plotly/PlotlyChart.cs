@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.FSharp.Core;
@@ -187,7 +188,7 @@ namespace IPlot.Plotly
         }
 
         /// Combine charts together and display as a single page in default browser
-        public void ShowAll(IEnumerable<PlotlyChart> charts)
+        public static void ShowAll(IEnumerable<PlotlyChart> charts)
         {
             var html = string.Join("",charts.Select(c => c.GetInlineHtml()));
             var plotlysrc = charts.Any() ? charts.First().plotlySrc : Html.DefaultPlotlySrc;
@@ -196,8 +197,46 @@ namespace IPlot.Plotly
                 Html.pageTemplate
                 .Replace("[PLOTLYSRC]", plotlysrc)
                 .Replace("[CHART]", html);
+            
             var combinedChartId = Guid.NewGuid().ToString();
             Html.showInBrowser(pageHtml, combinedChartId);
+        }
+
+        /// Save the chart to an HTML file
+        public void SaveHtml(string path)
+        {
+            var html = GetHtml();
+            var dir = Path.GetDirectoryName(path);
+
+            if (!String.IsNullOrEmpty(dir))
+            {
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+            }
+
+            File.WriteAllText(path, html);
+        }
+
+        /// Combine charts together and save as a single HTML file
+        public static void SaveHtmlAll(string path, IEnumerable<PlotlyChart> charts)
+        {
+            var html = string.Join("",charts.Select(c => c.GetInlineHtml()));
+            var plotlysrc = charts.Any() ? charts.First().plotlySrc : Html.DefaultPlotlySrc;
+
+            var pageHtml =
+                Html.pageTemplate
+                .Replace("[PLOTLYSRC]", plotlysrc)
+                .Replace("[CHART]", html);
+
+            var dir = Path.GetDirectoryName(path);
+
+            if (!String.IsNullOrEmpty(dir))
+            {
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+            }
+
+            File.WriteAllText(path, pageHtml);
         }
 
         /// Sets the chart's plotly.js src

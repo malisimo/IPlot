@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.FSharp.Core;
@@ -102,13 +103,14 @@ namespace IPlot.HighCharts
                 .Replace("data_obj", "data");
         }
 
-        /// Returns the JS to load relevant module scripts
-        private string GetModuleScripts()
+        /// Returns the JS to load relevant HighCharts modules
+        public static IEnumerable<string> GetModules(HighChartsChart chart)
         {
-            var seriesTypes = chart.series.Select(s => s.type_iplot);
+            var seriesTypes = chart.chart.series.Select(s => s.type_iplot);
             var modules =
                 seriesTypes
                 .SelectMany(t => ModuleLoading.GetDependencies(t))
+                .Distinct()
                 .ToArray();
 
             var moduleImports =
@@ -116,20 +118,21 @@ namespace IPlot.HighCharts
                     .Select(m =>
                         Html.moduleTemplate
                             .Replace("[MODULENAME]", m)
-                            .Replace("[HIGHCHARTSSRC]", highchartsSrc));
+                            .Replace("[HIGHCHARTSSRC]", chart.highchartsSrc));
 
-            return String.Join("\n", moduleImports);
+            return moduleImports;
         }
 
         /// Returns the chart's full HTML source.
         private string GetHtml()
         {
             var chartMarkup = GetInlineHtml();
+            var moduleSrc = String.Join("\n", GetModules(this));
 
             return
                 Html.pageTemplate
                     .Replace("[CHART]", chartMarkup)
-                    .Replace("[MODULESRC]", GetModuleScripts())
+                    .Replace("[MODULESRC]", moduleSrc)
                     .Replace("[HIGHCHARTSSRC]", highchartsSrc);
         }
 
@@ -159,18 +162,68 @@ namespace IPlot.HighCharts
         }
 
         /// Combine charts together and display as a single page in default browser
-        public void ShowAll(IEnumerable<HighChartsChart> charts)
+        public static void ShowAll(IEnumerable<HighChartsChart> charts)
         {
             var html = string.Join("",charts.Select(c => c.GetInlineHtml()));
+            var highChartsSrc = charts.Any() ? charts.First().highchartsSrc : Html.DefaultHighChartsSrc;
+            var modules =
+                charts
+                .SelectMany(c => GetModules(c))
+                .Distinct()
+                .ToArray();
+            var moduleSrc = String.Join("\n", modules);
 
             var pageHtml =
                 Html.pageTemplate
                 .Replace("[CHART]", html)
-                .Replace("[MODULESRC]", GetModuleScripts())
-                .Replace("[HIGHCHARTSSRC]", highchartsSrc);
+                .Replace("[MODULESRC]", moduleSrc)
+                .Replace("[HIGHCHARTSSRC]", highChartsSrc);
 
             var combinedChartId = Guid.NewGuid().ToString();            
             Html.showInBrowser(pageHtml, combinedChartId);
+        }
+
+        /// Save the chart to an HTML file
+        public void SaveHtml(string path)
+        {
+            var html = GetHtml();
+            var dir = Path.GetDirectoryName(path);
+
+            if (!String.IsNullOrEmpty(dir))
+            {
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+            }
+
+            File.WriteAllText(path, html);
+        }
+
+        /// Combine charts together and save as a single HTML file
+        public static void SaveHtmlAll(string path, IEnumerable<HighChartsChart> charts)
+        {
+            var html = string.Join("",charts.Select(c => c.GetInlineHtml()));
+            var highChartsSrc = charts.Any() ? charts.First().highchartsSrc : Html.DefaultHighChartsSrc;
+            var modules =
+                charts
+                .SelectMany(c => GetModules(c))
+                .Distinct();
+            var moduleSrc = String.Join("\n", modules);
+
+            var pageHtml =
+                Html.pageTemplate
+                .Replace("[CHART]", html)
+                .Replace("[MODULESRC]", moduleSrc)
+                .Replace("[HIGHCHARTSSRC]", highChartsSrc);           
+
+            var dir = Path.GetDirectoryName(path);
+
+            if (!String.IsNullOrEmpty(dir))
+            {
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+            }
+
+            File.WriteAllText(path, pageHtml);
         }
 
         /// Sets the chart's title

@@ -30,6 +30,9 @@ type Chart() =
     
     /// Displays a chart in the default browser
     static member Show (chart: HighChartsChart) = chart.Show()
+    
+    /// Combine charts together and display as a single page in default browser
+    static member ShowAll(charts: seq<HighChartsChart>) = HighChartsChart.ShowAll charts
 
     static member Save (filename:string) (chart: HighChartsChart) =
         let json = chart.SerializeChart()
@@ -42,15 +45,9 @@ type Chart() =
             client.Timeout <- TimeSpan.FromSeconds(3.)
 
             let jsonTemplate = "{
-                \"infile\":##JSON##,
-                \"scale\":false,
-                \"constr\":\"Chart\",
-                \"callback\":\"\",
-                \"styledMode\":false,
+                \"options\":##JSON##,
                 \"type\":\"image/png\",
-                \"asyncRendering\":false,
-                \"async\":false,
-                \"resources\":\"\"
+                \"async\":false
             }"
 
             let contentStr = jsonTemplate.Replace("##JSON##", json)
@@ -82,24 +79,11 @@ type Chart() =
         with ex ->
             printfn "Exception saving chart: %s" (string ex)
     
+    /// Displays a chart in the default browser
+    static member SaveHtml (path: string) (chart: HighChartsChart) = chart.SaveHtml path
+    
     /// Combine charts together and display as a single page in default browser
-    static member ShowAll(charts: seq<HighChartsChart>) =
-        let html =
-            charts
-            |> Seq.map (fun c->c.GetInlineHtml()) |> Seq.reduce (+)
-
-        let highchartsSrc charts =
-            match charts |> Seq.tryHead<HighChartsChart> with
-            | Some s -> s.highchartsSrc
-            | None -> Html.DefaultHighChartsSrc
-
-        let pageHtml =
-            Html.pageTemplate
-                .Replace("[HIGHCHARTSSRC]", highchartsSrc charts)
-                .Replace("[CHART]", html)
-                
-        let combinedChartId = Guid.NewGuid().ToString()
-        Html.showInBrowser(pageHtml, combinedChartId)
+    static member SaveHtmlAll (path: string) (charts: seq<HighChartsChart>) = HighChartsChart.SaveHtmlAll(path, charts)
 
     /// Sets the chart's width.
     static member WithTitle title (chart:HighChartsChart) =
