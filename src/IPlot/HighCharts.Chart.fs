@@ -54,7 +54,7 @@ type Chart() =
             use content = new StringContent(contentStr, Encoding.UTF8, "application/json")
 
             let resp =
-                client.PostAsync("http://export.highcharts.com/", content)
+                client.PostAsync("https://export.highcharts.com/", content)
                 |> Async.AwaitTask
                 |> Async.RunSynchronously
             
