@@ -16,7 +16,7 @@ type FormatterKernelExtension() =
         newScript.AppendLine("""<script type="text/javascript">""") |> ignore
         newScript.AppendLine("""
 var renderPlotly = function() {
-    var iplotRequire = require.config({context:'iplot-0.0.1-pre9',paths:{plotly:'https://cdn.plot.ly/plotly-1.49.2.min'}}) || require;
+    var iplotRequire = require.config({context:'iplot',paths:{plotly:'https://cdn.plot.ly/plotly-1.49.2.min'}}) || require;
     iplotRequire(['plotly'], function(Plotly) { """) |> ignore
         newScript.AppendLine(script) |> ignore
         newScript.AppendLine(@"});
@@ -30,8 +30,8 @@ var renderPlotly = function() {
         newScript.AppendLine("""<script type="text/javascript">""") |> ignore
         newScript.AppendLine("""
 var renderHighCharts = function() {
-    var iplotRequire = require.config({context:'iplot-0.0.1-pre9',packages:[{name:'highcharts',main:'highcharts'}],paths:{highcharts:'https://code.highcharts.com'}}) || require;
-    iplotRequire(['highcharts','highcharts/modules/exporting','highcharts/modules/accessibility'], function(Highcharts) { """) |> ignore
+    var iplotRequire = require.config({context:'iplot',paths: { highcharts: 'https://code.highcharts.com' } }) || require;
+    iplotRequire(['highcharts/highcharts'], function(Highcharts) { """) |> ignore
         newScript.AppendLine(script) |> ignore
         newScript.AppendLine(@"});
 };"
